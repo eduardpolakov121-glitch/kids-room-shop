@@ -106,4 +106,5 @@ async function deleteOrderCRM(id) {
     }
 
     return true;
+
 }
