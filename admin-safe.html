@@ -190,6 +190,7 @@ async function renderCRMOrders() {
                 <b>Клієнт:</b> ${order.name}<br>
                 <b>Телефон:</b> ${order.phone}<br>
                 <b>Сума:</b> ${order.total} грн<br>
+                <b>Статус:</b> ${order.status}<br>
                 <b>Створено:</b> ${new Date(order.created_at).toLocaleString()}<br>
                 <b>Товари:</b><br>
                 ${itemsHtml}

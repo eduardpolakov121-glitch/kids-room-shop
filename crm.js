@@ -3,7 +3,6 @@ const SUPABASE_KEY = "sb_publishable_cRp6r2C_3nszludByS9V9Q_sl1QlHg5";
 
 /* ЗБЕРЕГТИ ЗАМОВЛЕННЯ В CRM */
 async function saveOrderCRM(order) {
-
     const response = await fetch(`${SUPABASE_URL}/rest/v1/orders`, {
         method: "POST",
         headers: {
@@ -31,7 +30,6 @@ async function saveOrderCRM(order) {
 
 /* ОТРИМАТИ ВСІ ЗАМОВЛЕННЯ */
 async function getOrdersCRM() {
-
     const response = await fetch(
         `${SUPABASE_URL}/rest/v1/orders?select=*&order=created_at.desc`,
         {
@@ -59,7 +57,6 @@ async function getOrdersCRM() {
 
 /* ОНОВИТИ СТАТУС ЗАМОВЛЕННЯ */
 async function updateOrderStatusCRM(id, status) {
-
     const response = await fetch(
         `${SUPABASE_URL}/rest/v1/orders?id=eq.${encodeURIComponent(id)}`,
         {
@@ -90,7 +87,6 @@ async function updateOrderStatusCRM(id, status) {
 
 /* ВИДАЛИТИ ЗАМОВЛЕННЯ */
 async function deleteOrderCRM(id) {
-
     const response = await fetch(
         `${SUPABASE_URL}/rest/v1/orders?id=eq.${encodeURIComponent(id)}`,
         {
