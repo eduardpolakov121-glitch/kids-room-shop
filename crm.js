@@ -1,8 +1,9 @@
-const SUPABASE_URL = "https://hhvnsoxjuiadrupkvvzr.supabase.co";
-const SUPABASE_KEY = "sb_publishable_wUWvPv_eztlIcBG3hbvVHQ_aiMLTr-Q";
+const SUPABASE_URL = "https://xhhzxiithajxgngmbzzd.supabase.co";
+const SUPABASE_KEY = "sb_publishable_cRp6r2C_3nszludByS9V9Q_sl1QlHg5";
 
 /* ЗБЕРЕГТИ ЗАМОВЛЕННЯ В CRM */
 async function saveOrderCRM(order) {
+
     const response = await fetch(`${SUPABASE_URL}/rest/v1/orders`, {
         method: "POST",
         headers: {
@@ -30,13 +31,17 @@ async function saveOrderCRM(order) {
 
 /* ОТРИМАТИ ВСІ ЗАМОВЛЕННЯ */
 async function getOrdersCRM() {
-    const response = await fetch(`${SUPABASE_URL}/rest/v1/orders?select=*&order=created_at.desc`, {
-        method: "GET",
-        headers: {
-            "apikey": SUPABASE_KEY,
-            "Authorization": `Bearer ${SUPABASE_KEY}`
+
+    const response = await fetch(
+        `${SUPABASE_URL}/rest/v1/orders?select=*&order=created_at.desc`,
+        {
+            method: "GET",
+            headers: {
+                "apikey": SUPABASE_KEY,
+                "Authorization": `Bearer ${SUPABASE_KEY}`
+            }
         }
-    });
+    );
 
     const text = await response.text();
 
@@ -54,16 +59,20 @@ async function getOrdersCRM() {
 
 /* ОНОВИТИ СТАТУС ЗАМОВЛЕННЯ */
 async function updateOrderStatusCRM(id, status) {
-    const response = await fetch(`${SUPABASE_URL}/rest/v1/orders?id=eq.${encodeURIComponent(id)}`, {
-        method: "PATCH",
-        headers: {
-            "Content-Type": "application/json",
-            "apikey": SUPABASE_KEY,
-            "Authorization": `Bearer ${SUPABASE_KEY}`,
-            "Prefer": "return=representation"
-        },
-        body: JSON.stringify({ status: status })
-    });
+
+    const response = await fetch(
+        `${SUPABASE_URL}/rest/v1/orders?id=eq.${encodeURIComponent(id)}`,
+        {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+                "apikey": SUPABASE_KEY,
+                "Authorization": `Bearer ${SUPABASE_KEY}`,
+                "Prefer": "return=representation"
+            },
+            body: JSON.stringify({ status: status })
+        }
+    );
 
     const text = await response.text();
 
@@ -81,13 +90,17 @@ async function updateOrderStatusCRM(id, status) {
 
 /* ВИДАЛИТИ ЗАМОВЛЕННЯ */
 async function deleteOrderCRM(id) {
-    const response = await fetch(`${SUPABASE_URL}/rest/v1/orders?id=eq.${encodeURIComponent(id)}`, {
-        method: "DELETE",
-        headers: {
-            "apikey": SUPABASE_KEY,
-            "Authorization": `Bearer ${SUPABASE_KEY}`
+
+    const response = await fetch(
+        `${SUPABASE_URL}/rest/v1/orders?id=eq.${encodeURIComponent(id)}`,
+        {
+            method: "DELETE",
+            headers: {
+                "apikey": SUPABASE_KEY,
+                "Authorization": `Bearer ${SUPABASE_KEY}`
+            }
         }
-    });
+    );
 
     const text = await response.text();
 
