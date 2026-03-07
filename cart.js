@@ -116,8 +116,7 @@ async function checkout() {
         phone: phone,
         items: cart,
         total: cart.reduce((sum, p) => sum + p.price * p.qty, 0),
-        status: "Новий",
-        created_at: new Date().toISOString()
+        status: "Новий"
     };
 
     try {
