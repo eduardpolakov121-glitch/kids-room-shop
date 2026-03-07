@@ -1,5 +1,7 @@
 let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
+/* ВІДКРИТТЯ КОШИКА */
+
 function toggleCart() {
     document.getElementById("cart").classList.toggle("open");
     document.getElementById("cart-overlay").classList.toggle("active");
@@ -10,9 +12,13 @@ function closeCart() {
     document.getElementById("cart-overlay").classList.remove("active");
 }
 
+/* ДОДАТИ В КОШИК */
+
 function addToCart(id) {
     let qtyInput = document.getElementById("qty-" + id);
-    let qty = parseInt(qtyInput ? qtyInput.value : 1, 10);
+    let qty = parseInt(qtyInput ? qtyInput.value : 1);
+
+    if (isNaN(qty) || qty < 1) qty = 1;
 
     let product = products.find(p => p.id === id);
     if (!product) return;
@@ -22,7 +28,7 @@ function addToCart(id) {
     if (item) {
         item.qty += qty;
     } else {
-        cart.push({ ...product, qty });
+        cart.push({ ...product, qty: qty });
     }
 
     renderCart();
@@ -53,11 +59,12 @@ function cartMinus(id) {
     saveCart();
 }
 
+/* РЕНДЕР КОШИКА */
+
 function renderCart() {
     let items = document.getElementById("cart-items");
     let countEl = document.getElementById("cart-count");
     let totalEl = document.getElementById("total");
-    let checkoutTotalEl = document.getElementById("checkout-total");
 
     if (!items || !countEl || !totalEl) return;
 
@@ -72,75 +79,77 @@ function renderCart() {
 
         items.innerHTML += `
         <div class="cart-item">
-            <div class="cart-item-meta">
-                <img class="cart-thumb" src="${p.img || ''}" alt="${p.name || ''}">
-                <div>
-                    ${p.name}<br>
-                    ${p.price} грн
-                </div>
+            <div>
+                ${p.name}<br>
+                ${p.price} грн
             </div>
+
             <div>
                 <button onclick="cartMinus('${p.id}')">−</button>
                 ${p.qty}
                 <button onclick="cartPlus('${p.id}')">+</button>
             </div>
-        </div>`;
+        </div>
+        `;
     });
-
-    if (!cart.length) {
-        items.innerHTML = '<p style="color:#667788;">Ваш кошик поки порожній.</p>';
-    }
 
     countEl.innerText = count;
     totalEl.innerText = "Разом: " + total + " грн";
-
-    if (checkoutTotalEl) {
-        checkoutTotalEl.innerText = "Разом: " + total + " грн";
-    }
 }
 
-function openCheckoutModal() {
+/* МОДАЛЬНЕ ВІКНО ЗАМОВЛЕННЯ */
+
+function checkout() {
     if (cart.length === 0) {
         alert("Кошик порожній");
         return;
     }
 
-    renderCart();
-    document.getElementById("checkout-modal").classList.remove("hidden");
+    let modal = document.getElementById("checkout-modal");
+    if (modal) {
+        modal.classList.add("open");
+    }
 }
 
 function closeCheckoutModal() {
-    document.getElementById("checkout-modal").classList.add("hidden");
+    let modal = document.getElementById("checkout-modal");
+    if (modal) {
+        modal.classList.remove("open");
+    }
+}
+
+function updateDeliveryPlaceholder() {
+    let delivery = document.getElementById("order-delivery");
+    let address = document.getElementById("order-address");
+
+    if (!delivery || !address) return;
+
+    if (delivery.value === "Нова пошта") {
+        address.placeholder = "Відділення Нової пошти";
+    } else {
+        address.placeholder = "Відділення або адреса Укрпошти";
+    }
 }
 
 async function submitCheckout() {
-    if (cart.length === 0) {
-        alert("Кошик порожній");
+    let name = document.getElementById("order-name").value.trim();
+    let surname = document.getElementById("order-surname").value.trim();
+    let phone = document.getElementById("order-phone").value.trim();
+    let city = document.getElementById("order-city").value.trim();
+    let delivery = document.getElementById("order-delivery").value;
+    let address = document.getElementById("order-address").value.trim();
+
+    if (!name || !surname || !phone || !city || !delivery || !address) {
+        alert("Будь ласка, заповніть усі поля");
         return;
     }
 
-    const name = document.getElementById("checkout-name").value.trim();
-    const surname = document.getElementById("checkout-surname").value.trim();
-    const phone = document.getElementById("checkout-phone").value.trim();
-    const city = document.getElementById("checkout-city").value.trim();
-    const delivery = document.getElementById("checkout-delivery").value;
-    const branch = document.getElementById("checkout-branch").value.trim();
-
-    if (!name || !surname || !phone || !city || !delivery || !branch) {
-        alert("Будь ласка, заповніть усі поля замовлення");
-        return;
-    }
-
-    const cleanPhone = phone.replace(/\s+/g, "");
-
-    const order = {
-        name: `${name} ${surname}`,
-        first_name: name,
-        last_name: surname,
-        phone: cleanPhone,
-        city,
-        delivery_method: delivery,
-        delivery_branch: branch,
+    let order = {
+        name: name + " " + surname,
+        phone: phone,
+        city: city,
+        delivery: delivery,
+        address: address,
         items: cart,
         total: cart.reduce((sum, p) => sum + p.price * p.qty, 0),
         status: "Новий"
@@ -148,12 +157,20 @@ async function submitCheckout() {
 
     try {
         await saveOrderCRM(order);
+
         cart = [];
         saveCart();
         renderCart();
-        clearCheckoutForm();
+
+        document.getElementById("order-name").value = "";
+        document.getElementById("order-surname").value = "";
+        document.getElementById("order-phone").value = "";
+        document.getElementById("order-city").value = "";
+        document.getElementById("order-address").value = "";
+
         closeCheckoutModal();
         closeCart();
+
         alert("Замовлення оформлено ✅");
     } catch (error) {
         console.error(error);
@@ -161,30 +178,28 @@ async function submitCheckout() {
     }
 }
 
-function clearCheckoutForm() {
-    document.getElementById("checkout-name").value = "";
-    document.getElementById("checkout-surname").value = "";
-    document.getElementById("checkout-phone").value = "";
-    document.getElementById("checkout-city").value = "";
-    document.getElementById("checkout-delivery").value = "";
-    document.getElementById("checkout-branch").value = "";
-}
+/* TOAST */
 
 function showToast(text) {
     let toast = document.createElement("div");
+
     toast.style.position = "fixed";
     toast.style.bottom = "20px";
     toast.style.right = "20px";
-    toast.style.background = "#ff8a3d";
+    toast.style.background = "#ff6600";
     toast.style.color = "white";
     toast.style.padding = "15px 25px";
     toast.style.borderRadius = "10px";
     toast.style.zIndex = "9999";
-    toast.style.boxShadow = "0 10px 24px rgba(0,0,0,0.18)";
+
     toast.innerText = text;
+
     document.body.appendChild(toast);
+
     setTimeout(() => toast.remove(), 2000);
 }
+
+/* АНІМАЦІЯ */
 
 function animateFly(id) {
     let productEl = document.querySelector(`#prod-${id}`);
@@ -193,12 +208,14 @@ function animateFly(id) {
     if (!productEl || !cartBtn) return;
 
     let clone = productEl.cloneNode(true);
+
     clone.style.position = "fixed";
     clone.style.top = productEl.getBoundingClientRect().top + "px";
     clone.style.left = productEl.getBoundingClientRect().left + "px";
     clone.style.width = productEl.offsetWidth + "px";
     clone.style.transition = "0.7s ease";
     clone.style.zIndex = "9999";
+
     document.body.appendChild(clone);
 
     setTimeout(() => {
@@ -222,10 +239,5 @@ function saveCart() {
     localStorage.setItem("cart", JSON.stringify(cart));
 }
 
-window.addEventListener("keydown", event => {
-    if (event.key === "Escape") {
-        closeCheckoutModal();
-    }
-});
-
 renderCart();
+updateDeliveryPlaceholder();
