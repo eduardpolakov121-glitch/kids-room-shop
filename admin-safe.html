@@ -4,267 +4,135 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Адмін панель Kids Room</title>
-
-<link rel="stylesheet" href="style.css">
-
+<link rel="stylesheet" href="style_updated.css">
 <style>
-*{
-    box-sizing:border-box;
-}
-
-body{
-    margin:0;
-}
-
+*{box-sizing:border-box;}
+body{margin:0;}
+.admin-page{padding:30px 15px 50px;}
 .login-box{
-    max-width:400px;
-    margin:120px auto;
-    background:white;
-    padding:30px;
-    border-radius:12px;
-    box-shadow:0 5px 20px rgba(0,0,0,0.1);
-    text-align:center;
+max-width:420px;
+margin:90px auto;
+background:white;
+padding:30px;
+border-radius:20px;
+box-shadow:0 10px 30px rgba(0,0,0,0.10);
+text-align:center;
 }
-
-.admin-box{
-    max-width:900px;
-    margin:80px auto;
-    display:none;
-    padding:0 15px 40px;
-}
-
+.login-logo{width:82px;height:82px;border-radius:50%;object-fit:cover;margin-bottom:10px;}
+.admin-box{max-width:1120px;margin:0 auto;display:none;}
+.admin-header{display:flex;align-items:center;gap:16px;margin-bottom:20px;}
+.admin-header img{width:72px;height:72px;border-radius:50%;object-fit:cover;box-shadow:0 6px 16px rgba(0,0,0,0.12);}
 .panel-card{
-    background:white;
-    padding:20px;
-    border-radius:12px;
-    box-shadow:0 5px 20px rgba(0,0,0,0.08);
-    margin-bottom:24px;
+background:white;
+padding:22px;
+border-radius:20px;
+box-shadow:0 8px 24px rgba(44,62,80,0.08);
+margin-bottom:22px;
 }
-
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.form-grid .full{grid-column:1/-1;}
 input,select,textarea{
-    width:100%;
-    padding:10px;
-    margin:6px 0;
-    border-radius:6px;
-    border:1px solid #ddd;
-    font-size:15px;
+width:100%;padding:12px 14px;margin:0;border-radius:12px;border:1px solid #dfe8ee;font-size:15px;
 }
-
-textarea{
-    min-height:110px;
-    resize:vertical;
-}
-
+textarea{min-height:110px;resize:vertical;}
 button{
-    background:#ff6600;
-    color:white;
-    border:none;
-    padding:10px 20px;
-    border-radius:6px;
-    cursor:pointer;
-    font-weight:bold;
-    transition:0.2s;
+background:#ff8a3d;color:white;border:none;padding:11px 18px;border-radius:10px;cursor:pointer;font-weight:700;transition:.25s;
 }
-
-button:hover{
-    opacity:0.92;
-}
-
-.btn-secondary{
-    background:#777;
-}
-
-.btn-danger{
-    background:#d9534f;
-}
-
-.form-actions{
-    display:flex;
-    gap:10px;
-    flex-wrap:wrap;
-    margin-top:12px;
-}
-
+button:hover{background:#f26c17;}
+.btn-secondary{background:#7f909e;}
+.btn-secondary:hover{background:#6e7f8c;}
+.btn-danger{background:#d9534f;}
+.btn-danger:hover{background:#c63f3b;}
+.form-actions,.row-actions,.order-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px;}
 .product-row{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    padding:12px;
-    border-bottom:1px solid #eee;
+display:flex;justify-content:space-between;align-items:center;padding:14px;border:1px solid #edf1f4;background:white;margin-bottom:10px;border-radius:14px;
 }
-
-.product-row:last-child{
-    border-bottom:none;
-}
-
-.product-row img{
-    width:60px;
-    height:60px;
-    object-fit:cover;
-    border-radius:6px;
-    margin-right:15px;
-    background:#f5f5f5;
-}
-
-.product-info{
-    display:flex;
-    align-items:center;
-    gap:15px;
-}
-
-.product-meta{
-    color:#666;
-    font-size:14px;
-    margin-top:4px;
-}
-
-.row-actions{
-    display:flex;
-    gap:8px;
-    flex-wrap:wrap;
-}
-
-.row-actions button{
-    padding:8px 14px;
-}
-
-.order-card{
-    background:white;
-    padding:15px;
-    margin-top:12px;
-    border-radius:10px;
-    box-shadow:0 2px 10px rgba(0,0,0,0.08);
-}
-
-.order-actions{
-    display:flex;
-    gap:10px;
-    flex-wrap:wrap;
-    margin-top:10px;
-}
-
-.status-select{
-    max-width:220px;
-}
-
-.muted{
-    color:#777;
-    font-size:14px;
-}
-
-.section-title{
-    margin:0 0 15px;
-}
-
-.preview-box{
-    margin-top:10px;
-    display:none;
-}
-
-.preview-box img{
-    width:90px;
-    height:90px;
-    object-fit:cover;
-    border-radius:8px;
-    border:1px solid #eee;
-    background:#fafafa;
-}
-
-@media(max-width:768px){
-    .admin-box{
-        margin:40px auto;
-    }
-
-    .product-row{
-        flex-direction:column;
-        align-items:flex-start;
-        gap:10px;
-    }
-
-    .product-info{
-        width:100%;
-    }
-
-    .row-actions,
-    .order-actions,
-    .form-actions{
-        width:100%;
-    }
-
-    .row-actions button,
-    .form-actions button{
-        width:100%;
-    }
-
-    .status-select{
-        max-width:100%;
-        width:100%;
-    }
+.product-row img{width:72px;height:72px;object-fit:cover;border-radius:12px;background:#f4f6f8;}
+.product-info{display:flex;align-items:center;gap:14px;}
+.product-meta{color:#667788;font-size:14px;margin-top:4px;line-height:1.5;}
+.section-title{margin:0 0 16px;}
+.preview-box{display:none;margin-top:12px;}
+.preview-box img{width:110px;height:110px;object-fit:cover;border-radius:14px;border:1px solid #edf1f4;background:#f8fafb;}
+.order-card{background:white;padding:18px;margin-top:12px;border-radius:16px;box-shadow:0 2px 10px rgba(0,0,0,0.08);}
+.order-items{margin-top:12px;display:grid;gap:10px;}
+.order-item{display:flex;gap:12px;align-items:center;padding:10px;border:1px solid #edf1f4;border-radius:12px;background:#fafcfd;}
+.order-item img{width:56px;height:56px;object-fit:cover;border-radius:10px;background:#f1f4f7;}
+.muted{color:#6d7d89;font-size:14px;}
+.status-select{max-width:240px;}
+@media(max-width:860px){
+.form-grid{grid-template-columns:1fr;}
+.product-row{flex-direction:column;align-items:flex-start;gap:12px;}
+.status-select{max-width:100%;width:100%;}
 }
 </style>
 </head>
-
 <body>
+<div class="admin-page">
+    <div class="login-box" id="loginBox">
+        <img src="logo.jpg" alt="Kids Room" class="login-logo">
+        <h2>🔒 Адмін вхід</h2>
+        <input id="loginUser" placeholder="Логін">
+        <div style="height:10px"></div>
+        <input id="loginPass" type="password" placeholder="Пароль">
+        <div style="height:18px"></div>
+        <button onclick="login()">Увійти</button>
+    </div>
 
-<div class="login-box" id="loginBox">
-    <h2>🔒 Адмін вхід</h2>
-    <input id="loginUser" placeholder="Логін">
-    <input id="loginPass" type="password" placeholder="Пароль">
-    <br><br>
-    <button onclick="login()">Увійти</button>
-</div>
-
-<div class="admin-box" id="adminBox">
-
-    <h2>🔧 Адмін панель</h2>
-
-    <div class="panel-card">
-        <h3 class="section-title">📦 Додати / редагувати товар</h3>
-
-        <input id="prodId" placeholder="ID (залишити пустим для нового товару)">
-        <input id="prodName" placeholder="Назва">
-        <input id="prodPrice" type="number" placeholder="Ціна">
-        <input id="prodOld" type="number" placeholder="Стара ціна">
-        <input type="file" id="prodFile" accept="image/*">
-        <textarea id="prodDesc" placeholder="Опис"></textarea>
-
-        <select id="prodCategory">
-            <option value="toy">Іграшки</option>
-            <option value="stroller">Коляски</option>
-            <option value="seat">Автокрісла</option>
-            <option value="clothes">Одяг</option>
-            <option value="transport">Транспорт</option>
-            <option value="sorter">Сортери</option>
-            <option value="baby">Для немовлят</option>
-            <option value="school">Шкільні товари</option>
-        </select>
-
-        <div class="preview-box" id="previewBox">
-            <div class="muted">Поточне фото:</div>
-            <img id="previewImg" src="" alt="preview">
+    <div class="admin-box" id="adminBox">
+        <div class="admin-header">
+            <img src="logo.jpg" alt="Kids Room">
+            <div>
+                <h2 style="margin:0 0 6px;">🔧 Адмін панель Kids Room</h2>
+                <div class="muted">Старий зручний вигляд + робота з товарами і CRM</div>
+            </div>
         </div>
 
-        <div class="form-actions">
-            <button onclick="saveProduct()">💾 Зберегти товар</button>
-            <button class="btn-secondary" onclick="clearForm()">Очистити форму</button>
+        <div class="panel-card">
+            <h3 class="section-title">📦 Додати / редагувати товар</h3>
+            <div class="form-grid">
+                <input id="prodId" class="full" placeholder="ID (залишити пустим для нового товару)">
+                <input id="prodName" placeholder="Назва">
+                <input id="prodPrice" type="number" placeholder="Ціна">
+                <input id="prodOld" type="number" placeholder="Стара ціна">
+                <select id="prodCategory">
+                    <option value="toy">Іграшки</option>
+                    <option value="stroller">Коляски</option>
+                    <option value="seat">Автокрісла</option>
+                    <option value="clothes">Одяг</option>
+                    <option value="transport">Транспорт</option>
+                    <option value="sorter">Сортери</option>
+                    <option value="baby">Для немовлят</option>
+                    <option value="school">Шкільні товари</option>
+                </select>
+                <input type="file" id="prodFile" accept="image/*" class="full">
+                <textarea id="prodDesc" class="full" placeholder="Опис"></textarea>
+            </div>
+
+            <div class="preview-box" id="previewBox">
+                <div class="muted" style="margin-bottom:8px;">Поточне фото товару:</div>
+                <img id="previewImg" src="" alt="preview">
+            </div>
+
+            <div class="form-actions">
+                <button onclick="saveProduct()">💾 Зберегти товар</button>
+                <button class="btn-secondary" onclick="clearForm()">Очистити форму</button>
+            </div>
+        </div>
+
+        <div class="panel-card">
+            <h3 class="section-title">📦 Товари</h3>
+            <div id="list"></div>
+        </div>
+
+        <div class="panel-card">
+            <h3 class="section-title">🧾 Замовлення CRM</h3>
+            <div id="crmOrders">Завантаження замовлень...</div>
         </div>
     </div>
-
-    <div class="panel-card">
-        <h3 class="section-title">📦 Товари</h3>
-        <div id="list"></div>
-    </div>
-
-    <div class="panel-card">
-        <h3 class="section-title">🧾 Замовлення CRM</h3>
-        <div id="crmOrders">Завантаження замовлень...</div>
-    </div>
-
 </div>
 
 <script src="products.js"></script>
 <script src="crm.js"></script>
-
 <script>
 function login() {
     let user = document.getElementById("loginUser").value.trim();
@@ -280,7 +148,7 @@ function login() {
     }
 }
 
-function saveLocalProducts() {
+function persistProducts() {
     localStorage.setItem("products", JSON.stringify(products));
 }
 
@@ -292,27 +160,19 @@ function clearForm() {
     document.getElementById("prodDesc").value = "";
     document.getElementById("prodCategory").value = "toy";
     document.getElementById("prodFile").value = "";
-
-    document.getElementById("previewImg").src = "";
-    document.getElementById("previewBox").style.display = "none";
+    showPreview("");
 }
 
 function showPreview(src) {
-    if (!src) {
-        document.getElementById("previewImg").src = "";
-        document.getElementById("previewBox").style.display = "none";
-        return;
-    }
-
-    document.getElementById("previewImg").src = src;
-    document.getElementById("previewBox").style.display = "block";
+    document.getElementById("previewImg").src = src || "";
+    document.getElementById("previewBox").style.display = src ? "block" : "none";
 }
 
 function saveProduct() {
     let id = document.getElementById("prodId").value.trim();
     let name = document.getElementById("prodName").value.trim();
-    let price = parseInt(document.getElementById("prodPrice").value);
-    let old = parseInt(document.getElementById("prodOld").value);
+    let price = parseInt(document.getElementById("prodPrice").value, 10);
+    let old = parseInt(document.getElementById("prodOld").value, 10);
     let desc = document.getElementById("prodDesc").value.trim();
     let cat = document.getElementById("prodCategory").value;
     let file = document.getElementById("prodFile").files[0];
@@ -325,8 +185,8 @@ function saveProduct() {
     function finish(img) {
         let product = {
             id: id || "prod_" + Date.now(),
-            name: name,
-            price: price,
+            name,
+            price,
             old: old || price,
             description: desc,
             category: cat,
@@ -334,14 +194,13 @@ function saveProduct() {
         };
 
         let index = products.findIndex(p => p.id === id);
-
         if (index >= 0) {
             products[index] = product;
         } else {
             products.push(product);
         }
 
-        saveLocalProducts();
+        persistProducts();
         renderList();
         clearForm();
         alert("Товар збережено ✅");
@@ -357,6 +216,20 @@ function saveProduct() {
     }
 }
 
+function getCategoryName(cat) {
+    const map = {
+        toy: "Іграшки",
+        stroller: "Коляски",
+        seat: "Автокрісла",
+        clothes: "Одяг",
+        transport: "Транспорт",
+        sorter: "Сортери",
+        baby: "Для немовлят",
+        school: "Шкільні товари"
+    };
+    return map[cat] || cat || "Без категорії";
+}
+
 function renderList() {
     let list = document.getElementById("list");
     list.innerHTML = "";
@@ -370,7 +243,7 @@ function renderList() {
         list.innerHTML += `
         <div class="product-row">
             <div class="product-info">
-                <img src="${p.img || ''}" alt="${p.name}">
+                <img src="${p.img || ''}" alt="${p.name || ''}">
                 <div>
                     <b>${p.name}</b><br>
                     ${p.price} грн
@@ -385,24 +258,8 @@ function renderList() {
                 <button onclick="editProduct('${p.id}')">✏ Редагувати</button>
                 <button class="btn-danger" onclick="deleteProduct('${p.id}')">🗑 Видалити</button>
             </div>
-        </div>
-        `;
+        </div>`;
     });
-}
-
-function getCategoryName(cat) {
-    const map = {
-        toy: "Іграшки",
-        stroller: "Коляски",
-        seat: "Автокрісла",
-        clothes: "Одяг",
-        transport: "Транспорт",
-        sorter: "Сортери",
-        baby: "Для немовлят",
-        school: "Шкільні товари"
-    };
-
-    return map[cat] || cat || "Без категорії";
 }
 
 function editProduct(id) {
@@ -415,23 +272,33 @@ function editProduct(id) {
     document.getElementById("prodOld").value = p.old || "";
     document.getElementById("prodDesc").value = p.description || "";
     document.getElementById("prodCategory").value = p.category || "toy";
-
     showPreview(p.img || "");
-
-    window.scrollTo({
-        top: 0,
-        behavior: "smooth"
-    });
+    window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
 function deleteProduct(id) {
     if (!confirm("Видалити товар?")) return;
-
     products = products.filter(p => p.id !== id);
-    saveLocalProducts();
+    persistProducts();
     renderList();
     clearForm();
     alert("Товар видалено ✅");
+}
+
+function buildOrderItems(items) {
+    if (!Array.isArray(items) || !items.length) {
+        return "<div class='muted'>Немає товарів</div>";
+    }
+
+    return `<div class="order-items">${items.map(item => `
+        <div class="order-item">
+            <img src="${item.img || ''}" alt="${item.name || ''}">
+            <div>
+                <b>${item.name || 'Товар'}</b><br>
+                ${item.qty || 1} × ${item.price || 0} грн
+            </div>
+        </div>
+    `).join("")}</div>`;
 }
 
 async function renderCRMOrders() {
@@ -449,23 +316,18 @@ async function renderCRMOrders() {
         container.innerHTML = "";
 
         orders.forEach(order => {
-            let itemsHtml = "";
-
-            if (Array.isArray(order.items)) {
-                order.items.forEach(item => {
-                    itemsHtml += `${item.name} × ${item.qty} — ${item.price} грн<br>`;
-                });
-            }
-
             container.innerHTML += `
             <div class="order-card">
-                <b>Клієнт:</b> ${order.name || "-"}<br>
-                <b>Телефон:</b> ${order.phone || "-"}<br>
+                <b>Клієнт:</b> ${order.name || '-'}<br>
+                <b>Телефон:</b> ${order.phone || '-'}<br>
+                <b>Місто:</b> ${order.city || '-'}<br>
+                <b>Доставка:</b> ${order.delivery_method || '-'}<br>
+                <b>Відділення / адреса:</b> ${order.delivery_branch || '-'}<br>
                 <b>Сума:</b> ${order.total || 0} грн<br>
-                <b>Статус:</b> ${order.status || "Новий"}<br>
-                <b>Створено:</b> ${order.created_at ? new Date(order.created_at).toLocaleString() : "-"}<br>
-                <b>Товари:</b><br>
-                ${itemsHtml || "Немає товарів"}
+                <b>Статус:</b> ${order.status || 'Новий'}<br>
+                <b>Створено:</b> ${order.created_at ? new Date(order.created_at).toLocaleString() : '-'}<br>
+                <b>Товари:</b>
+                ${buildOrderItems(order.items)}
 
                 <div class="order-actions">
                     <select class="status-select" id="status-${order.id}">
@@ -475,12 +337,10 @@ async function renderCRMOrders() {
                         <option value="Завершено" ${order.status === "Завершено" ? "selected" : ""}>Завершено</option>
                         <option value="Скасовано" ${order.status === "Скасовано" ? "selected" : ""}>Скасовано</option>
                     </select>
-
                     <button onclick="changeStatus('${order.id}')">Змінити статус</button>
                     <button class="btn-danger" onclick="removeOrder('${order.id}')">Видалити</button>
                 </div>
-            </div>
-            `;
+            </div>`;
         });
     } catch (error) {
         console.error(error);
@@ -515,6 +375,5 @@ async function removeOrder(id) {
     }
 }
 </script>
-
 </body>
 </html>
