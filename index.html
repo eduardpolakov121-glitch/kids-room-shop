@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="uk">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kids Room</title>
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div id="cart-overlay" class="cart-overlay" onclick="closeCart()"></div>
+
+<header>
+    <div class="logo">Kids Room</div>
+    <input id="search" placeholder="🔍 Пошук товару">
+    <div class="cart-button" onclick="toggleCart()">
+        🛒 <span id="cart-count">0</span>
+    </div>
+</header>
+
+<div class="banner">
+    <img src="banner.jpg">
+</div>
+
+<div class="container">
+
+    <aside class="sidebar">
+        <h3>Каталог</h3>
+        <ul>
+            <li onclick="filterCategory('all')">Всі товари</li>
+            <li onclick="filterCategory('toy')">🧸 Іграшки</li>
+            <li onclick="filterCategory('stroller')">🎀 Коляски</li>
+            <li onclick="filterCategory('seat')">💺 Автокрісла</li>
+            <li onclick="filterCategory('clothes')">👕 Одяг</li>
+            <li onclick="filterCategory('transport')">🚲 Транспорт</li>
+            <li onclick="filterCategory('sorter')">🧩 Сортери</li>
+            <li onclick="filterCategory('baby')">🍼 Для немовлят</li>
+            <li onclick="filterCategory('school')">🎒 Шкільні товари</li>
+        </ul>
+    </aside>
+
+    <main>
+        <div class="filters">
+            <select onchange="sortProducts(this.value)">
+                <option value="">Сортувати</option>
+                <option value="cheap">Дешеві → дорогі</option>
+                <option value="expensive">Дорогі → дешеві</option>
+                <option value="name">По назві</option>
+            </select>
+        </div>
+
+        <div id="products" class="products"></div>
+    </main>
+
+</div>
+
+<div id="cart" class="cart">
+    <h2>Кошик</h2>
+
+    <div id="cart-items"></div>
+
+    <h3 id="total"></h3>
+
+    <button onclick="clearCart()">Очистити</button>
+    <button onclick="checkout()">Оформити</button>
+
+    <br><br>
+
+    <button onclick="closeCart()">👉 Продовжити пошук</button>
+</div>
+
+<div class="social">
+    <a href="viber://chat?number=380986501614">Viber</a>
+    <a href="https://t.me/380986501614">Telegram</a>
+    <a href="https://www.instagram.com/kids.room.ua/">Instagram</a>
+</div>
+
+<script src="products.js"></script>
+<script src="crm.js"></script>
+<script src="cart.js"></script>
+<script src="script.js"></script>
+
+</body>
+</html>

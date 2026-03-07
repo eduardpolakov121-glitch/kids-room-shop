@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="uk">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Товар</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+<header>
+<div class="logo">Kids Room</div>
+</header>
+
+<div class="container" style="padding:40px; justify-content:center;">
+
+<div id="product-page" style="max-width:700px; width:100%; text-align:center;"></div>
+
+</div>
+
+<script>
+
+/* НАЗАД */
+
+function goBack(){
+window.close();
+}
+
+/* ПОЛУЧЕНИЕ ТОВАРА */
+
+let product = JSON.parse(localStorage.getItem("selectedProduct"));
+
+let container = document.getElementById("product-page");
+
+if(product){
+
+container.innerHTML = `
+
+<img src="${product.img}" 
+style="
+width:100%;
+max-width:500px;
+border-radius:12px;
+margin-bottom:20px;
+">
+
+<h1>${product.name}</h1>
+
+<h2 style="color:#ff6600">${product.price} грн</h2>
+
+<div style="margin-top:20px">
+
+<button onclick="addToCart('${product.id}')" style="
+padding:12px 25px;
+background:#ff6600;
+color:white;
+border:none;
+border-radius:8px;
+cursor:pointer;
+font-size:16px;
+font-weight:bold;
+margin-right:10px;
+">
+Додати в кошик
+</button>
+
+<button onclick="goBack()" style="
+padding:10px 15px;
+background:#eee;
+border:none;
+border-radius:8px;
+cursor:pointer;
+font-size:14px;
+">
+Назад
+</button>
+
+</div>
+
+<p style="
+margin-top:30px;
+font-size:18px;
+line-height:1.5;
+color:#444;
+">
+
+${product.description}
+
+</p>
+
+`;
+
+}
+
+</script>
+
+<script src="products.js"></script>
+<script src="cart.js"></script>
+
+</body>
+</html>

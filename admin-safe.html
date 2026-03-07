@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Адмін панель CRM</title>
+
+<link rel="stylesheet" href="style.css">
+
+<style>
+.login-box{
+max-width:400px;
+margin:120px auto;
+background:white;
+padding:30px;
+border-radius:12px;
+box-shadow:0 5px 20px rgba(0,0,0,0.1);
+text-align:center;
+}
+
+.admin-box{
+max-width:1100px;
+margin:80px auto;
+display:none;
+padding:0 15px;
+}
+
+input,select,textarea{
+width:100%;
+padding:10px;
+margin:6px 0;
+border-radius:6px;
+border:1px solid #ddd;
+box-sizing:border-box;
+}
+
+button{
+background:#ff6600;
+color:white;
+border:none;
+padding:10px 20px;
+border-radius:6px;
+cursor:pointer;
+font-weight:bold;
+}
+
+.product-row{
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:12px;
+border-bottom:1px solid #eee;
+background:white;
+margin-bottom:8px;
+border-radius:8px;
+}
+
+.product-row img{
+width:60px;
+height:60px;
+object-fit:cover;
+border-radius:6px;
+margin-right:15px;
+}
+
+.product-info{
+display:flex;
+align-items:center;
+gap:15px;
+}
+
+.order-card{
+background:white;
+padding:15px;
+margin-top:12px;
+border-radius:10px;
+box-shadow:0 2px 10px rgba(0,0,0,0.08);
+}
+
+.order-actions{
+display:flex;
+gap:10px;
+flex-wrap:wrap;
+margin-top:10px;
+}
+
+.status-select{
+max-width:220px;
+}
+
+@media(max-width:768px){
+    .product-row{
+        flex-direction:column;
+        align-items:flex-start;
+        gap:10px;
+    }
+
+    .product-info{
+        flex-direction:row;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="login-box" id="loginBox">
+    <h2>🔒 Адмін вхід</h2>
+
+    <input id="loginUser" placeholder="Логін">
+    <input id="loginPass" type="password" placeholder="Пароль">
+
+    <br><br>
+
+    <button onclick="login()">Увійти</button>
+</div>
+
+<div class="admin-box" id="adminBox">
+    <h2>🔧 Адмін панель</h2>
+
+    <h3>📦 Товари</h3>
+    <div id="list"></div>
+
+    <h3 style="margin-top:40px">🧾 Замовлення CRM</h3>
+    <div id="crmOrders"></div>
+</div>
+
+<script src="products.js"></script>
+<script src="crm.js"></script>
+
+<script>
+function login() {
+    let user = document.getElementById("loginUser").value.trim();
+    let pass = document.getElementById("loginPass").value.trim();
+
+    if (user === "admin" && pass === "5265") {
+        document.getElementById("loginBox").style.display = "none";
+        document.getElementById("adminBox").style.display = "block";
+        renderList();
+        renderCRMOrders();
+    } else {
+        alert("Невірний логін або пароль ❌");
+    }
+}
+
+function renderList() {
+    let list = document.getElementById("list");
+    list.innerHTML = "";
+
+    products.forEach(p => {
+        list.innerHTML += `
+        <div class="product-row">
+            <div class="product-info">
+                <img src="${p.img}">
+                <div>
+                    <b>${p.name}</b><br>
+                    ${p.price} грн
+                </div>
+            </div>
+        </div>
+        `;
+    });
+}
+
+async function renderCRMOrders() {
+    let container = document.getElementById("crmOrders");
+    container.innerHTML = "Завантаження замовлень...";
+
+    try {
+        let orders = await getOrdersCRM();
+
+        if (!orders.length) {
+            container.innerHTML = "<div class='order-card'>Замовлень поки немає</div>";
+            return;
+        }
+
+        container.innerHTML = "";
+
+        orders.forEach(order => {
+            let itemsHtml = "";
+
+            if (Array.isArray(order.items)) {
+                order.items.forEach(item => {
+                    itemsHtml += `${item.name} × ${item.qty} — ${item.price} грн<br>`;
+                });
+            }
+
+            container.innerHTML += `
+            <div class="order-card">
+                <b>Клієнт:</b> ${order.name}<br>
+                <b>Телефон:</b> ${order.phone}<br>
+                <b>Сума:</b> ${order.total} грн<br>
+                <b>Створено:</b> ${new Date(order.created_at).toLocaleString()}<br>
+                <b>Товари:</b><br>
+                ${itemsHtml}
+
+                <div class="order-actions">
+                    <select class="status-select" id="status-${order.id}">
+                        <option value="Новий" ${order.status === "Новий" ? "selected" : ""}>Новий</option>
+                        <option value="В роботі" ${order.status === "В роботі" ? "selected" : ""}>В роботі</option>
+                        <option value="Відправлено" ${order.status === "Відправлено" ? "selected" : ""}>Відправлено</option>
+                        <option value="Завершено" ${order.status === "Завершено" ? "selected" : ""}>Завершено</option>
+                        <option value="Скасовано" ${order.status === "Скасовано" ? "selected" : ""}>Скасовано</option>
+                    </select>
+
+                    <button onclick="changeStatus('${order.id}')">Змінити статус</button>
+                    <button onclick="removeOrder('${order.id}')">Видалити</button>
+                </div>
+            </div>
+            `;
+        });
+    } catch (error) {
+        console.error(error);
+        container.innerHTML = "<div class='order-card'>Помилка завантаження замовлень</div>";
+    }
+}
+
+async function changeStatus(id) {
+    let select = document.getElementById("status-" + id);
+    let newStatus = select.value;
+
+    try {
+        await updateOrderStatusCRM(id, newStatus);
+        alert("Статус оновлено ✅");
+        renderCRMOrders();
+    } catch (error) {
+        console.error(error);
+        alert("Не вдалося змінити статус");
+    }
+}
+
+async function removeOrder(id) {
+    if (!confirm("Видалити замовлення?")) return;
+
+    try {
+        await deleteOrderCRM(id);
+        alert("Замовлення видалено ✅");
+        renderCRMOrders();
+    } catch (error) {
+        console.error(error);
+        alert("Не вдалося видалити замовлення");
+    }
+}
+</script>
+
+</body>
+</html>
