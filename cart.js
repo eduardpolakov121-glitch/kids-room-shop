@@ -130,7 +130,7 @@ async function checkout() {
         closeCart();
     } catch (error) {
         console.error(error);
-        alert("Не вдалося відправити замовлення в CRM");
+        alert("Помилка CRM: " + error.message);
     }
 }
 

@@ -14,13 +14,18 @@ async function saveOrderCRM(order) {
         body: JSON.stringify(order)
     });
 
+    const text = await response.text();
+
     if (!response.ok) {
-        const errorText = await response.text();
-        alert("CRM ERROR: " + errorText);
-        throw new Error(errorText);
+        console.error("CRM INSERT ERROR:", text);
+        throw new Error(text);
     }
 
-    return await response.json();
+    try {
+        return JSON.parse(text);
+    } catch {
+        return text;
+    }
 }
 
 /* ОТРИМАТИ ВСІ ЗАМОВЛЕННЯ */
@@ -36,13 +41,18 @@ async function getOrdersCRM() {
         }
     );
 
+    const text = await response.text();
+
     if (!response.ok) {
-        const errorText = await response.text();
-        alert("LOAD ERROR: " + errorText);
-        throw new Error(errorText);
+        console.error("CRM LOAD ERROR:", text);
+        throw new Error(text);
     }
 
-    return await response.json();
+    try {
+        return JSON.parse(text);
+    } catch {
+        return [];
+    }
 }
 
 /* ОНОВИТИ СТАТУС ЗАМОВЛЕННЯ */
@@ -61,13 +71,18 @@ async function updateOrderStatusCRM(id, status) {
         }
     );
 
+    const text = await response.text();
+
     if (!response.ok) {
-        const errorText = await response.text();
-        alert("STATUS ERROR: " + errorText);
-        throw new Error(errorText);
+        console.error("CRM STATUS ERROR:", text);
+        throw new Error(text);
     }
 
-    return await response.json();
+    try {
+        return JSON.parse(text);
+    } catch {
+        return text;
+    }
 }
 
 /* ВИДАЛИТИ ЗАМОВЛЕННЯ */
@@ -83,10 +98,11 @@ async function deleteOrderCRM(id) {
         }
     );
 
+    const text = await response.text();
+
     if (!response.ok) {
-        const errorText = await response.text();
-        alert("DELETE ERROR: " + errorText);
-        throw new Error(errorText);
+        console.error("CRM DELETE ERROR:", text);
+        throw new Error(text);
     }
 
     return true;
