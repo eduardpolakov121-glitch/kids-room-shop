@@ -6,84 +6,6 @@ const NOVA_POSHTA_API_URL = "https://api.novaposhta.ua/v2.0/json/";
 let selectedCity = null;
 
 /* КОРЗИНА */
-
-function animateCartButton() {
-    const cartButton = document.querySelector('.cart-button');
-    if (!cartButton || !cartButton.animate) return;
-
-    cartButton.animate([
-        { transform: 'scale(1)' },
-        { transform: 'scale(1.18)' },
-        { transform: 'scale(0.96)' },
-        { transform: 'scale(1.08)' },
-        { transform: 'scale(1)' }
-    ], {
-        duration: 520,
-        easing: 'ease-out'
-    });
-}
-
-function findProductImageById(id) {
-    const cardImg = document.querySelector(`#prod-${id} img`);
-    if (cardImg) return cardImg;
-
-    const productPageImg = document.querySelector('#product-page img');
-    if (productPageImg) return productPageImg;
-
-    return null;
-}
-
-function flyToCart(id) {
-    const cartButton = document.querySelector('.cart-button');
-    const sourceImg = findProductImageById(id);
-
-    if (!cartButton) return;
-
-    if (!sourceImg) {
-        animateCartButton();
-        return;
-    }
-
-    const start = sourceImg.getBoundingClientRect();
-    const end = cartButton.getBoundingClientRect();
-
-    if (!start.width || !start.height) {
-        animateCartButton();
-        return;
-    }
-
-    const clone = sourceImg.cloneNode(true);
-    clone.style.position = 'fixed';
-    clone.style.left = start.left + 'px';
-    clone.style.top = start.top + 'px';
-    clone.style.width = start.width + 'px';
-    clone.style.height = start.height + 'px';
-    clone.style.borderRadius = '12px';
-    clone.style.objectFit = 'cover';
-    clone.style.zIndex = '99999';
-    clone.style.pointerEvents = 'none';
-    clone.style.transition = 'transform 0.8s cubic-bezier(.22,.61,.36,1), opacity 0.8s ease, left 0.8s cubic-bezier(.22,.61,.36,1), top 0.8s cubic-bezier(.22,.61,.36,1), width 0.8s ease, height 0.8s ease';
-    clone.style.boxShadow = '0 16px 40px rgba(0,0,0,0.22)';
-    document.body.appendChild(clone);
-
-    const endLeft = end.left + end.width / 2 - 18;
-    const endTop = end.top + end.height / 2 - 18;
-
-    requestAnimationFrame(() => {
-        clone.style.left = endLeft + 'px';
-        clone.style.top = endTop + 'px';
-        clone.style.width = '36px';
-        clone.style.height = '36px';
-        clone.style.opacity = '0.25';
-        clone.style.transform = 'scale(0.25) rotate(16deg)';
-    });
-
-    setTimeout(() => {
-        clone.remove();
-        animateCartButton();
-    }, 820);
-}
-
 function toggleCart() {
     document.getElementById("cart").classList.toggle("open");
     document.getElementById("cart-overlay").classList.toggle("active");
@@ -113,7 +35,6 @@ function addToCart(id) {
         cart.push({ ...product, qty });
     }
 
-    flyToCart(id);
     renderCart();
     saveCart();
     showToast("Товар додано в кошик");
