@@ -5,15 +5,32 @@ const NOVA_POSHTA_API_URL = "https://api.novaposhta.ua/v2.0/json/";
 
 let selectedCity = null;
 
-/* КОРЗИНА */
 function toggleCart() {
-    document.getElementById("cart").classList.toggle("open");
-    document.getElementById("cart-overlay").classList.toggle("active");
+    document.getElementById("cart")?.classList.toggle("open");
+    document.getElementById("cart-overlay")?.classList.toggle("active");
 }
 
 function closeCart() {
-    document.getElementById("cart").classList.remove("open");
-    document.getElementById("cart-overlay").classList.remove("active");
+    document.getElementById("cart")?.classList.remove("open");
+    document.getElementById("cart-overlay")?.classList.remove("active");
+}
+
+function animateAddToCart(id) {
+    const card = document.getElementById(`prod-${id}`);
+    if (card) {
+        card.classList.remove("product-added");
+        void card.offsetWidth;
+        card.classList.add("product-added");
+        setTimeout(() => card.classList.remove("product-added"), 650);
+    }
+
+    const cartButton = document.querySelector(".cart-button");
+    if (cartButton) {
+        cartButton.classList.remove("cart-bump");
+        void cartButton.offsetWidth;
+        cartButton.classList.add("cart-bump");
+        setTimeout(() => cartButton.classList.remove("cart-bump"), 650);
+    }
 }
 
 function addToCart(id) {
@@ -21,42 +38,40 @@ function addToCart(id) {
 
     const qtyInput = document.getElementById("qty-" + id);
     let qty = parseInt(qtyInput ? qtyInput.value : 1, 10);
-
     if (isNaN(qty) || qty < 1) qty = 1;
 
-    const product = products.find(p => p.id === id);
+    const product = products.find(item => item.id === id);
     if (!product) return;
 
-    const item = cart.find(p => p.id === id);
-
+    const item = cart.find(entry => entry.id === id);
     if (item) {
         item.qty += qty;
     } else {
-        cart.push({ ...product, qty });
+        cart.push({ ...product, img: getSafeProductImage(product), qty });
     }
 
     renderCart();
     saveCart();
+    animateAddToCart(id);
     showToast("Товар додано в кошик");
 }
 
 function cartPlus(id) {
-    const item = cart.find(p => p.id === id);
+    const item = cart.find(entry => entry.id === id);
     if (!item) return;
-
     item.qty++;
     renderCart();
     saveCart();
 }
 
 function cartMinus(id) {
-    const item = cart.find(p => p.id === id);
+    const item = cart.find(entry => entry.id === id);
     if (!item) return;
 
     if (item.qty > 1) {
         item.qty--;
     } else {
-        cart = cart.filter(p => p.id !== id);
+        cart = cart.filter(entry => entry.id !== id);
     }
 
     renderCart();
@@ -75,51 +90,58 @@ function renderCart() {
     let sum = 0;
     let qty = 0;
 
-    cart.forEach(p => {
-        sum += p.price * p.qty;
-        qty += p.qty;
+    cart.forEach(item => {
+        sum += item.price * item.qty;
+        qty += item.qty;
 
         items.innerHTML += `
         <div class="cart-item">
-            <div>
-                ${p.name}<br>
-                ${p.price} грн
+            <div class="cart-item-main">
+                <img class="cart-item-image" src="${getSafeProductImage(item)}" alt="${item.name}" onerror="this.onerror=null;this.src='${PRODUCT_PLACEHOLDER}'">
+                <div>
+                    <div class="cart-item-name">${item.name}</div>
+                    <div class="cart-item-price">${item.price} грн</div>
+                </div>
             </div>
-            <div>
-                <button onclick="cartMinus('${p.id}')">−</button>
-                ${p.qty}
-                <button onclick="cartPlus('${p.id}')">+</button>
+            <div class="cart-item-controls">
+                <button type="button" onclick="cartMinus('${item.id}')">−</button>
+                <span>${item.qty}</span>
+                <button type="button" onclick="cartPlus('${item.id}')">+</button>
             </div>
         </div>
         `;
     });
 
+    if (!cart.length) {
+        items.innerHTML = `<div class="cart-empty">Кошик поки порожній</div>`;
+    }
+
     count.innerText = qty;
     total.innerText = "Разом: " + sum + " грн";
 }
 
-/* МОДАЛКА */
 function checkout() {
     if (cart.length === 0) {
         alert("Кошик порожній");
         return;
     }
 
-    document.getElementById("checkout-modal").classList.add("open");
+    document.getElementById("checkout-modal")?.classList.add("open");
     handleDeliveryTypeChange();
 }
 
 function closeCheckoutModal() {
-    document.getElementById("checkout-modal").classList.remove("open");
+    document.getElementById("checkout-modal")?.classList.remove("open");
 }
 
-/* ПЕРЕКЛЮЧЕННЯ ДОСТАВКИ */
 function handleDeliveryTypeChange() {
-    const delivery = document.getElementById("order-delivery").value;
+    const delivery = document.getElementById("order-delivery")?.value;
 
     const npCityWrap = document.getElementById("np-city-wrap");
     const npWarehouseWrap = document.getElementById("np-warehouse-wrap");
     const ukrWrap = document.getElementById("ukrposhta-wrap");
+
+    if (!npCityWrap || !npWarehouseWrap || !ukrWrap) return;
 
     if (delivery === "Нова пошта") {
         npCityWrap.style.display = "block";
@@ -132,13 +154,10 @@ function handleDeliveryTypeChange() {
     }
 }
 
-/* API НОВОЇ ПОШТИ */
 async function callNP(model, method, props) {
     const res = await fetch(NOVA_POSHTA_API_URL, {
         method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
             apiKey: NOVA_POSHTA_API_KEY,
             modelName: model,
@@ -148,7 +167,6 @@ async function callNP(model, method, props) {
     });
 
     const data = await res.json();
-
     if (!data.success) {
         console.error("Nova Poshta API error:", data);
         return [];
@@ -161,12 +179,12 @@ async function loadWarehouses(cityRef) {
     return await callNP("AddressGeneral", "getWarehouses", { CityRef: cityRef });
 }
 
-/* ПОШУК МІСТА */
 async function handleCityInput() {
     const input = document.getElementById("order-city");
     const list = document.getElementById("city-suggestions");
-    const val = input.value.trim();
+    if (!input || !list) return;
 
+    const val = input.value.trim();
     selectedCity = null;
     resetWarehouses("Оберіть відділення");
 
@@ -182,7 +200,6 @@ async function handleCityInput() {
     });
 
     list.innerHTML = "";
-
     if (!result.length) {
         list.style.display = "none";
         return;
@@ -196,19 +213,14 @@ async function handleCityInput() {
         item.Addresses.forEach(city => {
             const cityName = city.Present || city.MainDescription || city.Description || "Місто";
             const cityRefForWarehouses = city.DeliveryCity || city.Ref || "";
-
             if (!cityRefForWarehouses) return;
 
             const div = document.createElement("div");
             div.className = "np-suggestion-item";
             div.innerText = cityName;
-
             div.onclick = async () => {
                 input.value = cityName;
-                selectedCity = {
-                    name: cityName,
-                    ref: cityRefForWarehouses
-                };
+                selectedCity = { name: cityName, ref: cityRefForWarehouses };
                 list.style.display = "none";
                 list.innerHTML = "";
                 await fillWarehouses(cityRefForWarehouses);
@@ -219,7 +231,6 @@ async function handleCityInput() {
     });
 }
 
-/* ВІДДІЛЕННЯ */
 function resetWarehouses(text) {
     const select = document.getElementById("order-address");
     if (!select) return;
@@ -228,8 +239,9 @@ function resetWarehouses(text) {
 
 async function fillWarehouses(cityRef) {
     const select = document.getElementById("order-address");
-    resetWarehouses("Завантаження...");
+    if (!select) return;
 
+    resetWarehouses("Завантаження...");
     const warehouses = await loadWarehouses(cityRef);
 
     if (!warehouses.length) {
@@ -238,9 +250,8 @@ async function fillWarehouses(cityRef) {
     }
 
     select.innerHTML = `<option value="">Оберіть відділення</option>`;
-
-    warehouses.forEach(w => {
-        const text = w.Description || w.ShortAddress || "Відділення";
+    warehouses.forEach(warehouse => {
+        const text = warehouse.Description || warehouse.ShortAddress || "Відділення";
         const option = document.createElement("option");
         option.value = text;
         option.innerText = text;
@@ -248,12 +259,11 @@ async function fillWarehouses(cityRef) {
     });
 }
 
-/* ВІДПРАВКА */
 async function submitCheckout() {
-    const name = document.getElementById("order-name").value.trim();
-    const surname = document.getElementById("order-surname").value.trim();
-    const phone = document.getElementById("order-phone").value.trim();
-    const delivery = document.getElementById("order-delivery").value;
+    const name = document.getElementById("order-name")?.value.trim();
+    const surname = document.getElementById("order-surname")?.value.trim();
+    const phone = document.getElementById("order-phone")?.value.trim();
+    const delivery = document.getElementById("order-delivery")?.value;
 
     let city = "";
     let address = "";
@@ -264,8 +274,8 @@ async function submitCheckout() {
     }
 
     if (delivery === "Нова пошта") {
-        city = document.getElementById("order-city").value.trim();
-        address = document.getElementById("order-address").value;
+        city = document.getElementById("order-city")?.value.trim() || "";
+        address = document.getElementById("order-address")?.value || "";
 
         if (!city || !selectedCity) {
             alert("Оберіть місто зі списку");
@@ -279,8 +289,8 @@ async function submitCheckout() {
     }
 
     if (delivery === "Укрпошта") {
-        city = document.getElementById("order-city-manual").value.trim();
-        const index = document.getElementById("order-index").value.trim();
+        city = document.getElementById("order-city-manual")?.value.trim() || "";
+        const index = document.getElementById("order-index")?.value.trim() || "";
 
         if (!city) {
             alert("Вкажіть місто");
@@ -303,8 +313,8 @@ async function submitCheckout() {
         city,
         delivery,
         address,
-        items: cart,
-        total: cart.reduce((s, p) => s + p.price * p.qty, 0),
+        items: cart.map(item => ({ ...item, img: getSafeProductImage(item) })),
+        total: cart.reduce((sum, item) => sum + item.price * item.qty, 0),
         status: "Новий",
         status_group: "new",
         operator_comment: "",
@@ -332,34 +342,36 @@ async function submitCheckout() {
 
         closeCheckoutModal();
         closeCart();
-
-        alert("Замовлення оформлено");
+        showToast("Замовлення оформлено");
     } catch (error) {
         console.error(error);
         alert("Помилка CRM: " + error.message);
     }
 }
 
-/* TOAST */
 function showToast(text) {
-    const t = document.createElement("div");
+    let toastHost = document.getElementById("toast-host");
+    if (!toastHost) {
+        toastHost = document.createElement("div");
+        toastHost.id = "toast-host";
+        toastHost.className = "toast-host";
+        document.body.appendChild(toastHost);
+    }
 
-    t.style.position = "fixed";
-    t.style.bottom = "20px";
-    t.style.right = "20px";
-    t.style.background = "#ff6600";
-    t.style.color = "white";
-    t.style.padding = "12px 20px";
-    t.style.borderRadius = "10px";
-    t.style.zIndex = "9999";
+    const toast = document.createElement("div");
+    toast.className = "toast";
+    toast.innerText = text;
+    toastHost.appendChild(toast);
 
-    t.innerText = text;
+    requestAnimationFrame(() => toast.classList.add("show"));
 
-    document.body.appendChild(t);
-    setTimeout(() => t.remove(), 2000);
+    setTimeout(() => {
+        toast.classList.remove("show");
+        toast.classList.add("hide");
+        setTimeout(() => toast.remove(), 280);
+    }, 1900);
 }
 
-/* SAVE */
 function clearCart() {
     cart = [];
     saveCart();
@@ -370,7 +382,6 @@ function saveCart() {
     localStorage.setItem("cart", JSON.stringify(cart));
 }
 
-/* INIT */
 renderCart();
 
 document.addEventListener("DOMContentLoaded", () => {

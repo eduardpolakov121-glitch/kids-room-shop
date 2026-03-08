@@ -175,16 +175,7 @@ button:hover{ opacity:0.92; }
         <input type="file" id="prodFile" accept="image/*">
         <textarea id="prodDesc" placeholder="Опис"></textarea>
 
-        <select id="prodCategory">
-            <option value="toy">Іграшки</option>
-            <option value="stroller">Коляски</option>
-            <option value="seat">Автокрісла</option>
-            <option value="clothes">Одяг</option>
-            <option value="transport">Транспорт</option>
-            <option value="sorter">Сортери</option>
-            <option value="baby">Для немовлят</option>
-            <option value="school">Шкільні товари</option>
-        </select>
+        <select id="prodCategory"></select>
 
         <div class="preview-box" id="previewBox">
             <div class="muted">Поточне фото:</div>
@@ -217,8 +208,18 @@ const ADMIN_LOGIN_KEY = "kids_room_admin_login";
 function openAdminPanel() {
     document.getElementById("loginBox").style.display = "none";
     document.getElementById("adminBox").style.display = "block";
+    renderCategoryOptions();
     renderList();
     renderCRMOrders();
+}
+
+function renderCategoryOptions() {
+    const select = document.getElementById("prodCategory");
+    if (!select) return;
+
+    select.innerHTML = CATEGORIES.map(category => `
+        <option value="${category.id}">${category.icon} ${category.name}</option>
+    `).join("");
 }
 
 function login() {
@@ -250,13 +251,8 @@ function clearForm() {
 }
 
 function showPreview(src) {
-    if (!src) {
-        document.getElementById("previewImg").src = "";
-        document.getElementById("previewBox").style.display = "none";
-        return;
-    }
-
-    document.getElementById("previewImg").src = src;
+    const image = src || PRODUCT_PLACEHOLDER;
+    document.getElementById("previewImg").src = image;
     document.getElementById("previewBox").style.display = "block";
 }
 
@@ -275,18 +271,18 @@ function saveProduct() {
     }
 
     function finish(img) {
-        const product = {
+        const exist = products.find(product => product.id === id);
+        const product = normalizeProduct({
             id: id || "prod_" + Date.now(),
             name,
             price,
             old: old || price,
             description: desc,
             category: cat,
-            img: img || ""
-        };
+            img: img || exist?.img || PRODUCT_PLACEHOLDER
+        }, id || undefined);
 
-        const index = products.findIndex(p => p.id === product.id);
-
+        const index = products.findIndex(item => item.id === product.id);
         if (index >= 0) {
             products[index] = product;
         } else {
@@ -304,8 +300,8 @@ function saveProduct() {
         reader.onload = e => finish(e.target.result);
         reader.readAsDataURL(file);
     } else {
-        const exist = products.find(p => p.id === id);
-        finish(exist ? exist.img : "");
+        const exist = products.find(product => product.id === id);
+        finish(exist ? exist.img : PRODUCT_PLACEHOLDER);
     }
 }
 
@@ -319,66 +315,50 @@ function renderList() {
         return;
     }
 
-    products.forEach(p => {
+    products.forEach(product => {
         list.innerHTML += `
         <div class="product-row">
             <div class="product-info">
-                <img src="${p.img || ''}" alt="${p.name}">
+                <img src="${getSafeProductImage(product)}" alt="${product.name}" onerror="this.onerror=null;this.src='${PRODUCT_PLACEHOLDER}'">
                 <div>
-                    <b>${p.name}</b><br>
-                    ${p.price} грн
+                    <b>${product.name}</b><br>
+                    ${product.price} грн
                     <div class="product-meta">
-                        ID: ${p.id}<br>
-                        Категорія: ${getCategoryName(p.category)}
+                        ID: ${product.id}<br>
+                        Категорія: ${getCategoryName(product.category)}
                     </div>
                 </div>
             </div>
 
             <div class="row-actions">
-                <button onclick="editProduct('${p.id}')">✏ Редагувати</button>
-                <button class="btn-danger" onclick="deleteProduct('${p.id}')">🗑 Видалити</button>
+                <button onclick="editProduct('${product.id}')">✏ Редагувати</button>
+                <button class="btn-danger" onclick="deleteProduct('${product.id}')">🗑 Видалити</button>
             </div>
         </div>
         `;
     });
 }
 
-function getCategoryName(cat) {
-    const map = {
-        toy: "Іграшки",
-        stroller: "Коляски",
-        seat: "Автокрісла",
-        clothes: "Одяг",
-        transport: "Транспорт",
-        sorter: "Сортери",
-        baby: "Для немовлят",
-        school: "Шкільні товари"
-    };
-
-    return map[cat] || cat || "Без категорії";
-}
-
 function editProduct(id) {
     refreshProductsFromStorage();
-    const p = products.find(x => x.id === id);
-    if (!p) return;
+    const product = products.find(item => item.id === id);
+    if (!product) return;
 
-    document.getElementById("prodId").value = p.id || "";
-    document.getElementById("prodName").value = p.name || "";
-    document.getElementById("prodPrice").value = p.price || "";
-    document.getElementById("prodOld").value = p.old || "";
-    document.getElementById("prodDesc").value = p.description || "";
-    document.getElementById("prodCategory").value = p.category || "toy";
+    document.getElementById("prodId").value = product.id || "";
+    document.getElementById("prodName").value = product.name || "";
+    document.getElementById("prodPrice").value = product.price || "";
+    document.getElementById("prodOld").value = product.old || "";
+    document.getElementById("prodDesc").value = product.description || "";
+    document.getElementById("prodCategory").value = product.category || "toy";
 
-    showPreview(p.img || "");
-
+    showPreview(product.img || PRODUCT_PLACEHOLDER);
     window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
 function deleteProduct(id) {
     if (!confirm("Видалити товар?")) return;
 
-    products = products.filter(p => p.id !== id);
+    products = products.filter(product => product.id !== id);
     saveProducts();
     renderList();
     clearForm();
@@ -426,7 +406,7 @@ async function renderCRMOrders() {
                 order.items.forEach(item => {
                     itemsHtml += `
                     <div class="order-product">
-                        <img src="${item.img || ''}" alt="${item.name || 'Товар'}">
+                        <img src="${getSafeProductImage(item)}" alt="${item.name || 'Товар'}" onerror="this.onerror=null;this.src='${PRODUCT_PLACEHOLDER}'">
                         <div>
                             <div style="font-weight:bold;">${item.name || "Товар"}</div>
                             <div>${item.qty || 1} × ${item.price || 0} грн</div>
@@ -468,6 +448,7 @@ window.addEventListener("storage", event => {
 });
 
 window.onload = function() {
+    renderCategoryOptions();
     if (localStorage.getItem(ADMIN_LOGIN_KEY) === "true") {
         openAdminPanel();
     }

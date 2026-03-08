@@ -1,103 +1,56 @@
 <!DOCTYPE html>
 <html lang="uk">
-
 <head>
-
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Товар</title>
-
 <link rel="stylesheet" href="style.css">
-
 </head>
-
 <body>
 
 <header>
-<div class="logo">Kids Room</div>
+    <div class="logo-wrap">
+        <div class="logo">Kids Room</div>
+        <div class="logo-subtitle">Сторінка товару</div>
+    </div>
 </header>
 
-<div class="container" style="padding:40px; justify-content:center;">
-
-<div id="product-page" style="max-width:700px; width:100%; text-align:center;"></div>
-
+<div class="product-page-shell">
+    <div id="product-page" class="product-page"></div>
 </div>
 
 <script>
-
-/* НАЗАД */
-
-function goBack(){
-window.close();
+function goBack() {
+    if (window.history.length > 1) {
+        window.history.back();
+    } else {
+        window.close();
+    }
 }
 
-/* ПОЛУЧЕНИЕ ТОВАРА */
+const product = JSON.parse(localStorage.getItem("selectedProduct") || "null");
+const container = document.getElementById("product-page");
 
-let product = JSON.parse(localStorage.getItem("selectedProduct"));
-
-let container = document.getElementById("product-page");
-
-if(product){
-
-container.innerHTML = `
-
-<img src="${product.img}" 
-style="
-width:100%;
-max-width:500px;
-border-radius:12px;
-margin-bottom:20px;
-">
-
-<h1>${product.name}</h1>
-
-<h2 style="color:#ff6600">${product.price} грн</h2>
-
-<div style="margin-top:20px">
-
-<button onclick="addToCart('${product.id}')" style="
-padding:12px 25px;
-background:#ff6600;
-color:white;
-border:none;
-border-radius:8px;
-cursor:pointer;
-font-size:16px;
-font-weight:bold;
-margin-right:10px;
-">
-Додати в кошик
-</button>
-
-<button onclick="goBack()" style="
-padding:10px 15px;
-background:#eee;
-border:none;
-border-radius:8px;
-cursor:pointer;
-font-size:14px;
-">
-Назад
-</button>
-
-</div>
-
-<p style="
-margin-top:30px;
-font-size:18px;
-line-height:1.5;
-color:#444;
-">
-
-${product.description}
-
-</p>
-
-`;
-
+if (product && container) {
+    const safeImg = (typeof getSafeProductImage === "function") ? getSafeProductImage(product) : (product.img || "product-placeholder.svg");
+    container.innerHTML = `
+        <div class="product-page-card">
+            <div class="product-page-image-wrap">
+                <img src="${safeImg}" alt="${product.name}" onerror="this.onerror=null;this.src='product-placeholder.svg'">
+            </div>
+            <div class="product-page-info">
+                <div class="product-page-category">${typeof getCategoryIcon === "function" ? getCategoryIcon(product.category) : "📦"} ${typeof getCategoryName === "function" ? getCategoryName(product.category) : (product.category || "Товар")}</div>
+                <h1>${product.name}</h1>
+                <h2>${product.price} грн</h2>
+                <p>${product.description || "Опис товару буде додано найближчим часом."}</p>
+                <div class="product-page-actions">
+                    <button type="button" class="add-btn" onclick="addToCart('${product.id}')">Додати в кошик</button>
+                    <button type="button" class="secondary-btn product-back-btn" onclick="goBack()">Назад</button>
+                </div>
+            </div>
+        </div>
+    `;
 }
-
 </script>
 
 <script src="products.js"></script>
