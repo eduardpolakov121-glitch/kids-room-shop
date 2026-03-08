@@ -21,6 +21,7 @@ left:0;
 width:100%;
 z-index:1000;
 box-sizing:border-box;
+transition:0.3s;
 }
 
 .logo{
@@ -136,16 +137,12 @@ cursor:pointer;
 transform:translateY(-5px);
 }
 
-/* PRODUCT IMAGE */
-
 .product img{
 width:100%;
 height:200px;
 object-fit:cover;
 border-radius:8px;
 }
-
-/* PRICE */
 
 .price{
 font-size:20px;
@@ -158,8 +155,6 @@ text-decoration:line-through;
 color:gray;
 margin-right:10px;
 }
-
-/* QUANTITY CONTROL */
 
 .quantity{
 display:flex;
@@ -187,8 +182,6 @@ border-radius:6px;
 font-size:18px;
 }
 
-/* ADD BUTTON */
-
 .add-btn{
 background:#ff6600;
 color:white;
@@ -204,8 +197,6 @@ transition:0.3s;
 background:#ff4500;
 }
 
-/* CART BUTTON */
-
 .cart-button{
 position:fixed;
 right:20px;
@@ -219,8 +210,6 @@ font-size:28px;
 cursor:pointer;
 box-shadow:0 6px 18px rgba(0,0,0,0.3);
 }
-
-/* CART PANEL */
 
 .cart{
 position:fixed;
@@ -257,8 +246,6 @@ height:25px;
 cursor:pointer;
 }
 
-/* OVERLAY */
-
 .cart-overlay{
 position:fixed;
 top:0;
@@ -274,7 +261,7 @@ z-index:3000;
 display:block;
 }
 
-/* CHECKOUT MODAL */
+/* CHECKOUT */
 
 .checkout-modal{
 position:fixed;
@@ -319,6 +306,7 @@ border:1px solid #ddd;
 border-radius:8px;
 font-size:15px;
 box-sizing:border-box;
+background:#fff;
 }
 
 .checkout-actions{
@@ -340,6 +328,42 @@ font-weight:bold;
 
 .secondary-btn{
 background:#888 !important;
+}
+
+/* NOVA POSHTA SEARCH */
+
+.np-field-wrap{
+position:relative;
+}
+
+.np-suggestions{
+position:absolute;
+left:0;
+right:0;
+top:100%;
+background:#fff;
+border:1px solid #ddd;
+border-top:none;
+border-radius:0 0 10px 10px;
+max-height:220px;
+overflow-y:auto;
+display:none;
+z-index:30;
+box-shadow:0 8px 18px rgba(0,0,0,0.08);
+}
+
+.np-suggestion-item{
+padding:10px 12px;
+cursor:pointer;
+border-bottom:1px solid #f2f2f2;
+}
+
+.np-suggestion-item:hover{
+background:#fff5ee;
+}
+
+.np-suggestion-item:last-child{
+border-bottom:none;
 }
 
 /* SOCIAL */
@@ -364,18 +388,9 @@ font-weight:bold;
 box-shadow:0 4px 10px rgba(0,0,0,0.15);
 }
 
-/* HIDE HEADER ON SCROLL */
-
 header.hide{
 transform:translateY(-100%);
-transition:0.3s;
 }
-
-header{
-transition:0.3s;
-}
-
-/* RESPONSIVE */
 
 @media (max-width: 1100px){
 .products{

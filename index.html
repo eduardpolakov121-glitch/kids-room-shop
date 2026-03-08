@@ -78,14 +78,27 @@
         <input type="text" id="order-name" placeholder="Ім'я">
         <input type="text" id="order-surname" placeholder="Прізвище">
         <input type="tel" id="order-phone" placeholder="Телефон">
-        <input type="text" id="order-city" placeholder="Місто">
 
-        <select id="order-delivery" onchange="updateDeliveryPlaceholder()">
+        <select id="order-delivery" onchange="handleDeliveryTypeChange()">
             <option value="Нова пошта">Нова пошта</option>
             <option value="Укрпошта">Укрпошта</option>
         </select>
 
-        <input type="text" id="order-address" placeholder="Відділення або адреса">
+        <div id="np-city-wrap" class="np-field-wrap">
+            <input type="text" id="order-city" placeholder="Почніть вводити місто">
+            <div id="city-suggestions" class="np-suggestions"></div>
+        </div>
+
+        <div id="np-warehouse-wrap" class="np-field-wrap">
+            <select id="order-address">
+                <option value="">Спочатку оберіть місто</option>
+            </select>
+        </div>
+
+        <div id="ukrposhta-wrap" style="display:none;">
+            <input type="text" id="order-city-manual" placeholder="Місто">
+            <input type="text" id="order-address-manual" placeholder="Відділення або адреса">
+        </div>
 
         <div class="checkout-actions">
             <button onclick="submitCheckout()">Підтвердити</button>
