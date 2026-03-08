@@ -264,7 +264,13 @@
   <script>
     const SUPABASE_URL = "https://xhhzxiithajxgngmbzzd.supabase.co";
     const SUPABASE_KEY = "sb_publishable_cRp6r2C_3nszludByS9V9Q_sl1QlHg5";
-    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+      auth: {
+        persistSession: true,
+        autoRefreshToken: true,
+        detectSessionInUrl: false
+      }
+    });
 
     const STAGES = {
       new: { title: 'Нові', status: 'Новий', day: 0 },
@@ -324,12 +330,23 @@
       authError('');
       const email = document.getElementById('loginEmail').value.trim();
       const password = document.getElementById('loginPassword').value.trim();
-      const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
-      if (error) {
+      const btn = document.querySelector('.auth-card button');
+      btn.disabled = true;
+      btn.textContent = 'Вхід...';
+
+      try {
+        const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+        if (error) {
+          authError(error.message || 'Помилка входу');
+          return;
+        }
+        window.location.reload();
+      } catch (error) {
         authError(error.message || 'Помилка входу');
-        return;
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Увійти';
       }
-      await bootCRM();
     }
 
     async function logoutCRM(){
@@ -637,12 +654,6 @@
         .replace(/"/g, '&quot;')
         .replace(/'/g, '&#039;');
     }
-
-    supabaseClient.auth.onAuthStateChange(async (_event, session) => {
-      if (session?.user) {
-        try { await bootCRM(); } catch (e) { console.error(e); }
-      }
-    });
 
     bootCRM().catch(error => {
       console.error(error);
