@@ -17,8 +17,6 @@ function closeCart() {
     document.getElementById("cart-overlay").classList.remove("active");
 }
 
-/* ДОБАВИТЬ В КОРЗИНУ */
-
 function addToCart(id) {
     let qtyInput = document.getElementById("qty-" + id);
     let qty = parseInt(qtyInput ? qtyInput.value : 1, 10);
@@ -64,8 +62,6 @@ function cartMinus(id) {
     saveCart();
 }
 
-/* РЕНДЕР КОРЗИНЫ */
-
 function renderCart() {
     let items = document.getElementById("cart-items");
     let count = document.getElementById("cart-count");
@@ -88,7 +84,6 @@ function renderCart() {
                 ${p.name}<br>
                 ${p.price} грн
             </div>
-
             <div>
                 <button onclick="cartMinus('${p.id}')">−</button>
                 ${p.qty}
@@ -102,7 +97,7 @@ function renderCart() {
     total.innerText = "Разом: " + sum + " грн";
 }
 
-/* ОФОРМЛЕНИЕ */
+/* МОДАЛКА */
 
 function checkout() {
     if (cart.length === 0) {
@@ -113,13 +108,11 @@ function checkout() {
     document.getElementById("checkout-modal").classList.add("open");
 }
 
-/* ЗАКРЫТЬ */
-
 function closeCheckoutModal() {
     document.getElementById("checkout-modal").classList.remove("open");
 }
 
-/* НОВА ПОШТА API */
+/* API НОВОЙ ПОЧТЫ */
 
 async function callNP(model, method, props) {
     let res = await fetch(NOVA_POSHTA_API_URL, {
@@ -145,32 +138,29 @@ async function callNP(model, method, props) {
     return data.data || [];
 }
 
-/* ЗАГРУЗКА ОТДЕЛЕНИЙ */
-
 async function loadWarehouses(cityRef) {
-    let data = await callNP(
+    return await callNP(
         "AddressGeneral",
         "getWarehouses",
         {
             CityRef: cityRef
         }
     );
-
-    return data;
 }
 
-/* ПОИСК ГОРОДА — ИСПРАВЛЕННЫЙ */
+/* ПОИСК ГОРОДА */
 
 async function handleCityInput() {
     let input = document.getElementById("order-city");
     let list = document.getElementById("city-suggestions");
-
     let val = input.value.trim();
+
+    selectedCity = null;
+    resetWarehouses("Оберіть відділення");
 
     if (val.length < 2) {
         list.style.display = "none";
         list.innerHTML = "";
-        selectedCity = null;
         return;
     }
 
@@ -196,16 +186,24 @@ async function handleCityInput() {
         if (!item.Addresses || !item.Addresses.length) return;
 
         item.Addresses.forEach(city => {
+            let cityName = city.Present || city.MainDescription || city.Description || "Місто";
+            let cityRefForWarehouses = city.DeliveryCity || city.Ref || "";
+
+            if (!cityRefForWarehouses) return;
+
             let div = document.createElement("div");
-
             div.className = "np-suggestion-item";
-            div.innerText = city.Present || city.MainDescription || city.Description || "Місто";
+            div.innerText = cityName;
 
-            div.onclick = () => {
-                input.value = city.Present || city.MainDescription || city.Description || "";
-                selectedCity = city;
+            div.onclick = async () => {
+                input.value = cityName;
+                selectedCity = {
+                    name: cityName,
+                    ref: cityRefForWarehouses
+                };
                 list.style.display = "none";
-                fillWarehouses(city.Ref);
+                list.innerHTML = "";
+                await fillWarehouses(cityRefForWarehouses);
             };
 
             list.appendChild(div);
@@ -213,21 +211,33 @@ async function handleCityInput() {
     });
 }
 
-/* ЗАПОЛНИТЬ ОТДЕЛЕНИЯ */
+/* ОТДЕЛЕНИЯ */
+
+function resetWarehouses(text) {
+    let select = document.getElementById("order-address");
+    if (!select) return;
+    select.innerHTML = `<option value="">${text}</option>`;
+}
 
 async function fillWarehouses(cityRef) {
     let select = document.getElementById("order-address");
 
-    select.innerHTML = "<option value=''>Завантаження...</option>";
+    resetWarehouses("Завантаження...");
 
     let warehouses = await loadWarehouses(cityRef);
 
-    select.innerHTML = "<option value=''>Оберіть відділення</option>";
+    if (!warehouses.length) {
+        resetWarehouses("Немає відділень");
+        return;
+    }
+
+    select.innerHTML = `<option value="">Оберіть відділення</option>`;
 
     warehouses.forEach(w => {
+        let text = w.Description || w.ShortAddress || "Відділення";
         let option = document.createElement("option");
-        option.value = w.Description || "";
-        option.innerText = w.Description || "Відділення";
+        option.value = text;
+        option.innerText = text;
         select.appendChild(option);
     });
 }
@@ -247,8 +257,8 @@ async function submitCheckout() {
         return;
     }
 
-    if (!city) {
-        alert("Оберіть місто");
+    if (!city || !selectedCity) {
+        alert("Оберіть місто зі списку");
         return;
     }
 
@@ -279,7 +289,7 @@ async function submitCheckout() {
         document.getElementById("order-surname").value = "";
         document.getElementById("order-phone").value = "";
         document.getElementById("order-city").value = "";
-        document.getElementById("order-address").innerHTML = "<option value=''>Оберіть відділення</option>";
+        resetWarehouses("Оберіть відділення");
 
         selectedCity = null;
 
@@ -314,15 +324,13 @@ function showToast(text) {
     setTimeout(() => t.remove(), 2000);
 }
 
-/* CLEAR */
+/* SAVE */
 
 function clearCart() {
     cart = [];
     saveCart();
     renderCart();
 }
-
-/* SAVE */
 
 function saveCart() {
     localStorage.setItem("cart", JSON.stringify(cart));
