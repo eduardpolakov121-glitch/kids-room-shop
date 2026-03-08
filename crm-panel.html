@@ -111,9 +111,8 @@
   <div id="authView" class="auth-wrap">
     <div class="auth-card">
       <h2>Kids Room CRM Pro</h2>
-      <p>Вхід для адміністратора та оператора.</p>
-      <input id="loginEmail" type="email" placeholder="Email">
-      <input id="loginPassword" type="password" placeholder="Пароль">
+            <input id="loginEmail" type="email" placeholder="Email" autocomplete="off" autocapitalize="off" spellcheck="false">
+      <input id="loginPassword" type="password" placeholder="Пароль" autocomplete="new-password">
       <button onclick="loginCRM()">Увійти</button>
       <div id="authError" class="auth-note"></div>
     </div>
@@ -125,8 +124,7 @@
         <div class="brand-badge">K</div>
         <div>
           <h1>Kids Room CRM Pro</h1>
-          <p>CRM у стилі LP: вкладки по днях, список замовлень, редагована картка.</p>
-        </div>
+                  </div>
       </div>
       <div class="header-actions">
         <span id="userRoleBadge" class="role-badge">role</span>
@@ -137,8 +135,6 @@
     </header>
 
     <div class="layout">
-      <div class="top-note">Закази показуються списком по вкладках. При відкритті карточки можна редагувати дані клієнта, коментарі, етап, статус і суму.</div>
-
       <section class="stats">
         <div class="stat-card"><div class="label">Замовлень сьогодні</div><div class="value" id="statToday">0</div></div>
         <div class="stat-card"><div class="label">У роботі зараз</div><div class="value" id="statActive">0</div></div>
@@ -147,7 +143,7 @@
       </section>
 
       <section class="toolbar">
-        <input id="searchInput" placeholder="Пошук: ім'я, телефон, місто" oninput="applyFilters()">
+        <input id="searchInput" placeholder="Пошук: ім'я, телефон, місто" oninput="applyFilters()" autocomplete="off" spellcheck="false">
         <select id="deliveryFilter" onchange="applyFilters()">
           <option value="all">Вся доставка</option>
           <option value="Нова пошта">Нова пошта</option>
@@ -196,16 +192,16 @@
               <div class="field inline-2">
                 <div>
                   <label>Ім'я</label>
-                  <input id="dFirstName">
+                  <input id="dFirstName" autocomplete="off">
                 </div>
                 <div>
                   <label>Прізвище</label>
-                  <input id="dLastName">
+                  <input id="dLastName" autocomplete="off">
                 </div>
               </div>
-              <div class="field"><label>Повне ім'я</label><input id="dName"></div>
-              <div class="field"><label>Телефон</label><input id="dPhone"></div>
-              <div class="field"><label>Місто</label><input id="dCity"></div>
+              <div class="field"><label>Повне ім'я</label><input id="dName" autocomplete="off"></div>
+              <div class="field"><label>Телефон</label><input id="dPhone" autocomplete="off"></div>
+              <div class="field"><label>Місто</label><input id="dCity" autocomplete="off"></div>
               <div class="field"><label>Тип доставки</label>
                 <select id="dDelivery">
                   <option value="Нова пошта">Нова пошта</option>
@@ -213,7 +209,7 @@
                   <option value="Інше">Інше</option>
                 </select>
               </div>
-              <div class="field"><label>Адреса / відділення / індекс</label><textarea id="dAddress"></textarea></div>
+              <div class="field"><label>Адреса / відділення / індекс</label><textarea id="dAddress" autocomplete="off"></textarea></div>
             </div>
 
             <div class="panel">
@@ -227,7 +223,7 @@
             <div class="panel">
               <h3>Етап і статус</h3>
               <div class="field"><label>Вкладка / етап</label><select id="dStage"></select></div>
-              <div class="field"><label>Підпис статусу</label><input id="dStatus"></div>
+              <div class="field"><label>Підпис статусу</label><input id="dStatus" autocomplete="off"></div>
               <div class="field inline-2">
                 <div>
                   <label>Дата створення</label>
