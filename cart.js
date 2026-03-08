@@ -314,7 +314,13 @@ async function submitCheckout() {
     };
 
     try {
-        await saveOrderCRM(order);
+        const crmSaver = window.saveOrderCRM;
+
+        if (typeof crmSaver !== "function") {
+            throw new Error("Функція saveOrderCRM не завантажилась. Замініть файл crm.js на нову версію і оновіть сайт.");
+        }
+
+        await crmSaver(order);
 
         cart = [];
         saveCart();

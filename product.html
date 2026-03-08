@@ -1,60 +1,917 @@
 <!DOCTYPE html>
 <html lang="uk">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Товар</title>
-<link rel="stylesheet" href="style.css">
-</head>
-<body>
-
-<header>
-    <div class="logo-wrap">
-        <div class="logo">Kids Room</div>
-        <div class="logo-subtitle">Сторінка товару</div>
-    </div>
-</header>
-
-<div class="product-page-shell">
-    <div id="product-page" class="product-page"></div>
-</div>
-
-<script>
-function goBack() {
-    if (window.history.length > 1) {
-        window.history.back();
-    } else {
-        window.close();
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kids Room — Сторінка товару</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    :root{
+      --kr-orange:#ff6b00;
+      --kr-orange-dark:#ea5a00;
+      --kr-bg:#f5f2ec;
+      --kr-card:#fffdf9;
+      --kr-text:#243041;
+      --kr-muted:#6f7b8c;
+      --kr-line:#ece7df;
+      --kr-shadow:0 14px 38px rgba(0,0,0,0.08);
     }
-}
 
-const product = JSON.parse(localStorage.getItem("selectedProduct") || "null");
-const container = document.getElementById("product-page");
+    body.product-body{
+      background:linear-gradient(135deg,#f6f1ea 0%,#eef4f8 100%);
+      min-height:100vh;
+    }
 
-if (product && container) {
-    const safeImg = (typeof getSafeProductImage === "function") ? getSafeProductImage(product) : (product.img || "product-placeholder.svg");
-    container.innerHTML = `
-        <div class="product-page-card">
-            <div class="product-page-image-wrap">
-                <img src="${safeImg}" alt="${product.name}" onerror="this.onerror=null;this.src='product-placeholder.svg'">
-            </div>
-            <div class="product-page-info">
-                <div class="product-page-category">${typeof getCategoryIcon === "function" ? getCategoryIcon(product.category) : "📦"} ${typeof getCategoryName === "function" ? getCategoryName(product.category) : (product.category || "Товар")}</div>
-                <h1>${product.name}</h1>
-                <h2>${product.price} грн</h2>
-                <p>${product.description || "Опис товару буде додано найближчим часом."}</p>
-                <div class="product-page-actions">
-                    <button type="button" class="add-btn" onclick="addToCart('${product.id}')">Додати в кошик</button>
-                    <button type="button" class="secondary-btn product-back-btn" onclick="goBack()">Назад</button>
-                </div>
-            </div>
+    .product-topbar{
+      position:sticky;
+      top:0;
+      z-index:1100;
+      backdrop-filter:blur(12px);
+      background:rgba(255,253,249,0.92);
+      border-bottom:1px solid rgba(236,231,223,0.95);
+      box-shadow:0 8px 24px rgba(0,0,0,0.05);
+    }
+
+    .product-topbar-inner{
+      max-width:1280px;
+      margin:0 auto;
+      padding:14px 20px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:16px;
+    }
+
+    .product-brand{
+      display:flex;
+      align-items:center;
+      gap:14px;
+      min-width:0;
+    }
+
+    .product-brand-logo{
+      width:48px;
+      height:48px;
+      border-radius:16px;
+      background:linear-gradient(135deg,#ffd8b7,#fff4d9);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:24px;
+      box-shadow:inset 0 0 0 1px rgba(255,107,0,0.08);
+      flex-shrink:0;
+    }
+
+    .product-brand-text{
+      min-width:0;
+    }
+
+    .product-brand-text .logo{
+      display:block;
+      font-size:20px;
+      line-height:1.1;
+    }
+
+    .product-brand-text small{
+      display:block;
+      color:var(--kr-muted);
+      margin-top:3px;
+      font-size:13px;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+
+    .product-topbar-actions{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+
+    .product-mini-btn,
+    .product-primary-btn,
+    .product-secondary-btn{
+      border:none;
+      border-radius:14px;
+      cursor:pointer;
+      font-weight:700;
+      transition:transform .18s ease, box-shadow .18s ease, background .18s ease;
+    }
+
+    .product-mini-btn:hover,
+    .product-primary-btn:hover,
+    .product-secondary-btn:hover{
+      transform:translateY(-1px);
+    }
+
+    .product-mini-btn{
+      padding:11px 16px;
+      background:#fff;
+      color:var(--kr-text);
+      border:1px solid var(--kr-line);
+      box-shadow:0 6px 18px rgba(0,0,0,0.04);
+    }
+
+    .product-cart-fab{
+      position:relative;
+      min-width:52px;
+      height:52px;
+      padding:0 16px;
+      border-radius:16px;
+      background:var(--kr-orange);
+      color:#fff;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      box-shadow:0 12px 28px rgba(255,107,0,0.28);
+    }
+
+    .product-cart-fab.bump{
+      animation:cartBump .45s ease;
+    }
+
+    #product-cart-count{
+      position:absolute;
+      right:-6px;
+      top:-6px;
+      min-width:22px;
+      height:22px;
+      border-radius:999px;
+      background:#fff;
+      color:var(--kr-orange);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:12px;
+      font-weight:800;
+      box-shadow:0 6px 14px rgba(0,0,0,0.12);
+      padding:0 6px;
+      box-sizing:border-box;
+    }
+
+    .product-shell{
+      max-width:1280px;
+      margin:0 auto;
+      padding:28px 20px 48px;
+      box-sizing:border-box;
+    }
+
+    .product-breadcrumbs{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      flex-wrap:wrap;
+      font-size:14px;
+      color:var(--kr-muted);
+      margin-bottom:20px;
+    }
+
+    .product-breadcrumbs a,
+    .product-breadcrumbs button{
+      background:none;
+      border:none;
+      padding:0;
+      color:inherit;
+      cursor:pointer;
+      font:inherit;
+    }
+
+    .product-breadcrumbs a:hover,
+    .product-breadcrumbs button:hover{
+      color:var(--kr-orange);
+    }
+
+    .product-layout{
+      display:grid;
+      grid-template-columns:minmax(0,1.04fr) minmax(360px,0.96fr);
+      gap:28px;
+      align-items:start;
+    }
+
+    .product-gallery,
+    .product-info-card{
+      background:var(--kr-card);
+      border:1px solid rgba(236,231,223,0.95);
+      border-radius:30px;
+      box-shadow:var(--kr-shadow);
+      overflow:hidden;
+    }
+
+    .product-gallery{
+      padding:24px;
+    }
+
+    .product-gallery-frame{
+      position:relative;
+      overflow:hidden;
+      border-radius:28px;
+      background:linear-gradient(145deg,#fbefe1,#f0e0cf);
+      min-height:520px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      box-shadow:inset 0 0 0 1px rgba(255,255,255,0.45);
+    }
+
+    .product-gallery-frame::before,
+    .product-gallery-frame::after{
+      content:"";
+      position:absolute;
+      border-radius:50%;
+      pointer-events:none;
+      opacity:.65;
+    }
+
+    .product-gallery-frame::before{
+      width:240px;
+      height:240px;
+      background:radial-gradient(circle,#ffd36f 0%,rgba(255,211,111,0) 70%);
+      top:-34px;
+      right:-18px;
+    }
+
+    .product-gallery-frame::after{
+      width:200px;
+      height:200px;
+      background:radial-gradient(circle,#ffd9c2 0%,rgba(255,217,194,0) 70%);
+      bottom:-40px;
+      left:-24px;
+    }
+
+    .product-main-image{
+      width:100%;
+      max-height:640px;
+      object-fit:contain;
+      display:block;
+      position:relative;
+      z-index:1;
+    }
+
+    .product-image-chip{
+      position:absolute;
+      left:20px;
+      bottom:20px;
+      z-index:2;
+      background:rgba(255,255,255,0.92);
+      color:var(--kr-text);
+      border:1px solid rgba(236,231,223,0.95);
+      border-radius:999px;
+      padding:10px 16px;
+      font-size:14px;
+      font-weight:700;
+      box-shadow:0 8px 22px rgba(0,0,0,0.08);
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+
+    .product-info-card{
+      padding:28px;
+      box-sizing:border-box;
+    }
+
+    .product-badges{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-bottom:14px;
+    }
+
+    .product-badge{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:9px 14px;
+      border-radius:999px;
+      font-size:14px;
+      font-weight:700;
+      background:#fff5ec;
+      color:#b25a10;
+      border:1px solid #ffe0c5;
+    }
+
+    .product-title{
+      margin:0 0 16px;
+      color:var(--kr-text);
+      font-size:clamp(32px,4vw,48px);
+      line-height:1.08;
+      letter-spacing:-0.03em;
+    }
+
+    .product-price-row{
+      display:flex;
+      align-items:flex-end;
+      gap:14px;
+      flex-wrap:wrap;
+      margin-bottom:18px;
+    }
+
+    .product-price-current{
+      font-size:clamp(34px,3.2vw,46px);
+      line-height:1;
+      font-weight:800;
+      color:var(--kr-orange);
+    }
+
+    .product-price-old{
+      font-size:20px;
+      color:#97a0ab;
+      text-decoration:line-through;
+      margin-bottom:5px;
+    }
+
+    .product-discount{
+      padding:7px 11px;
+      border-radius:999px;
+      background:#ffe8d7;
+      color:#c35500;
+      font-weight:800;
+      font-size:14px;
+      margin-bottom:6px;
+    }
+
+    .product-desc{
+      color:#4d596b;
+      font-size:17px;
+      line-height:1.75;
+      margin:0 0 22px;
+    }
+
+    .product-feature-list{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:12px;
+      margin:0 0 22px;
+      padding:0;
+      list-style:none;
+    }
+
+    .product-feature-list li{
+      background:#fffaf4;
+      border:1px solid #f2e6d8;
+      border-radius:18px;
+      padding:14px 16px;
+      color:#445062;
+      font-size:15px;
+      line-height:1.45;
+    }
+
+    .product-feature-list strong{
+      display:block;
+      color:var(--kr-text);
+      margin-bottom:4px;
+      font-size:14px;
+    }
+
+    .product-buy-box{
+      margin-top:10px;
+      padding:18px;
+      background:linear-gradient(180deg,#fff9f2 0%,#fff 100%);
+      border:1px solid #f3e3d3;
+      border-radius:24px;
+    }
+
+    .product-buy-top{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:16px;
+      flex-wrap:wrap;
+      margin-bottom:16px;
+    }
+
+    .product-stock{
+      color:#15803d;
+      background:#ecfdf3;
+      border:1px solid #b7efca;
+      padding:9px 14px;
+      border-radius:999px;
+      font-weight:700;
+      font-size:14px;
+    }
+
+    .product-qty{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+
+    .product-qty-label{
+      font-weight:700;
+      color:var(--kr-text);
+    }
+
+    .product-qty-control{
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      background:#fff;
+      border:1px solid #eadfce;
+      border-radius:18px;
+      padding:8px;
+      box-shadow:0 8px 20px rgba(0,0,0,0.04);
+    }
+
+    .product-qty-control button{
+      width:42px;
+      height:42px;
+      border:none;
+      border-radius:14px;
+      background:#f3f3f3;
+      color:#253041;
+      font-size:24px;
+      cursor:pointer;
+      font-weight:700;
+    }
+
+    .product-qty-control input{
+      width:62px;
+      height:42px;
+      border:none;
+      background:transparent;
+      text-align:center;
+      font-size:18px;
+      font-weight:800;
+      color:var(--kr-text);
+      outline:none;
+    }
+
+    .product-actions{
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+
+    .product-primary-btn{
+      min-height:56px;
+      padding:14px 24px;
+      background:linear-gradient(135deg,var(--kr-orange) 0%,#ff8a33 100%);
+      color:#fff;
+      box-shadow:0 16px 28px rgba(255,107,0,0.22);
+      font-size:16px;
+    }
+
+    .product-secondary-btn{
+      min-height:56px;
+      padding:14px 22px;
+      background:#fff;
+      color:var(--kr-text);
+      border:1px solid var(--kr-line);
+      box-shadow:0 10px 22px rgba(0,0,0,0.04);
+      font-size:16px;
+    }
+
+    .product-note{
+      margin-top:16px;
+      font-size:14px;
+      color:var(--kr-muted);
+      line-height:1.6;
+    }
+
+    .product-empty{
+      background:var(--kr-card);
+      border-radius:28px;
+      border:1px solid var(--kr-line);
+      box-shadow:var(--kr-shadow);
+      padding:40px 28px;
+      text-align:center;
+      max-width:720px;
+      margin:48px auto 0;
+    }
+
+    .product-empty h1{
+      margin:0 0 10px;
+      color:var(--kr-text);
+    }
+
+    .product-empty p{
+      color:var(--kr-muted);
+      margin:0 0 18px;
+      line-height:1.7;
+    }
+
+    .fly-clone{
+      position:fixed;
+      z-index:9999;
+      pointer-events:none;
+      border-radius:18px;
+      object-fit:cover;
+      box-shadow:0 18px 40px rgba(0,0,0,0.18);
+      transition:transform .75s cubic-bezier(.2,.8,.2,1), opacity .75s ease, left .75s cubic-bezier(.2,.8,.2,1), top .75s cubic-bezier(.2,.8,.2,1), width .75s cubic-bezier(.2,.8,.2,1), height .75s cubic-bezier(.2,.8,.2,1);
+    }
+
+    @keyframes cartBump{
+      0%{ transform:scale(1); }
+      35%{ transform:scale(1.13); }
+      100%{ transform:scale(1); }
+    }
+
+    @media (max-width:1100px){
+      .product-layout{
+        grid-template-columns:1fr;
+      }
+      .product-gallery-frame{
+        min-height:460px;
+      }
+    }
+
+    @media (max-width:768px){
+      .product-topbar-inner{
+        padding:12px 14px;
+      }
+      .product-brand-logo{
+        width:42px;
+        height:42px;
+        border-radius:14px;
+      }
+      .product-brand-text .logo{
+        font-size:18px;
+      }
+      .product-topbar-actions{
+        gap:8px;
+      }
+      .product-mini-btn{
+        padding:10px 12px;
+      }
+      .product-shell{
+        padding:18px 12px 30px;
+      }
+      .product-gallery,
+      .product-info-card{
+        border-radius:24px;
+      }
+      .product-gallery{
+        padding:14px;
+      }
+      .product-gallery-frame{
+        min-height:320px;
+        border-radius:20px;
+      }
+      .product-info-card{
+        padding:18px;
+      }
+      .product-title{
+        font-size:34px;
+      }
+      .product-price-current{
+        font-size:34px;
+      }
+      .product-desc{
+        font-size:16px;
+      }
+      .product-feature-list{
+        grid-template-columns:1fr;
+      }
+      .product-buy-box{
+        padding:14px;
+        border-radius:20px;
+      }
+      .product-buy-top{
+        flex-direction:column;
+        align-items:flex-start;
+      }
+      .product-actions{
+        flex-direction:column;
+      }
+      .product-primary-btn,
+      .product-secondary-btn{
+        width:100%;
+      }
+      .product-cart-fab{
+        min-width:50px;
+        height:50px;
+        padding:0 14px;
+      }
+    }
+
+    @media (max-width:520px){
+      .product-brand-text small{
+        display:none;
+      }
+      .product-topbar-actions{
+        width:100%;
+        justify-content:space-between;
+      }
+      .product-mini-btn{
+        flex:1;
+      }
+      .product-cart-fab{
+        min-width:56px;
+      }
+      .product-breadcrumbs{
+        font-size:13px;
+        margin-bottom:14px;
+      }
+      .product-gallery-frame{
+        min-height:270px;
+      }
+      .product-title{
+        font-size:28px;
+      }
+      .product-price-row{
+        gap:10px;
+      }
+      .product-price-current{
+        font-size:30px;
+      }
+      .product-price-old{
+        font-size:18px;
+      }
+      .product-qty{
+        width:100%;
+        justify-content:space-between;
+      }
+      .product-qty-control{
+        width:100%;
+        justify-content:space-between;
+      }
+      .product-qty-control input{
+        flex:1;
+      }
+    }
+  </style>
+</head>
+<body class="product-body">
+  <div class="product-topbar">
+    <div class="product-topbar-inner">
+      <div class="product-brand">
+        <div class="product-brand-logo">🧸</div>
+        <div class="product-brand-text">
+          <span class="logo">Kids Room</span>
+          <small>Сторінка товару</small>
         </div>
-    `;
-}
-</script>
+      </div>
 
-<script src="products.js"></script>
-<script src="cart.js"></script>
+      <div class="product-topbar-actions">
+        <button class="product-mini-btn" type="button" onclick="goBack()">← Назад</button>
+        <button class="product-cart-fab" id="product-cart-button" type="button" onclick="goHomeToCart()" aria-label="Перейти до кошика">
+          🛒
+          <span id="product-cart-count">0</span>
+        </button>
+      </div>
+    </div>
+  </div>
 
+  <main class="product-shell">
+    <div class="product-breadcrumbs">
+      <a href="index.html">Головна</a>
+      <span>›</span>
+      <button type="button" onclick="goBack()">Каталог</button>
+      <span>›</span>
+      <span id="breadcrumb-name">Товар</span>
+    </div>
+
+    <div id="product-page"></div>
+  </main>
+
+  <script src="products.js"></script>
+  <script src="cart.js"></script>
+  <script>
+    const CATEGORY_NAMES = {
+      toy: "Іграшки",
+      stroller: "Коляски",
+      seat: "Автокрісла",
+      clothes: "Одяг",
+      transport: "Транспорт",
+      sorter: "Сортери",
+      baby: "Для немовлят",
+      school: "Шкільні товари",
+      furniture: "Дитячі меблі",
+      feeding: "Годування",
+      hygiene: "Гігієна",
+      bedding: "Постіль",
+      creativity: "Творчість"
+    };
+
+    function fallbackImage(){
+      return 'data:image/svg+xml;utf8,' + encodeURIComponent(`
+        <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="900" viewBox="0 0 1200 900">
+          <defs>
+            <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#fbefe1"/>
+              <stop offset="100%" stop-color="#f0e0cf"/>
+            </linearGradient>
+          </defs>
+          <rect width="1200" height="900" rx="48" fill="url(#g)"/>
+          <circle cx="600" cy="210" r="118" fill="#f3c87c" opacity="0.9"/>
+          <rect x="270" y="390" width="660" height="115" rx="56" fill="#f79a4b"/>
+          <rect x="350" y="545" width="500" height="66" rx="33" fill="#f2bb82"/>
+          <text x="600" y="725" text-anchor="middle" font-family="Arial, sans-serif" font-size="82" font-weight="700" fill="#c56617">Kids Room</text>
+        </svg>
+      `);
+    }
+
+    function sanitizeImage(src){
+      if (!src || typeof src !== 'string') return fallbackImage();
+      const value = src.trim();
+      if (!value) return fallbackImage();
+      if (/^https?:\/\//i.test(value)) return fallbackImage();
+      return value;
+    }
+
+    function getCategoryName(cat){
+      return CATEGORY_NAMES[cat] || cat || 'Категорія';
+    }
+
+    function getSelectedProduct(){
+      refreshProductsFromStorage();
+
+      let stored = null;
+      try {
+        stored = JSON.parse(localStorage.getItem('selectedProduct') || 'null');
+      } catch (e) {
+        stored = null;
+      }
+
+      if (stored?.id) {
+        const fresh = products.find(item => String(item.id) === String(stored.id));
+        if (fresh) return fresh;
+      }
+
+      const params = new URLSearchParams(window.location.search);
+      const byQuery = params.get('id');
+      if (byQuery) {
+        const fresh = products.find(item => String(item.id) === String(byQuery));
+        if (fresh) return fresh;
+      }
+
+      return stored;
+    }
+
+    function getDiscountPercent(oldPrice, currentPrice){
+      const oldVal = Number(oldPrice || 0);
+      const curVal = Number(currentPrice || 0);
+      if (!oldVal || !curVal || oldVal <= curVal) return null;
+      return Math.round(((oldVal - curVal) / oldVal) * 100);
+    }
+
+    function updateProductCartCount(){
+      let count = 0;
+      try {
+        const cartData = JSON.parse(localStorage.getItem('cart') || '[]');
+        if (Array.isArray(cartData)) {
+          count = cartData.reduce((sum, item) => sum + Number(item.qty || 0), 0);
+        }
+      } catch (e) {
+        count = 0;
+      }
+
+      const countEl = document.getElementById('product-cart-count');
+      if (countEl) countEl.textContent = count;
+    }
+
+    function goBack(){
+      if (document.referrer && document.referrer.includes(location.host)) {
+        history.back();
+      } else {
+        window.location.href = 'index.html';
+      }
+    }
+
+    function goHomeToCart(){
+      window.location.href = 'index.html#cart';
+    }
+
+    function animateToCartFromProduct(){
+      const image = document.getElementById('product-main-image');
+      const cartButton = document.getElementById('product-cart-button');
+
+      if (!image || !cartButton) {
+        cartButton?.classList.add('bump');
+        setTimeout(() => cartButton?.classList.remove('bump'), 450);
+        return;
+      }
+
+      const imgRect = image.getBoundingClientRect();
+      const cartRect = cartButton.getBoundingClientRect();
+
+      const clone = image.cloneNode(true);
+      clone.className = 'fly-clone';
+      clone.style.left = imgRect.left + 'px';
+      clone.style.top = imgRect.top + 'px';
+      clone.style.width = imgRect.width + 'px';
+      clone.style.height = imgRect.height + 'px';
+      document.body.appendChild(clone);
+
+      requestAnimationFrame(() => {
+        clone.style.left = (cartRect.left + cartRect.width / 2 - 30) + 'px';
+        clone.style.top = (cartRect.top + cartRect.height / 2 - 30) + 'px';
+        clone.style.width = '60px';
+        clone.style.height = '60px';
+        clone.style.transform = 'scale(.2) rotate(10deg)';
+        clone.style.opacity = '.2';
+      });
+
+      setTimeout(() => {
+        clone.remove();
+        cartButton.classList.add('bump');
+        setTimeout(() => cartButton.classList.remove('bump'), 450);
+      }, 760);
+    }
+
+    function renderProductPage(){
+      const container = document.getElementById('product-page');
+      const crumb = document.getElementById('breadcrumb-name');
+      const product = getSelectedProduct();
+
+      if (!product) {
+        if (crumb) crumb.textContent = 'Товар не знайдено';
+        container.innerHTML = `
+          <section class="product-empty">
+            <h1>Товар не знайдено</h1>
+            <p>Схоже, сторінка була відкрита без вибору товару. Повернись у каталог і відкрий потрібну картку ще раз.</p>
+            <button class="product-primary-btn" type="button" onclick="window.location.href='index.html'">Перейти в каталог</button>
+          </section>
+        `;
+        return;
+      }
+
+      const imageSrc = sanitizeImage(product.img);
+      const categoryName = getCategoryName(product.category);
+      const discount = getDiscountPercent(product.old, product.price);
+      const description = product.description || 'Якісний дитячий товар для щоденного використання.';
+      if (crumb) crumb.textContent = product.name || 'Товар';
+      document.title = `Kids Room — ${product.name || 'Товар'}`;
+
+      container.innerHTML = `
+        <section class="product-layout">
+          <div class="product-gallery">
+            <div class="product-gallery-frame">
+              <img id="product-main-image" class="product-main-image" src="${imageSrc}" alt="${product.name}" onerror="this.onerror=null;this.src=fallbackImage();">
+              <div class="product-image-chip">🧸 ${categoryName}</div>
+            </div>
+          </div>
+
+          <article class="product-info-card">
+            <div class="product-badges">
+              <span class="product-badge">📦 Швидка обробка замовлення</span>
+              <span class="product-badge">🛡️ Перевірений товар</span>
+            </div>
+
+            <h1 class="product-title">${product.name}</h1>
+
+            <div class="product-price-row">
+              <div class="product-price-current">${product.price} грн</div>
+              ${Number(product.old) > Number(product.price) ? `<div class="product-price-old">${product.old} грн</div>` : ''}
+              ${discount ? `<div class="product-discount">-${discount}%</div>` : ''}
+            </div>
+
+            <p class="product-desc">${description}</p>
+
+            <ul class="product-feature-list">
+              <li><strong>Категорія</strong>${categoryName}</li>
+              <li><strong>Доставка</strong>Нова пошта або Укрпошта по Україні</li>
+              <li><strong>Оплата</strong>Підтвердження замовлення через сайт</li>
+              <li><strong>Наявність</strong>Актуальна на момент перегляду сторінки</li>
+            </ul>
+
+            <div class="product-buy-box">
+              <div class="product-buy-top">
+                <div class="product-stock">✅ Є в наявності</div>
+                <div class="product-qty">
+                  <span class="product-qty-label">Кількість</span>
+                  <div class="product-qty-control">
+                    <button type="button" onclick="minus('${product.id}')">−</button>
+                    <input id="qty-${product.id}" type="number" value="1" min="1" inputmode="numeric">
+                    <button type="button" onclick="plus('${product.id}')">+</button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="product-actions">
+                <button class="product-primary-btn" type="button" onclick="handleProductAddToCart('${product.id}')">🛒 Додати в кошик</button>
+                <button class="product-secondary-btn" type="button" onclick="goBack()">← Повернутись до товарів</button>
+              </div>
+
+              <div class="product-note">Після натискання товар одразу додається в кошик. Усі попередні зміни по корзині, категоріях і мобільній адаптації залишаються без змін.</div>
+            </div>
+          </article>
+        </section>
+      `;
+    }
+
+    function handleProductAddToCart(id){
+      animateToCartFromProduct();
+      if (typeof addToCart === 'function') {
+        addToCart(id);
+      }
+      setTimeout(updateProductCartCount, 120);
+    }
+
+    renderProductPage();
+    updateProductCartCount();
+
+    window.addEventListener('storage', event => {
+      if (event.key === 'cart') updateProductCartCount();
+      if (event.key === 'products') renderProductPage();
+    });
+
+    window.addEventListener('products:updated', renderProductPage);
+    window.addEventListener('cart:updated', updateProductCartCount);
+  </script>
 </body>
 </html>
