@@ -1,880 +1,598 @@
 <!DOCTYPE html>
 <html lang="uk">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Kids Room CRM</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<style>
-:root{
-    --bg:#f4f7fb;
-    --card:#ffffff;
-    --line:#e7ebf3;
-    --text:#1f2937;
-    --muted:#6b7280;
-    --primary:#4f73ff;
-    --accent:#ff8f3d;
-    --danger:#e05757;
-    --success:#1fa971;
-    --warning:#f4b740;
-    --shadow:0 12px 35px rgba(31,41,55,0.08);
-    --radius:18px;
-}
-*{box-sizing:border-box}
-body{
-    margin:0;
-    font-family:'Inter',Arial,sans-serif;
-    background:var(--bg);
-    color:var(--text);
-}
-button,input,select,textarea{font:inherit}
-button{
-    border:none;
-    cursor:pointer;
-    border-radius:14px;
-    padding:12px 18px;
-    font-weight:700;
-}
-input,select,textarea{
-    width:100%;
-    border:1px solid var(--line);
-    border-radius:14px;
-    padding:12px 14px;
-    background:#fff;
-}
-textarea{min-height:110px; resize:vertical}
-.auth-screen{
-    min-height:100vh;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    padding:24px;
-}
-.auth-card{
-    width:100%;
-    max-width:460px;
-    background:var(--card);
-    border-radius:24px;
-    box-shadow:var(--shadow);
-    padding:32px;
-}
-.auth-title{
-    margin:0 0 10px;
-    font-size:30px;
-    font-weight:800;
-}
-.auth-subtitle{
-    color:var(--muted);
-    margin:0 0 24px;
-    line-height:1.5;
-}
-.auth-actions{display:flex; gap:10px; flex-wrap:wrap; margin-top:10px}
-.btn-primary{background:var(--primary); color:#fff}
-.btn-secondary{background:#eef2ff; color:var(--primary)}
-.btn-danger{background:var(--danger); color:#fff}
-.btn-success{background:var(--success); color:#fff}
-.btn-warning{background:var(--warning); color:#2f2f2f}
-.btn-muted{background:#eef1f6; color:#374151}
-.note{font-size:14px; color:var(--muted); margin-top:12px; line-height:1.5}
-.hidden{display:none !important}
-.app{display:none; min-height:100vh}
-.sidebar{
-    position:fixed;
-    left:0;
-    top:0;
-    width:280px;
-    height:100vh;
-    background:#122033;
-    color:#fff;
-    padding:24px 18px;
-    overflow-y:auto;
-}
-.brand{
-    display:flex;
-    align-items:center;
-    gap:12px;
-    margin-bottom:28px;
-}
-.brand-badge{
-    width:46px;
-    height:46px;
-    border-radius:16px;
-    background:linear-gradient(135deg,#ff8f3d,#4f73ff);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-size:20px;
-    font-weight:800;
-}
-.brand small{display:block; color:rgba(255,255,255,0.7); margin-top:2px}
-.side-card{
-    background:rgba(255,255,255,0.08);
-    border:1px solid rgba(255,255,255,0.08);
-    border-radius:18px;
-    padding:16px;
-    margin-bottom:16px;
-}
-.side-label{font-size:13px; color:rgba(255,255,255,0.7); margin-bottom:6px}
-.side-value{font-size:16px; font-weight:700}
-.side-menu{
-    display:grid;
-    gap:8px;
-    margin-top:18px;
-}
-.side-menu button{
-    background:transparent;
-    color:#fff;
-    text-align:left;
-    padding:12px 14px;
-    border:1px solid rgba(255,255,255,0.08);
-}
-.side-menu button.active,
-.side-menu button:hover{background:rgba(255,255,255,0.1)}
-.main{
-    margin-left:280px;
-    padding:24px;
-}
-.topbar{
-    display:flex;
-    justify-content:space-between;
-    align-items:flex-start;
-    gap:16px;
-    margin-bottom:20px;
-}
-.topbar h1{margin:0 0 8px; font-size:30px}
-.topbar p{margin:0; color:var(--muted)}
-.topbar-actions{display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end}
-.grid-stats{
-    display:grid;
-    grid-template-columns:repeat(4,1fr);
-    gap:16px;
-    margin-bottom:18px;
-}
-.stat-card{
-    background:var(--card);
-    border-radius:var(--radius);
-    padding:18px;
-    box-shadow:var(--shadow);
-}
-.stat-card small{display:block; color:var(--muted); margin-bottom:8px}
-.stat-card strong{font-size:28px}
-.filters{
-    display:grid;
-    grid-template-columns:1.4fr 1fr 1fr 1fr auto;
-    gap:12px;
-    margin-bottom:18px;
-}
-.board-tabs{
-    display:flex;
-    gap:10px;
-    flex-wrap:wrap;
-    margin-bottom:18px;
-}
-.tab-btn{
-    background:#eef1f6;
-    color:#364152;
-    padding:12px 16px;
-    border-radius:14px;
-    font-weight:700;
-}
-.tab-btn.active{background:var(--primary); color:#fff}
-.content-grid{
-    display:grid;
-    grid-template-columns:1.2fr 2fr;
-    gap:18px;
-}
-.card{
-    background:var(--card);
-    border-radius:var(--radius);
-    box-shadow:var(--shadow);
-    padding:18px;
-}
-.card-header{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    gap:12px;
-    margin-bottom:14px;
-}
-.card-title{margin:0; font-size:20px}
-.orders-list{display:grid; gap:12px; max-height:calc(100vh - 290px); overflow:auto; padding-right:4px}
-.order-row{
-    border:1px solid var(--line);
-    border-radius:18px;
-    padding:14px;
-    display:grid;
-    gap:10px;
-    transition:0.2s;
-}
-.order-row:hover{border-color:#b8c4ff; transform:translateY(-1px)}
-.order-row.active{border-color:var(--primary); box-shadow:0 0 0 2px rgba(79,115,255,0.12)}
-.row-top{display:flex; justify-content:space-between; gap:10px; align-items:flex-start}
-.order-name{font-weight:700; font-size:16px}
-.badge{
-    display:inline-flex;
-    align-items:center;
-    gap:6px;
-    border-radius:999px;
-    padding:6px 10px;
-    font-size:12px;
-    font-weight:700;
-    white-space:nowrap;
-}
-.badge-new{background:#e9efff; color:#2e52d4}
-.badge-work{background:#fff4df; color:#9a6800}
-.badge-send{background:#e3fff4; color:#0a8f57}
-.badge-done{background:#e8fff6; color:#0a8f57}
-.badge-cancel{background:#ffe7e7; color:#bf3131}
-.muted{color:var(--muted)}
-.order-meta{display:grid; grid-template-columns:repeat(2,1fr); gap:8px; font-size:14px; color:#475467}
-.order-total{font-weight:800; font-size:20px; color:var(--accent)}
-.details-empty{color:var(--muted); padding:18px 0}
-.order-info-grid{display:grid; grid-template-columns:repeat(2,1fr); gap:12px; margin-bottom:16px}
-.info-box{background:#f8faff; border:1px solid var(--line); border-radius:16px; padding:14px}
-.info-box small{display:block; color:var(--muted); margin-bottom:6px}
-.info-box strong{font-size:15px; word-break:break-word}
-.order-products{display:grid; gap:10px; margin:14px 0}
-.order-product{
-    display:grid;
-    grid-template-columns:68px 1fr auto;
-    gap:12px;
-    align-items:center;
-    border:1px solid var(--line);
-    border-radius:16px;
-    padding:10px;
-}
-.order-product img{width:68px; height:68px; object-fit:cover; border-radius:12px; background:#f3f4f6}
-.product-title{font-weight:700; margin-bottom:4px}
-.panel-actions{display:flex; gap:10px; flex-wrap:wrap; margin-top:14px}
-.status-actions{display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-top:12px}
-.kpi-line{display:flex; justify-content:space-between; gap:12px; padding:8px 0; border-bottom:1px solid var(--line)}
-.kpi-line:last-child{border-bottom:none}
-.info-banner{
-    background:linear-gradient(135deg,#eef3ff,#fff8ef);
-    border:1px solid #dde5ff;
-    color:#31405c;
-    border-radius:16px;
-    padding:14px 16px;
-    margin-bottom:16px;
-    line-height:1.5;
-}
-@media (max-width: 1200px){
-    .grid-stats{grid-template-columns:repeat(2,1fr)}
-    .content-grid{grid-template-columns:1fr}
-    .orders-list{max-height:none}
-}
-@media (max-width: 920px){
-    .sidebar{position:static; width:100%; height:auto}
-    .main{margin-left:0}
-    .filters{grid-template-columns:1fr 1fr}
-    .status-actions{grid-template-columns:1fr 1fr}
-    .order-info-grid{grid-template-columns:1fr}
-}
-@media (max-width: 640px){
-    .topbar,.topbar-actions{flex-direction:column; align-items:stretch}
-    .filters{grid-template-columns:1fr}
-    .grid-stats{grid-template-columns:1fr}
-    .status-actions{grid-template-columns:1fr}
-    .order-meta{grid-template-columns:1fr}
-    .order-product{grid-template-columns:1fr}
-}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kids Room CRM Pro</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <style>
+    :root{
+      --bg:#f4f6fb;
+      --panel:#ffffff;
+      --line:#e7ebf3;
+      --text:#1f2a44;
+      --muted:#6f7a91;
+      --accent:#ff8f3d;
+      --accent-2:#5b7cff;
+      --danger:#e05650;
+      --success:#2db783;
+      --shadow:0 12px 35px rgba(31,42,68,.10);
+      --radius:18px;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:var(--text)}
+    .hidden{display:none !important}
+    .app-header{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:18px 22px;background:var(--panel);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:30}
+    .brand{display:flex;align-items:center;gap:12px}
+    .brand-badge{width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg,#ff8f3d,#ffd66e);display:flex;align-items:center;justify-content:center;color:#fff;font-size:22px;font-weight:700}
+    .brand h1{margin:0;font-size:24px}
+    .brand p{margin:2px 0 0;color:var(--muted);font-size:13px}
+    .header-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+    .header-actions button,.header-actions select,.header-actions input,.btn{border:none;border-radius:12px;padding:12px 14px;font-size:14px}
+    .btn{background:var(--accent);color:#fff;font-weight:700;cursor:pointer}
+    .btn.secondary{background:#eef2fb;color:var(--text)}
+    .btn.danger{background:var(--danger)}
+    .btn.success{background:var(--success)}
+    .btn:disabled{opacity:.5;cursor:not-allowed}
+    .layout{padding:22px}
+    .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:18px}
+    .stat-card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow)}
+    .stat-card .label{color:var(--muted);font-size:13px;margin-bottom:8px}
+    .stat-card .value{font-size:28px;font-weight:700}
+    .toolbar{display:grid;grid-template-columns:1.3fr .9fr .8fr auto;gap:12px;align-items:center;margin-bottom:18px}
+    .toolbar input,.toolbar select{width:100%;padding:14px 14px;border:1px solid var(--line);border-radius:14px;background:#fff;font-size:14px}
+    .kanban{display:grid;grid-template-columns:repeat(7,minmax(260px,1fr));gap:14px;align-items:start;overflow-x:auto;padding-bottom:14px}
+    .column{background:#eef2fb;border:1px solid #dde4f2;border-radius:20px;min-height:420px;display:flex;flex-direction:column}
+    .column-header{padding:14px 14px 10px;display:flex;align-items:center;justify-content:space-between;gap:10px;border-bottom:1px solid rgba(140,155,190,.18)}
+    .column-title{font-weight:700;font-size:15px}
+    .column-count{min-width:34px;height:34px;padding:0 10px;border-radius:999px;background:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--accent-2)}
+    .cards{padding:12px;display:flex;flex-direction:column;gap:12px;min-height:320px}
+    .cards.drag-over{background:rgba(91,124,255,.08);border-radius:18px}
+    .card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:14px;box-shadow:0 8px 18px rgba(31,42,68,.08);cursor:grab}
+    .card:active{cursor:grabbing}
+    .card-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;margin-bottom:10px}
+    .card-name{font-weight:700;font-size:15px;line-height:1.35}
+    .pill{display:inline-flex;align-items:center;justify-content:center;padding:6px 10px;border-radius:999px;background:#fff1e7;color:#d86b14;font-size:12px;font-weight:700;white-space:nowrap}
+    .card-row{display:flex;gap:8px;align-items:center;color:var(--muted);font-size:13px;margin-top:6px;line-height:1.35}
+    .card-total{margin-top:12px;font-weight:700;font-size:18px}
+    .card-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+    .mini-btn{padding:9px 11px;border:none;border-radius:10px;background:#eef2fb;color:var(--text);cursor:pointer;font-weight:700;font-size:12px}
+    .mini-btn.primary{background:var(--accent);color:#fff}
+    .mini-btn.danger{background:#ffe5e3;color:#c43e37}
+    .drawer-wrap{position:fixed;inset:0;background:rgba(10,18,34,.4);display:none;z-index:60}
+    .drawer-wrap.open{display:block}
+    .drawer{position:absolute;top:0;right:0;height:100%;width:min(760px,100%);background:#fff;box-shadow:-12px 0 40px rgba(0,0,0,.18);display:flex;flex-direction:column}
+    .drawer-head{padding:18px 20px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .drawer-head h2{margin:0;font-size:22px}
+    .drawer-body{padding:18px 20px 110px;overflow:auto}
+    .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+    .panel{background:#f8faff;border:1px solid var(--line);border-radius:18px;padding:16px;margin-bottom:14px}
+    .panel h3{margin:0 0 12px;font-size:17px}
+    .field{margin-bottom:12px}
+    .field label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
+    .field input,.field select,.field textarea{width:100%;padding:12px 13px;border:1px solid var(--line);border-radius:12px;background:#fff;font-size:14px}
+    .field textarea{min-height:92px;resize:vertical}
+    .items{display:flex;flex-direction:column;gap:10px}
+    .item{display:flex;justify-content:space-between;gap:12px;padding:12px;border-radius:14px;background:#fff;border:1px solid var(--line)}
+    .drawer-footer{position:absolute;left:0;right:0;bottom:0;padding:16px 20px;border-top:1px solid var(--line);background:#fff;display:flex;gap:10px;flex-wrap:wrap}
+    .auth-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
+    .auth-card{width:100%;max-width:460px;background:#fff;border-radius:24px;padding:28px;box-shadow:var(--shadow);border:1px solid var(--line)}
+    .auth-card h2{margin:0 0 8px;font-size:28px}
+    .auth-card p{margin:0 0 18px;color:var(--muted)}
+    .auth-card input{width:100%;padding:14px;border:1px solid var(--line);border-radius:14px;margin-bottom:12px;font-size:15px}
+    .auth-card button{width:100%;padding:14px;border:none;border-radius:14px;background:var(--accent);color:#fff;font-size:16px;font-weight:700;cursor:pointer}
+    .auth-note{margin-top:14px;font-size:13px;color:var(--muted)}
+    .muted{color:var(--muted)}
+    .empty{padding:24px;color:var(--muted);text-align:center}
+    .role-badge{padding:8px 12px;border-radius:999px;background:#eef2fb;font-weight:700;font-size:13px}
+    .history-line{padding:10px 0;border-bottom:1px dashed var(--line);font-size:14px}
+    .history-line:last-child{border-bottom:none}
+    .top-note{padding:12px 14px;border-radius:14px;background:#fff7ef;border:1px solid #ffe0c4;color:#9a5b18;margin-bottom:16px;font-size:14px}
+    @media (max-width:1200px){.stats{grid-template-columns:repeat(2,1fr)}.toolbar{grid-template-columns:1fr 1fr}.kanban{grid-template-columns:repeat(7,280px)}}
+    @media (max-width:820px){.app-header{padding:16px;align-items:flex-start}.layout{padding:16px}.stats,.toolbar,.grid-2{grid-template-columns:1fr}.drawer{width:100%}}
+  </style>
 </head>
 <body>
-<div id="authScreen" class="auth-screen">
+  <div id="authView" class="auth-wrap">
     <div class="auth-card">
-        <h1 class="auth-title">Kids Room CRM</h1>
-        <p class="auth-subtitle">Вхід для оператора та адміністратора. Замовлення із сайту автоматично потрапляють у блок “Нові”, далі їх можна вести по статусах та днях.</p>
-        <input id="email" type="email" placeholder="Email співробітника">
-        <input id="password" type="password" placeholder="Пароль">
-        <div class="auth-actions">
-            <button class="btn-primary" id="loginBtn">Увійти</button>
-            <button class="btn-secondary" id="restoreBtn">Нагадати пароль</button>
-        </div>
-        <div class="note">
-            Першого користувача потрібно створити в Supabase Auth. Роль користувача задається в таблиці <b>crm_profiles</b>.
-        </div>
-        <div class="note" id="authMessage"></div>
+      <h2>Kids Room CRM Pro</h2>
+      <p>Вхід для адміністратора та оператора.</p>
+      <input id="loginEmail" type="email" placeholder="Email">
+      <input id="loginPassword" type="password" placeholder="Пароль">
+      <button onclick="loginCRM()">Увійти</button>
+      <div id="authError" class="auth-note"></div>
     </div>
-</div>
+  </div>
 
-<div id="app" class="app">
-    <aside class="sidebar">
-        <div class="brand">
-            <div class="brand-badge">KR</div>
-            <div>
-                <div style="font-weight:800; font-size:18px;">Kids Room CRM</div>
-                <small>Панель менеджера замовлень</small>
+  <div id="appView" class="hidden">
+    <header class="app-header">
+      <div class="brand">
+        <div class="brand-badge">K</div>
+        <div>
+          <h1>Kids Room CRM Pro</h1>
+          <p>Робоча CRM для магазину: нові заявки, дні, відправки, коментарі.</p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <span id="userRoleBadge" class="role-badge">role</span>
+        <span id="userEmail" class="muted"></span>
+        <button class="btn secondary" onclick="refreshOrders()">Оновити</button>
+        <button class="btn danger" onclick="logoutCRM()">Вийти</button>
+      </div>
+    </header>
+
+    <div class="layout">
+      <div class="top-note">Оператор працює з коментарями та карткою замовлення. Адмін додатково може переносити замовлення між етапами та змінювати статуси.</div>
+
+      <section class="stats">
+        <div class="stat-card"><div class="label">Замовлень сьогодні</div><div class="value" id="statToday">0</div></div>
+        <div class="stat-card"><div class="label">У роботі зараз</div><div class="value" id="statActive">0</div></div>
+        <div class="stat-card"><div class="label">Виторг по вибірці</div><div class="value" id="statRevenue">0 грн</div></div>
+        <div class="stat-card"><div class="label">Відправлено / завершено</div><div class="value" id="statShipped">0</div></div>
+      </section>
+
+      <section class="toolbar">
+        <input id="searchInput" placeholder="Пошук: ім'я, телефон, місто" oninput="applyFilters()">
+        <select id="deliveryFilter" onchange="applyFilters()">
+          <option value="all">Вся доставка</option>
+          <option value="Нова пошта">Нова пошта</option>
+          <option value="Укрпошта">Укрпошта</option>
+        </select>
+        <select id="sortFilter" onchange="applyFilters()">
+          <option value="new">Спочатку новіші</option>
+          <option value="old">Спочатку старіші</option>
+          <option value="expensive">Сума: більші</option>
+          <option value="cheap">Сума: менші</option>
+        </select>
+        <button class="btn" onclick="refreshOrders()">Оновити дані</button>
+      </section>
+
+      <section id="kanbanBoard" class="kanban"></section>
+    </div>
+  </div>
+
+  <div id="drawerWrap" class="drawer-wrap" onclick="closeDrawer(event)">
+    <div class="drawer" onclick="event.stopPropagation()">
+      <div class="drawer-head">
+        <div>
+          <h2 id="drawerTitle">Замовлення</h2>
+          <div id="drawerSub" class="muted"></div>
+        </div>
+        <button class="btn secondary" onclick="forceCloseDrawer()">Закрити</button>
+      </div>
+      <div class="drawer-body">
+        <div class="grid-2">
+          <div>
+            <div class="panel">
+              <h3>Клієнт</h3>
+              <div class="field"><label>Ім'я</label><input id="dName" readonly></div>
+              <div class="field"><label>Телефон</label><input id="dPhone" readonly></div>
+              <div class="field"><label>Місто</label><input id="dCity" readonly></div>
+              <div class="field"><label>Доставка</label><input id="dDelivery" readonly></div>
+              <div class="field"><label>Адреса / відділення</label><textarea id="dAddress" readonly></textarea></div>
             </div>
-        </div>
 
-        <div class="side-card">
-            <div class="side-label">Користувач</div>
-            <div class="side-value" id="userFullName">—</div>
-            <div class="side-label" style="margin-top:10px;">Роль</div>
-            <div class="side-value" id="userRole">—</div>
-        </div>
-
-        <div class="side-card">
-            <div class="side-label">Швидкий перехід</div>
-            <div class="side-menu">
-                <button class="active" onclick="setGroup('new', this)">Нові</button>
-                <button onclick="setGroup('day1', this)">День 1</button>
-                <button onclick="setGroup('day2', this)">День 2</button>
-                <button onclick="setGroup('day3', this)">День 3</button>
-                <button onclick="setGroup('sent', this)">Відправлено</button>
-                <button onclick="setGroup('done', this)">Завершено</button>
-                <button onclick="setGroup('canceled', this)">Скасовано</button>
+            <div class="panel">
+              <h3>Коментарі</h3>
+              <div class="field"><label>Коментар оператора</label><textarea id="dOperatorComment" placeholder="Результат дзвінка, уточнення, домовленості"></textarea></div>
+              <div class="field"><label>Коментар адміністратора</label><textarea id="dManagerComment" placeholder="Службова нотатка, внутрішня позначка"></textarea></div>
             </div>
-        </div>
+          </div>
 
-        <div class="side-card">
-            <div class="side-label">Навігація</div>
-            <div class="side-menu">
-                <button onclick="window.location.href='admin-safe.html'">Товари та адмінка</button>
-                <button onclick="window.location.href='index.html'">Магазин</button>
-                <button onclick="logout()">Вийти з CRM</button>
+          <div>
+            <div class="panel">
+              <h3>Статус і рух замовлення</h3>
+              <div class="field"><label>Етап</label><select id="dStage"></select></div>
+              <div class="field"><label>Підпис статусу</label><input id="dStatus" placeholder="Наприклад: День 2"></div>
+              <div class="field"><label>Дата створення</label><input id="dCreated" readonly></div>
+              <div class="field"><label>Оновлено</label><input id="dUpdated" readonly></div>
+              <div class="field"><label>Сума</label><input id="dTotal" readonly></div>
             </div>
-        </div>
-    </aside>
 
-    <main class="main">
-        <div class="topbar">
-            <div>
-                <h1>Повна CRM замовлень</h1>
-                <p>Оператор працює із замовленням, додає коментар, а адміністратор рухає замовлення по днях, статусах та фінальних етапах.</p>
+            <div class="panel">
+              <h3>Товари</h3>
+              <div id="dItems" class="items"></div>
             </div>
-            <div class="topbar-actions">
-                <button class="btn-muted" onclick="loadOrders()">Оновити</button>
-                <button class="btn-primary" id="adminOnlyRefresh" onclick="openCreateUserHint()">Як додати співробітника</button>
+
+            <div class="panel">
+              <h3>Історія</h3>
+              <div id="dHistory"></div>
             </div>
+          </div>
         </div>
+      </div>
+      <div class="drawer-footer">
+        <button id="saveOrderBtn" class="btn success" onclick="saveDrawerOrder()">Зберегти</button>
+        <button id="deleteOrderBtn" class="btn danger" onclick="deleteCurrentOrder()">Видалити</button>
+      </div>
+    </div>
+  </div>
 
-        <div class="info-banner">
-            Логіка CRM: <b>Нові → День 1 → День 2 → День 3 → Відправлено / Завершено / Скасовано</b>. Оператор може залишати коментар до дзвінка. Адмін може переміщати замовлення між етапами.
-        </div>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    const SUPABASE_URL = "https://xhhzxiithajxgngmbzzd.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_cRp6r2C_3nszludByS9V9Q_sl1QlHg5";
+    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        <div class="grid-stats">
-            <div class="stat-card"><small>У вибраній папці</small><strong id="statCurrent">0</strong></div>
-            <div class="stat-card"><small>Нові замовлення</small><strong id="statNew">0</strong></div>
-            <div class="stat-card"><small>Відправлені</small><strong id="statSent">0</strong></div>
-            <div class="stat-card"><small>Загальна сума у папці</small><strong id="statSum">0 грн</strong></div>
-        </div>
+    const STAGES = {
+      new: { title: 'Нові', status: 'Новий', day: 0 },
+      day1: { title: 'День 1', status: 'День 1', day: 1 },
+      day2: { title: 'День 2', status: 'День 2', day: 2 },
+      day3: { title: 'День 3', status: 'День 3', day: 3 },
+      shipped: { title: 'Відправлено', status: 'Відправлено', day: 0 },
+      completed: { title: 'Завершено', status: 'Завершено', day: 0 },
+      cancelled: { title: 'Скасовано', status: 'Скасовано', day: 0 }
+    };
 
-        <div class="board-tabs" id="groupTabs"></div>
+    const STAGE_ORDER = ['new','day1','day2','day3','shipped','completed','cancelled'];
 
-        <div class="filters">
-            <input id="searchInput" placeholder="Пошук: ім'я, телефон, місто, відділення">
-            <select id="deliveryFilter">
-                <option value="">Уся доставка</option>
-                <option value="Нова пошта">Нова пошта</option>
-                <option value="Укрпошта">Укрпошта</option>
-            </select>
-            <select id="statusFilter">
-                <option value="">Усі статуси</option>
-                <option value="Новий">Новий</option>
-                <option value="В роботі">В роботі</option>
-                <option value="Відправлено">Відправлено</option>
-                <option value="Завершено">Завершено</option>
-                <option value="Скасовано">Скасовано</option>
-            </select>
-            <select id="sortFilter">
-                <option value="newest">Спочатку нові</option>
-                <option value="oldest">Спочатку старі</option>
-                <option value="expensive">Найдорожчі</option>
-                <option value="cheap">Найдешевші</option>
-            </select>
-            <button class="btn-muted" onclick="clearFilters()">Очистити</button>
-        </div>
+    let currentUser = null;
+    let currentProfile = null;
+    let allOrders = [];
+    let filteredOrders = [];
+    let selectedOrder = null;
+    let draggingOrderId = null;
 
-        <div class="content-grid">
-            <section class="card">
-                <div class="card-header">
-                    <h2 class="card-title">Список замовлень</h2>
-                    <span class="muted" id="ordersCountText">0 замовлень</span>
-                </div>
-                <div class="orders-list" id="ordersList"></div>
-            </section>
-
-            <section class="card">
-                <div class="card-header">
-                    <h2 class="card-title">Картка замовлення</h2>
-                    <span class="muted" id="detailStatusText">Нічого не відкрито</span>
-                </div>
-                <div id="orderDetails" class="details-empty">Оберіть замовлення зліва, щоб побачити повну картку.</div>
-            </section>
-        </div>
-    </main>
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script>
-const SUPABASE_URL = "https://xhhzxiithajxgngmbzzd.supabase.co";
-const SUPABASE_ANON_KEY = "sb_publishable_cRp6r2C_3nszludByS9V9Q_sl1QlHg5";
-const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-const GROUPS = [
-    { key: "new", title: "Нові", status: "Новий", badgeClass: "badge-new", dayBucket: 0 },
-    { key: "day1", title: "День 1", status: "В роботі", badgeClass: "badge-work", dayBucket: 1 },
-    { key: "day2", title: "День 2", status: "В роботі", badgeClass: "badge-work", dayBucket: 2 },
-    { key: "day3", title: "День 3", status: "В роботі", badgeClass: "badge-work", dayBucket: 3 },
-    { key: "sent", title: "Відправлено", status: "Відправлено", badgeClass: "badge-send", dayBucket: null },
-    { key: "done", title: "Завершено", status: "Завершено", badgeClass: "badge-done", dayBucket: null },
-    { key: "canceled", title: "Скасовано", status: "Скасовано", badgeClass: "badge-cancel", dayBucket: null }
-];
-
-let sessionUser = null;
-let profile = null;
-let orders = [];
-let filteredOrders = [];
-let activeGroup = "new";
-let selectedOrderId = null;
-
-const authScreen = document.getElementById("authScreen");
-const app = document.getElementById("app");
-const authMessage = document.getElementById("authMessage");
-
-function showAuthMessage(text, isError = false) {
-    authMessage.textContent = text || "";
-    authMessage.style.color = isError ? "#bf3131" : "#6b7280";
-}
-
-function groupInfo(key) {
-    return GROUPS.find(item => item.key === key) || GROUPS[0];
-}
-
-function formatMoney(value) {
-    return `${Number(value || 0).toLocaleString("uk-UA")} грн`;
-}
-
-function formatDate(value) {
-    if (!value) return "-";
-    const date = new Date(value);
-    if (Number.isNaN(date.getTime())) return "-";
-    return date.toLocaleString("uk-UA");
-}
-
-function renderTabs() {
-    const root = document.getElementById("groupTabs");
-    root.innerHTML = "";
-
-    GROUPS.forEach(group => {
-        const button = document.createElement("button");
-        button.className = `tab-btn ${group.key === activeGroup ? "active" : ""}`;
-        const count = orders.filter(order => (order.status_group || "new") === group.key).length;
-        button.textContent = `${group.title} ${count}`;
-        button.onclick = () => setGroup(group.key);
-        root.appendChild(button);
-    });
-}
-
-function setGroup(key, buttonEl = null) {
-    activeGroup = key;
-    document.querySelectorAll('.side-menu button').forEach(btn => btn.classList.remove('active'));
-    if (buttonEl) buttonEl.classList.add('active');
-    else {
-        document.querySelectorAll('.side-menu button').forEach(btn => {
-            if (btn.textContent.trim().startsWith(groupInfo(key).title)) btn.classList.add('active');
-        });
-    }
-    renderTabs();
-    applyFilters();
-}
-
-function clearFilters() {
-    document.getElementById("searchInput").value = "";
-    document.getElementById("deliveryFilter").value = "";
-    document.getElementById("statusFilter").value = "";
-    document.getElementById("sortFilter").value = "newest";
-    applyFilters();
-}
-
-function applyFilters() {
-    const search = document.getElementById("searchInput").value.trim().toLowerCase();
-    const delivery = document.getElementById("deliveryFilter").value;
-    const status = document.getElementById("statusFilter").value;
-    const sort = document.getElementById("sortFilter").value;
-
-    filteredOrders = orders
-        .filter(order => (order.status_group || "new") === activeGroup)
-        .filter(order => {
-            if (!delivery) return true;
-            return (order.delivery || "") === delivery;
-        })
-        .filter(order => {
-            if (!status) return true;
-            return (order.status || "") === status;
-        })
-        .filter(order => {
-            if (!search) return true;
-            const haystack = [
-                order.name,
-                order.phone,
-                order.city,
-                order.address,
-                order.delivery,
-                order.operator_comment,
-                order.manager_comment
-            ].join(" ").toLowerCase();
-            return haystack.includes(search);
-        });
-
-    if (sort === "newest") {
-        filteredOrders.sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
-    }
-    if (sort === "oldest") {
-        filteredOrders.sort((a, b) => new Date(a.created_at || 0) - new Date(b.created_at || 0));
-    }
-    if (sort === "expensive") {
-        filteredOrders.sort((a, b) => Number(b.total || 0) - Number(a.total || 0));
-    }
-    if (sort === "cheap") {
-        filteredOrders.sort((a, b) => Number(a.total || 0) - Number(b.total || 0));
+    function formatMoney(value) {
+      const num = Number(value || 0);
+      return num.toLocaleString('uk-UA') + ' грн';
     }
 
-    renderOrdersList();
-    renderStats();
-
-    if (selectedOrderId) {
-        const exists = filteredOrders.find(item => item.id === selectedOrderId) || orders.find(item => item.id === selectedOrderId);
-        if (exists) renderOrderDetails(exists);
-        else {
-            selectedOrderId = null;
-            document.getElementById("orderDetails").innerHTML = 'Оберіть замовлення зліва, щоб побачити повну картку.';
-        }
+    function formatDate(value) {
+      if (!value) return '-';
+      const d = new Date(value);
+      if (isNaN(d.getTime())) return value;
+      return d.toLocaleString('uk-UA');
     }
-}
 
-function renderStats() {
-    document.getElementById("statCurrent").textContent = filteredOrders.length;
-    document.getElementById("statNew").textContent = orders.filter(order => (order.status_group || "new") === "new").length;
-    document.getElementById("statSent").textContent = orders.filter(order => (order.status_group || "new") === "sent").length;
-    const sum = filteredOrders.reduce((acc, item) => acc + Number(item.total || 0), 0);
-    document.getElementById("statSum").textContent = formatMoney(sum);
-    document.getElementById("ordersCountText").textContent = `${filteredOrders.length} замовлень`;
-}
+    function getOrderName(order) {
+      return order.name || [order.customer_first_name, order.customer_last_name].filter(Boolean).join(' ') || 'Без імені';
+    }
 
-function rowBadgeClass(order) {
-    const info = groupInfo(order.status_group || "new");
-    return info.badgeClass;
-}
+    function normalizeStage(order) {
+      if (order.status_group && STAGES[order.status_group]) return order.status_group;
+      const status = String(order.status || '').toLowerCase();
+      if (status.includes('день 1')) return 'day1';
+      if (status.includes('день 2')) return 'day2';
+      if (status.includes('день 3')) return 'day3';
+      if (status.includes('відправ')) return 'shipped';
+      if (status.includes('заверш')) return 'completed';
+      if (status.includes('скас') || status.includes('відм')) return 'cancelled';
+      return 'new';
+    }
 
-function renderOrdersList() {
-    const root = document.getElementById("ordersList");
-    root.innerHTML = "";
+    function stageToPayload(stageKey) {
+      const config = STAGES[stageKey] || STAGES.new;
+      return {
+        status_group: stageKey,
+        day_bucket: config.day,
+        status: config.status,
+        moved_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      };
+    }
 
-    if (!filteredOrders.length) {
-        root.innerHTML = `<div class="details-empty">У цьому розділі поки що немає замовлень.</div>`;
+    async function loginCRM() {
+      const email = document.getElementById('loginEmail').value.trim();
+      const password = document.getElementById('loginPassword').value.trim();
+      const errorBox = document.getElementById('authError');
+      errorBox.textContent = '';
+
+      if (!email || !password) {
+        errorBox.textContent = 'Вкажіть email і пароль.';
         return;
-    }
+      }
 
-    filteredOrders.forEach(order => {
-        const row = document.createElement("div");
-        row.className = `order-row ${selectedOrderId === order.id ? 'active' : ''}`;
-        row.onclick = () => {
-            selectedOrderId = order.id;
-            renderOrdersList();
-            renderOrderDetails(order);
-        };
-
-        row.innerHTML = `
-            <div class="row-top">
-                <div>
-                    <div class="order-name">${order.name || "Без імені"}</div>
-                    <div class="muted">${order.phone || "Без телефону"}</div>
-                </div>
-                <span class="badge ${rowBadgeClass(order)}">${groupInfo(order.status_group || "new").title}</span>
-            </div>
-            <div class="order-meta">
-                <div>📍 ${order.city || "-"}</div>
-                <div>🚚 ${order.delivery || "-"}</div>
-                <div>🕒 ${formatDate(order.created_at)}</div>
-                <div>📦 ${Array.isArray(order.items) ? order.items.length : 0} товар(ів)</div>
-            </div>
-            <div class="row-top">
-                <div class="muted">${order.address || "Адреса не вказана"}</div>
-                <div class="order-total">${formatMoney(order.total)}</div>
-            </div>
-        `;
-        root.appendChild(row);
-    });
-}
-
-function renderOrderDetails(order) {
-    const root = document.getElementById("orderDetails");
-    document.getElementById("detailStatusText").textContent = `${groupInfo(order.status_group || "new").title} · ${order.status || "Новий"}`;
-
-    const itemsHtml = Array.isArray(order.items) && order.items.length
-        ? order.items.map(item => `
-            <div class="order-product">
-                <img src="${item.img || ''}" alt="${item.name || 'Товар'}">
-                <div>
-                    <div class="product-title">${item.name || 'Товар'}</div>
-                    <div class="muted">${item.qty || 1} × ${item.price || 0} грн</div>
-                </div>
-                <div style="font-weight:800;">${formatMoney((item.qty || 1) * (item.price || 0))}</div>
-            </div>
-        `).join('')
-        : `<div class="details-empty">У замовленні немає товарів.</div>`;
-
-    const isAdmin = profile?.role === 'admin';
-
-    root.innerHTML = `
-        <div class="order-info-grid">
-            <div class="info-box"><small>ПІБ клієнта</small><strong>${order.name || '-'}</strong></div>
-            <div class="info-box"><small>Телефон</small><strong>${order.phone || '-'}</strong></div>
-            <div class="info-box"><small>Місто</small><strong>${order.city || '-'}</strong></div>
-            <div class="info-box"><small>Доставка</small><strong>${order.delivery || '-'}</strong></div>
-            <div class="info-box"><small>Відділення / адреса</small><strong>${order.address || '-'}</strong></div>
-            <div class="info-box"><small>Дата створення</small><strong>${formatDate(order.created_at)}</strong></div>
-        </div>
-
-        <div class="info-banner" style="margin-bottom:12px;">
-            <b>Поточний етап:</b> ${groupInfo(order.status_group || 'new').title}. <b>Статус:</b> ${order.status || 'Новий'}.
-            ${isAdmin ? 'Ти увійшов як адміністратор і можеш рухати замовлення по етапах.' : 'Ти увійшов як оператор і можеш залишати коментар та працювати з карткою.'}
-        </div>
-
-        <div class="card" style="box-shadow:none; padding:0; background:transparent;">
-            <div class="card-header" style="margin-top:6px;">
-                <h3 class="card-title">Товари у замовленні</h3>
-                <strong>${formatMoney(order.total)}</strong>
-            </div>
-            <div class="order-products">${itemsHtml}</div>
-        </div>
-
-        <div class="card" style="box-shadow:none; padding:0; background:transparent;">
-            <div class="card-header"><h3 class="card-title">Коментарі</h3></div>
-            <label class="muted">Коментар оператора</label>
-            <textarea id="operatorComment">${order.operator_comment || ''}</textarea>
-            <div style="height:10px"></div>
-            <label class="muted">Службова примітка адміністратора</label>
-            <textarea id="managerComment" ${isAdmin ? '' : 'disabled'}>${order.manager_comment || ''}</textarea>
-            <div class="panel-actions">
-                <button class="btn-primary" onclick="saveComments('${order.id}')">Зберегти коментар</button>
-                <button class="btn-muted" onclick="copyPhone('${order.phone || ''}')">Скопіювати телефон</button>
-            </div>
-        </div>
-
-        <div class="card" style="box-shadow:none; padding:0; background:transparent; margin-top:16px;">
-            <div class="card-header"><h3 class="card-title">Керування статусом</h3></div>
-            <div class="status-actions">
-                <button class="btn-secondary" ${isAdmin ? '' : 'disabled'} onclick="moveOrder('${order.id}','new')">У Нові</button>
-                <button class="btn-warning" ${isAdmin ? '' : 'disabled'} onclick="moveOrder('${order.id}','day1')">У День 1</button>
-                <button class="btn-warning" ${isAdmin ? '' : 'disabled'} onclick="moveOrder('${order.id}','day2')">У День 2</button>
-                <button class="btn-warning" ${isAdmin ? '' : 'disabled'} onclick="moveOrder('${order.id}','day3')">У День 3</button>
-                <button class="btn-success" ${isAdmin ? '' : 'disabled'} onclick="moveOrder('${order.id}','sent')">Відправлено</button>
-                <button class="btn-success" ${isAdmin ? '' : 'disabled'} onclick="moveOrder('${order.id}','done')">Завершено</button>
-                <button class="btn-danger" ${isAdmin ? '' : 'disabled'} onclick="moveOrder('${order.id}','canceled')">Скасовано</button>
-            </div>
-        </div>
-
-        <div class="card" style="box-shadow:none; padding:0; background:transparent; margin-top:16px;">
-            <div class="card-header"><h3 class="card-title">Інформація по замовленню</h3></div>
-            <div class="kpi-line"><span class="muted">Джерело</span><strong>${order.source || 'website'}</strong></div>
-            <div class="kpi-line"><span class="muted">Статус</span><strong>${order.status || '-'}</strong></div>
-            <div class="kpi-line"><span class="muted">Група CRM</span><strong>${groupInfo(order.status_group || 'new').title}</strong></div>
-            <div class="kpi-line"><span class="muted">День на пошті</span><strong>${Number(order.day_bucket || 0)}</strong></div>
-        </div>
-    `;
-}
-
-function copyPhone(phone) {
-    if (!phone) return;
-    navigator.clipboard.writeText(phone);
-    alert('Телефон скопійовано');
-}
-
-async function saveComments(orderId) {
-    try {
-        const operatorComment = document.getElementById('operatorComment').value.trim();
-        const managerCommentEl = document.getElementById('managerComment');
-        const managerComment = managerCommentEl ? managerCommentEl.value.trim() : '';
-
-        const payload = {
-            operator_comment: operatorComment,
-            updated_at: new Date().toISOString()
-        };
-
-        if (profile?.role === 'admin') {
-            payload.manager_comment = managerComment;
-        }
-
-        const { error } = await supabaseClient.from('orders').update(payload).eq('id', orderId);
-        if (error) throw error;
-
-        await loadOrders(false);
-        alert('Коментар збережено');
-    } catch (error) {
-        console.error(error);
-        alert('Не вдалося зберегти коментар');
-    }
-}
-
-async function moveOrder(orderId, groupKey) {
-    if (profile?.role !== 'admin') {
-        alert('Тільки адміністратор може рухати замовлення по етапах');
+      const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+      if (error) {
+        errorBox.textContent = error.message;
         return;
+      }
+      await bootCRM();
     }
 
-    const info = groupInfo(groupKey);
-
-    try {
-        const { error } = await supabaseClient
-            .from('orders')
-            .update({
-                status_group: info.key,
-                status: info.status,
-                day_bucket: info.dayBucket === null ? null : info.dayBucket,
-                moved_at: new Date().toISOString(),
-                updated_at: new Date().toISOString()
-            })
-            .eq('id', orderId);
-
-        if (error) throw error;
-
-        selectedOrderId = orderId;
-        activeGroup = info.key;
-        await loadOrders(false);
-    } catch (error) {
-        console.error(error);
-        alert('Не вдалося змінити статус');
-    }
-}
-
-async function loadOrders(withLoader = true) {
-    if (withLoader) {
-        document.getElementById('ordersList').innerHTML = '<div class="details-empty">Завантаження замовлень...</div>';
+    async function logoutCRM() {
+      await supabaseClient.auth.signOut();
+      currentUser = null;
+      currentProfile = null;
+      document.getElementById('appView').classList.add('hidden');
+      document.getElementById('authView').classList.remove('hidden');
     }
 
-    const { data, error } = await supabaseClient
+    async function bootCRM() {
+      const { data: sessionData } = await supabaseClient.auth.getSession();
+      currentUser = sessionData.session?.user || null;
+
+      if (!currentUser) {
+        document.getElementById('authView').classList.remove('hidden');
+        document.getElementById('appView').classList.add('hidden');
+        return;
+      }
+
+      const { data: profile } = await supabaseClient
+        .from('crm_profiles')
+        .select('*')
+        .eq('id', currentUser.id)
+        .maybeSingle();
+
+      currentProfile = profile || { role: 'operator', full_name: '', email: currentUser.email };
+      document.getElementById('userRoleBadge').textContent = currentProfile.role === 'admin' ? 'Адмін' : 'Оператор';
+      document.getElementById('userEmail').textContent = currentUser.email;
+      document.getElementById('authView').classList.add('hidden');
+      document.getElementById('appView').classList.remove('hidden');
+      renderStageOptions();
+      refreshOrders();
+    }
+
+    function renderStageOptions() {
+      const select = document.getElementById('dStage');
+      select.innerHTML = STAGE_ORDER.map(key => `<option value="${key}">${STAGES[key].title}</option>`).join('');
+    }
+
+    async function refreshOrders() {
+      const { data, error } = await supabaseClient
         .from('orders')
         .select('*')
         .order('created_at', { ascending: false });
 
-    if (error) {
-        console.error(error);
-        document.getElementById('ordersList').innerHTML = '<div class="details-empty">Помилка завантаження замовлень.</div>';
+      if (error) {
+        alert('Помилка завантаження CRM: ' + error.message);
         return;
+      }
+
+      allOrders = (data || []).map(order => ({ ...order, status_group: normalizeStage(order) }));
+      applyFilters();
     }
 
-    orders = (data || []).map(order => ({
-        ...order,
-        status_group: order.status_group || 'new',
-        status: order.status || 'Новий',
-        operator_comment: order.operator_comment || '',
-        manager_comment: order.manager_comment || '',
-        day_bucket: order.day_bucket ?? 0
-    }));
+    function applyFilters() {
+      const q = document.getElementById('searchInput').value.trim().toLowerCase();
+      const delivery = document.getElementById('deliveryFilter').value;
+      const sort = document.getElementById('sortFilter').value;
 
-    renderTabs();
-    applyFilters();
+      filteredOrders = allOrders.filter(order => {
+        const text = [getOrderName(order), order.phone, order.city, order.address].join(' ').toLowerCase();
+        const qOk = !q || text.includes(q);
+        const dOk = delivery === 'all' || order.delivery === delivery;
+        return qOk && dOk;
+      });
 
-    if (!selectedOrderId && orders.length) {
-        selectedOrderId = orders[0].id;
-        renderOrderDetails(orders[0]);
+      filteredOrders.sort((a,b) => {
+        if (sort === 'old') return new Date(a.created_at) - new Date(b.created_at);
+        if (sort === 'expensive') return Number(b.total || 0) - Number(a.total || 0);
+        if (sort === 'cheap') return Number(a.total || 0) - Number(b.total || 0);
+        return new Date(b.created_at) - new Date(a.created_at);
+      });
+
+      renderStats();
+      renderKanban();
     }
-}
 
-async function loadProfile(userId) {
-    const { data, error } = await supabaseClient
-        .from('crm_profiles')
-        .select('*')
-        .eq('id', userId)
-        .single();
+    function renderStats() {
+      const today = new Date().toDateString();
+      const todayCount = filteredOrders.filter(o => new Date(o.created_at).toDateString() === today).length;
+      const activeCount = filteredOrders.filter(o => ['new','day1','day2','day3'].includes(o.status_group)).length;
+      const revenue = filteredOrders.reduce((sum,o) => sum + Number(o.total || 0), 0);
+      const shipped = filteredOrders.filter(o => ['shipped','completed'].includes(o.status_group)).length;
 
-    if (error) throw error;
+      document.getElementById('statToday').textContent = todayCount;
+      document.getElementById('statActive').textContent = activeCount;
+      document.getElementById('statRevenue').textContent = formatMoney(revenue);
+      document.getElementById('statShipped').textContent = shipped;
+    }
 
-    profile = data;
-    document.getElementById('userFullName').textContent = profile.full_name || sessionUser.email;
-    document.getElementById('userRole').textContent = profile.role === 'admin' ? 'Адміністратор' : 'Оператор';
-    document.getElementById('adminOnlyRefresh').textContent = profile.role === 'admin' ? 'Як додати співробітника' : 'Довідка по ролях';
-}
+    function renderKanban() {
+      const board = document.getElementById('kanbanBoard');
+      board.innerHTML = '';
 
-function openCreateUserHint() {
-    const message = profile?.role === 'admin'
-        ? 'Нових співробітників додавай у Supabase → Authentication → Users, а роль задавай у таблиці crm_profiles.'
-        : 'Оператор може працювати з карткою замовлення та коментарем. Переміщення по днях доступне адміну.';
-    alert(message);
-}
+      STAGE_ORDER.forEach(stageKey => {
+        const stageOrders = filteredOrders.filter(order => order.status_group === stageKey);
+        const column = document.createElement('div');
+        column.className = 'column';
+        column.innerHTML = `
+          <div class="column-header">
+            <div class="column-title">${STAGES[stageKey].title}</div>
+            <div class="column-count">${stageOrders.length}</div>
+          </div>
+          <div class="cards" data-stage="${stageKey}"></div>
+        `;
 
-async function showApp(user) {
-    sessionUser = user;
-    await loadProfile(user.id);
-    authScreen.style.display = 'none';
-    app.style.display = 'block';
-    await loadOrders();
-}
+        const cardsWrap = column.querySelector('.cards');
+        cardsWrap.addEventListener('dragover', onColumnDragOver);
+        cardsWrap.addEventListener('dragleave', onColumnDragLeave);
+        cardsWrap.addEventListener('drop', onColumnDrop);
 
-async function logout() {
-    await supabaseClient.auth.signOut();
-    location.reload();
-}
+        if (!stageOrders.length) {
+          cardsWrap.innerHTML = '<div class="empty">Поки немає замовлень</div>';
+        } else {
+          stageOrders.forEach(order => cardsWrap.appendChild(createCard(order)));
+        }
 
-document.getElementById('loginBtn').addEventListener('click', async () => {
-    const email = document.getElementById('email').value.trim();
-    const password = document.getElementById('password').value.trim();
+        board.appendChild(column);
+      });
+    }
 
-    if (!email || !password) {
-        showAuthMessage('Вкажи email і пароль', true);
+    function createCard(order) {
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.draggable = currentProfile?.role === 'admin';
+      card.dataset.id = order.id;
+      card.innerHTML = `
+        <div class="card-top">
+          <div class="card-name">${escapeHtml(getOrderName(order))}</div>
+          <div class="pill">${escapeHtml(order.delivery || 'Доставка')}</div>
+        </div>
+        <div class="card-row">📞 ${escapeHtml(order.phone || '-')}</div>
+        <div class="card-row">📍 ${escapeHtml(order.city || '-')}</div>
+        <div class="card-row">🕒 ${escapeHtml(formatDate(order.created_at))}</div>
+        <div class="card-total">${escapeHtml(formatMoney(order.total || 0))}</div>
+        <div class="card-actions">
+          <button class="mini-btn primary" type="button">Відкрити</button>
+          ${currentProfile?.role === 'admin' ? '<button class="mini-btn" type="button">Перенести</button>' : ''}
+        </div>
+      `;
+
+      card.querySelector('.mini-btn.primary').onclick = () => openOrder(order.id);
+      if (currentProfile?.role === 'admin') {
+        const moveBtn = card.querySelectorAll('.mini-btn')[1];
+        moveBtn.onclick = () => quickMove(order.id);
+        card.addEventListener('dragstart', () => draggingOrderId = order.id);
+        card.addEventListener('dragend', () => draggingOrderId = null);
+      }
+      return card;
+    }
+
+    async function quickMove(orderId) {
+      const order = allOrders.find(o => o.id === orderId);
+      if (!order) return;
+      const index = STAGE_ORDER.indexOf(order.status_group);
+      const next = STAGE_ORDER[Math.min(index + 1, STAGE_ORDER.length - 1)];
+      if (next === order.status_group) return;
+      await moveOrderToStage(orderId, next);
+    }
+
+    function onColumnDragOver(e) {
+      if (currentProfile?.role !== 'admin') return;
+      e.preventDefault();
+      e.currentTarget.classList.add('drag-over');
+    }
+    function onColumnDragLeave(e) { e.currentTarget.classList.remove('drag-over'); }
+    async function onColumnDrop(e) {
+      if (currentProfile?.role !== 'admin') return;
+      e.preventDefault();
+      e.currentTarget.classList.remove('drag-over');
+      const stage = e.currentTarget.dataset.stage;
+      if (draggingOrderId && stage) await moveOrderToStage(draggingOrderId, stage);
+    }
+
+    async function moveOrderToStage(orderId, stageKey) {
+      const order = allOrders.find(o => o.id === orderId);
+      if (!order) return;
+      const payload = stageToPayload(stageKey);
+      const { error } = await supabaseClient.from('orders').update(payload).eq('id', orderId);
+      if (error) {
+        alert('Не вдалося перенести замовлення: ' + error.message);
         return;
+      }
+      await refreshOrders();
+      if (selectedOrder?.id === orderId) {
+        openOrder(orderId);
+      }
     }
 
-    showAuthMessage('Перевіряю дані...');
+    function buildHistory(order) {
+      const lines = [];
+      lines.push(`Створено: ${formatDate(order.created_at)}`);
+      if (order.moved_at) lines.push(`Останнє переміщення: ${formatDate(order.moved_at)}`);
+      if (order.updated_at) lines.push(`Останнє оновлення: ${formatDate(order.updated_at)}`);
+      lines.push(`Етап: ${STAGES[order.status_group]?.title || order.status || 'Новий'}`);
+      return lines;
+    }
 
-    const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+    function openOrder(orderId) {
+      const order = allOrders.find(o => o.id === orderId);
+      if (!order) return;
+      selectedOrder = order;
 
-    if (error) {
-        showAuthMessage(error.message, true);
+      document.getElementById('drawerTitle').textContent = getOrderName(order);
+      document.getElementById('drawerSub').textContent = `Замовлення #${order.id}`;
+      document.getElementById('dName').value = getOrderName(order);
+      document.getElementById('dPhone').value = order.phone || '';
+      document.getElementById('dCity').value = order.city || '';
+      document.getElementById('dDelivery').value = order.delivery || '';
+      document.getElementById('dAddress').value = order.address || '';
+      document.getElementById('dOperatorComment').value = order.operator_comment || '';
+      document.getElementById('dManagerComment').value = order.manager_comment || '';
+      document.getElementById('dStage').value = order.status_group;
+      document.getElementById('dStatus').value = order.status || STAGES[order.status_group]?.status || 'Новий';
+      document.getElementById('dCreated').value = formatDate(order.created_at);
+      document.getElementById('dUpdated').value = formatDate(order.updated_at);
+      document.getElementById('dTotal').value = formatMoney(order.total || 0);
+
+      document.getElementById('dItems').innerHTML = Array.isArray(order.items) && order.items.length
+        ? order.items.map(item => `
+          <div class="item">
+            <div>
+              <div><strong>${escapeHtml(item.name || 'Товар')}</strong></div>
+              <div class="muted">${escapeHtml(String(item.qty || 1))} × ${escapeHtml(String(item.price || 0))} грн</div>
+            </div>
+            <div><strong>${escapeHtml(String((item.qty || 1) * (item.price || 0)))} грн</strong></div>
+          </div>`).join('')
+        : '<div class="empty">Немає товарів</div>';
+
+      document.getElementById('dHistory').innerHTML = buildHistory(order).map(line => `<div class="history-line">${escapeHtml(line)}</div>`).join('');
+
+      const isAdmin = currentProfile?.role === 'admin';
+      document.getElementById('dManagerComment').disabled = !isAdmin;
+      document.getElementById('dStage').disabled = !isAdmin;
+      document.getElementById('dStatus').readOnly = !isAdmin;
+      document.getElementById('deleteOrderBtn').classList.toggle('hidden', !isAdmin);
+
+      document.getElementById('drawerWrap').classList.add('open');
+    }
+
+    async function saveDrawerOrder() {
+      if (!selectedOrder) return;
+      const isAdmin = currentProfile?.role === 'admin';
+      const stage = document.getElementById('dStage').value;
+
+      const payload = {
+        operator_comment: document.getElementById('dOperatorComment').value.trim(),
+        updated_at: new Date().toISOString()
+      };
+
+      if (isAdmin) {
+        payload.manager_comment = document.getElementById('dManagerComment').value.trim();
+        payload.status_group = stage;
+        payload.status = document.getElementById('dStatus').value.trim() || STAGES[stage]?.status || 'Новий';
+        payload.day_bucket = STAGES[stage]?.day || 0;
+        payload.moved_at = new Date().toISOString();
+      }
+
+      const { error } = await supabaseClient.from('orders').update(payload).eq('id', selectedOrder.id);
+      if (error) {
+        alert('Не вдалося зберегти замовлення: ' + error.message);
         return;
+      }
+
+      await refreshOrders();
+      openOrder(selectedOrder.id);
+      alert('Зміни збережено ✅');
     }
 
-    try {
-        await showApp(data.user);
-    } catch (profileError) {
-        console.error(profileError);
-        showAuthMessage('Вхід є, але профіль співробітника не знайдено в crm_profiles', true);
-        await supabaseClient.auth.signOut();
-    }
-});
-
-document.getElementById('restoreBtn').addEventListener('click', async () => {
-    const email = document.getElementById('email').value.trim();
-    if (!email) {
-        showAuthMessage('Спочатку введи email', true);
+    async function deleteCurrentOrder() {
+      if (currentProfile?.role !== 'admin' || !selectedOrder) return;
+      if (!confirm('Видалити замовлення?')) return;
+      const { error } = await supabaseClient.from('orders').delete().eq('id', selectedOrder.id);
+      if (error) {
+        alert('Не вдалося видалити: ' + error.message);
         return;
+      }
+      forceCloseDrawer();
+      await refreshOrders();
     }
 
-    const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/crm-panel.html`
+    function closeDrawer(e) {
+      if (e.target.id === 'drawerWrap') forceCloseDrawer();
+    }
+    function forceCloseDrawer() {
+      selectedOrder = null;
+      document.getElementById('drawerWrap').classList.remove('open');
+    }
+
+    function escapeHtml(str) {
+      return String(str ?? '')
+        .replace(/&/g,'&amp;')
+        .replace(/</g,'&lt;')
+        .replace(/>/g,'&gt;')
+        .replace(/"/g,'&quot;')
+        .replace(/'/g,'&#039;');
+    }
+
+    supabaseClient.auth.onAuthStateChange((_event, session) => {
+      if (session?.user) bootCRM();
     });
 
-    if (error) {
-        showAuthMessage(error.message, true);
-        return;
-    }
-
-    showAuthMessage('Лист для відновлення пароля відправлено.');
-});
-
-document.getElementById('searchInput').addEventListener('input', applyFilters);
-document.getElementById('deliveryFilter').addEventListener('change', applyFilters);
-document.getElementById('statusFilter').addEventListener('change', applyFilters);
-document.getElementById('sortFilter').addEventListener('change', applyFilters);
-
-(async function init() {
-    renderTabs();
-    const { data } = await supabaseClient.auth.getSession();
-    if (data?.session?.user) {
-        try {
-            await showApp(data.session.user);
-        } catch (error) {
-            console.error(error);
-            showAuthMessage('Профіль користувача не налаштований у crm_profiles', true);
-        }
-    }
-})();
-</script>
+    bootCRM();
+  </script>
 </body>
 </html>
