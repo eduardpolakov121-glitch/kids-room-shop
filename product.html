@@ -681,6 +681,27 @@
   <script src="products.js"></script>
   <script src="cart.js"></script>
   <script>
+    function plus(id){
+      const el = document.getElementById("qty-" + id);
+      if (!el) return;
+
+      const value = parseInt(el.value || "1", 10);
+      el.value = isNaN(value) || value < 1 ? 1 : value + 1;
+    }
+
+    function minus(id){
+      const el = document.getElementById("qty-" + id);
+      if (!el) return;
+
+      const value = parseInt(el.value || "1", 10);
+      if (isNaN(value) || value <= 1) {
+        el.value = 1;
+        return;
+      }
+
+      el.value = value - 1;
+    }
+
     const CATEGORY_NAMES = {
       toy: "Іграшки",
       stroller: "Коляски",
