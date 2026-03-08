@@ -748,13 +748,6 @@
         if (fresh) return fresh;
       }
 
-      const params = new URLSearchParams(window.location.search);
-      const byQuery = params.get('id');
-      if (byQuery && Array.isArray(window.products)) {
-        const fresh = products.find(item => String(item.id) === String(byQuery));
-        if (fresh) return fresh;
-      }
-
       return stored;
     }
 
@@ -780,27 +773,19 @@
       if (countEl) countEl.textContent = count;
     }
 
-    function getCatalogReturnUrl(){
-      const saved = localStorage.getItem('catalogReturnUrl');
-      if (saved && typeof saved === 'string') return saved;
-      return 'index.html';
-    }
-
     function goBack(){
-      const savedUrl = getCatalogReturnUrl();
+      const ref = document.referrer || "";
 
-      if (window.history.length > 1 && document.referrer && document.referrer.includes(location.host)) {
-        history.back();
+      if (ref && ref.includes(location.host) && !ref.includes('product.html')) {
+        window.location.href = ref;
         return;
       }
 
-      window.location.href = savedUrl || 'index.html';
+      window.location.href = 'index.html';
     }
 
     function goHomeToCart(){
-      const baseUrl = getCatalogReturnUrl() || 'index.html';
-      const cleanBase = baseUrl.split('#')[0];
-      window.location.href = cleanBase + '#cart';
+      window.location.href = 'index.html#cart';
     }
 
     function animateToCartFromProduct(){

@@ -1,24 +1,23 @@
 <!DOCTYPE html>
 <html lang="uk">
+
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Kids Room</title>
 <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
 <div id="cart-overlay" class="cart-overlay" onclick="closeCart()"></div>
 
 <header>
-    <div class="logo-wrap">
-        <div class="logo">Kids Room</div>
-        <div class="logo-subtitle">Дитячі товари для дому та прогулянок</div>
-    </div>
-    <input id="search" placeholder="🔍 Пошук товару" autocomplete="off">
-    <button class="cart-button" type="button" onclick="toggleCart()" aria-label="Відкрити кошик">
+    <div class="logo">Kids Room</div>
+    <input id="search" placeholder="🔍 Пошук товару">
+    <div class="cart-button" onclick="toggleCart()">
         🛒 <span id="cart-count">0</span>
-    </button>
+    </div>
 </header>
 
 <div class="banner">
@@ -26,9 +25,25 @@
 </div>
 
 <div class="container">
+
     <aside class="sidebar">
         <h3>Каталог</h3>
-        <ul id="category-list"></ul>
+        <ul>
+            <li onclick="filterCategory('all')">✨ Всі товари</li>
+            <li onclick="filterCategory('toy')">🧸 Іграшки</li>
+            <li onclick="filterCategory('stroller')">🛒 Коляски</li>
+            <li onclick="filterCategory('seat')">💺 Автокрісла</li>
+            <li onclick="filterCategory('clothes')">👕 Одяг</li>
+            <li onclick="filterCategory('transport')">🚲 Транспорт</li>
+            <li onclick="filterCategory('sorter')">🧩 Сортери</li>
+            <li onclick="filterCategory('baby')">🍼 Для немовлят</li>
+            <li onclick="filterCategory('school')">🎒 Шкільні товари</li>
+            <li onclick="filterCategory('furniture')">🛏️ Дитячі меблі</li>
+            <li onclick="filterCategory('feeding')">🍼 Годування</li>
+            <li onclick="filterCategory('hygiene')">🧼 Гігієна</li>
+            <li onclick="filterCategory('bedding')">🛌 Постіль</li>
+            <li onclick="filterCategory('creativity')">🎨 Творчість</li>
+        </ul>
     </aside>
 
     <main>
@@ -43,18 +58,22 @@
 
         <div id="products" class="products"></div>
     </main>
+
 </div>
 
 <div id="cart" class="cart">
     <h2>Кошик</h2>
+
     <div id="cart-items"></div>
+
     <h3 id="total"></h3>
 
-    <div class="cart-actions">
-        <button type="button" onclick="clearCart()">Очистити</button>
-        <button type="button" onclick="checkout()">Оформити</button>
-        <button type="button" class="secondary-btn cart-continue" onclick="closeCart()">👉 Продовжити пошук</button>
-    </div>
+    <button onclick="clearCart()">Очистити</button>
+    <button onclick="checkout()">Оформити</button>
+
+    <br><br>
+
+    <button onclick="closeCart()">👉 Продовжити пошук</button>
 </div>
 
 <div id="checkout-modal" class="checkout-modal">
@@ -87,8 +106,8 @@
         </div>
 
         <div class="checkout-actions">
-            <button type="button" onclick="submitCheckout()">Підтвердити</button>
-            <button type="button" class="secondary-btn" onclick="closeCheckoutModal()">Скасувати</button>
+            <button onclick="submitCheckout()">Підтвердити</button>
+            <button class="secondary-btn" onclick="closeCheckoutModal()">Скасувати</button>
         </div>
     </div>
 </div>
