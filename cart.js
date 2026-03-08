@@ -106,10 +106,31 @@ function checkout() {
     }
 
     document.getElementById("checkout-modal").classList.add("open");
+    handleDeliveryTypeChange();
 }
 
 function closeCheckoutModal() {
     document.getElementById("checkout-modal").classList.remove("open");
+}
+
+/* ПЕРЕКЛЮЧЕНИЕ ДОСТАВКИ */
+
+function handleDeliveryTypeChange() {
+    let delivery = document.getElementById("order-delivery").value;
+
+    let npCityWrap = document.getElementById("np-city-wrap");
+    let npWarehouseWrap = document.getElementById("np-warehouse-wrap");
+    let ukrWrap = document.getElementById("ukrposhta-wrap");
+
+    if (delivery === "Нова пошта") {
+        npCityWrap.style.display = "block";
+        npWarehouseWrap.style.display = "block";
+        ukrWrap.style.display = "none";
+    } else {
+        npCityWrap.style.display = "none";
+        npWarehouseWrap.style.display = "none";
+        ukrWrap.style.display = "block";
+    }
 }
 
 /* API НОВОЙ ПОЧТЫ */
@@ -249,22 +270,45 @@ async function submitCheckout() {
     let surname = document.getElementById("order-surname").value.trim();
     let phone = document.getElementById("order-phone").value.trim();
     let delivery = document.getElementById("order-delivery").value;
-    let city = document.getElementById("order-city").value.trim();
-    let address = document.getElementById("order-address").value;
+
+    let city = "";
+    let address = "";
 
     if (!name || !surname || !phone) {
         alert("Заповніть всі поля");
         return;
     }
 
-    if (!city || !selectedCity) {
-        alert("Оберіть місто зі списку");
-        return;
+    if (delivery === "Нова пошта") {
+        city = document.getElementById("order-city").value.trim();
+        address = document.getElementById("order-address").value;
+
+        if (!city || !selectedCity) {
+            alert("Оберіть місто зі списку");
+            return;
+        }
+
+        if (!address) {
+            alert("Оберіть відділення");
+            return;
+        }
     }
 
-    if (!address) {
-        alert("Оберіть відділення");
-        return;
+    if (delivery === "Укрпошта") {
+        city = document.getElementById("order-city-manual").value.trim();
+        let index = document.getElementById("order-index").value.trim();
+
+        if (!city) {
+            alert("Вкажіть місто");
+            return;
+        }
+
+        if (!index) {
+            alert("Вкажіть поштовий індекс");
+            return;
+        }
+
+        address = "Індекс: " + index;
     }
 
     let order = {
@@ -289,8 +333,10 @@ async function submitCheckout() {
         document.getElementById("order-surname").value = "";
         document.getElementById("order-phone").value = "";
         document.getElementById("order-city").value = "";
-        resetWarehouses("Оберіть відділення");
+        document.getElementById("order-city-manual").value = "";
+        document.getElementById("order-index").value = "";
 
+        resetWarehouses("Оберіть відділення");
         selectedCity = null;
 
         closeCheckoutModal();
@@ -343,6 +389,8 @@ renderCart();
 document.addEventListener("DOMContentLoaded", () => {
     let cityInput = document.getElementById("order-city");
     let list = document.getElementById("city-suggestions");
+
+    handleDeliveryTypeChange();
 
     if (cityInput) {
         cityInput.addEventListener("input", handleCityInput);

@@ -1,122 +1,594 @@
 <!DOCTYPE html>
 <html lang="uk">
-
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Kids Room</title>
+<title>Адмін панель Kids Room</title>
+
 <link rel="stylesheet" href="style.css">
+
+<style>
+*{
+    box-sizing:border-box;
+}
+
+body{
+    margin:0;
+}
+
+.login-box{
+    max-width:400px;
+    margin:120px auto;
+    background:white;
+    padding:30px;
+    border-radius:12px;
+    box-shadow:0 5px 20px rgba(0,0,0,0.1);
+    text-align:center;
+}
+
+.admin-box{
+    max-width:1200px;
+    margin:80px auto;
+    display:none;
+    padding:0 15px 40px;
+}
+
+.panel-card{
+    background:white;
+    padding:20px;
+    border-radius:18px;
+    box-shadow:0 5px 20px rgba(0,0,0,0.06);
+    margin-bottom:24px;
+}
+
+input,select,textarea{
+    width:100%;
+    padding:12px 14px;
+    margin:6px 0;
+    border-radius:10px;
+    border:1px solid #ddd;
+    font-size:15px;
+    background:#fff;
+}
+
+textarea{
+    min-height:110px;
+    resize:vertical;
+}
+
+button{
+    background:#ff8f3d;
+    color:white;
+    border:none;
+    padding:12px 20px;
+    border-radius:14px;
+    cursor:pointer;
+    font-weight:bold;
+    transition:0.2s;
+}
+
+button:hover{
+    opacity:0.92;
+}
+
+.btn-secondary{
+    background:#8f8f8f;
+}
+
+.btn-danger{
+    background:#e05650;
+}
+
+.form-actions{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    margin-top:12px;
+}
+
+.product-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:20px;
+    padding:16px;
+    border:1px solid #edf0f3;
+    border-radius:18px;
+    margin-bottom:14px;
+    background:#fff;
+}
+
+.product-row img{
+    width:80px;
+    height:80px;
+    object-fit:cover;
+    border-radius:14px;
+    background:#f5f5f5;
+    flex-shrink:0;
+}
+
+.product-info{
+    display:flex;
+    align-items:center;
+    gap:16px;
+    flex:1;
+}
+
+.product-meta{
+    color:#6b7890;
+    font-size:14px;
+    margin-top:4px;
+    line-height:1.5;
+}
+
+.row-actions{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+}
+
+.row-actions button{
+    padding:12px 18px;
+}
+
+.order-card{
+    background:white;
+    padding:18px;
+    margin-top:12px;
+    border-radius:16px;
+    box-shadow:0 2px 10px rgba(0,0,0,0.05);
+    border:1px solid #edf0f3;
+}
+
+.order-actions{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    margin-top:16px;
+}
+
+.status-select{
+    max-width:280px;
+}
+
+.muted{
+    color:#777;
+    font-size:14px;
+}
+
+.section-title{
+    margin:0 0 15px;
+}
+
+.preview-box{
+    margin-top:10px;
+    display:none;
+}
+
+.preview-box img{
+    width:90px;
+    height:90px;
+    object-fit:cover;
+    border-radius:8px;
+    border:1px solid #eee;
+    background:#fafafa;
+}
+
+.order-product{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:10px;
+    margin-top:8px;
+    border:1px solid #eee;
+    border-radius:14px;
+    background:#fafafa;
+}
+
+.order-product img{
+    width:60px;
+    height:60px;
+    object-fit:cover;
+    border-radius:10px;
+    background:#f1f1f1;
+    flex-shrink:0;
+}
+
+@media(max-width:768px){
+    .admin-box{
+        margin:40px auto;
+    }
+
+    .product-row{
+        flex-direction:column;
+        align-items:flex-start;
+    }
+
+    .product-info{
+        width:100%;
+    }
+
+    .row-actions,
+    .order-actions,
+    .form-actions{
+        width:100%;
+    }
+
+    .row-actions button,
+    .form-actions button,
+    .order-actions button{
+        width:100%;
+    }
+
+    .status-select{
+        max-width:100%;
+        width:100%;
+    }
+}
+</style>
 </head>
 
 <body>
 
-<div id="cart-overlay" class="cart-overlay" onclick="closeCart()"></div>
-
-<header>
-    <div class="logo">Kids Room</div>
-    <input id="search" placeholder="🔍 Пошук товару">
-    <div class="cart-button" onclick="toggleCart()">
-        🛒 <span id="cart-count">0</span>
-    </div>
-</header>
-
-<div class="banner">
-    <img src="banner.jpg" alt="Kids Room banner">
-</div>
-
-<div class="container">
-
-    <aside class="sidebar">
-        <h3>Каталог</h3>
-        <ul>
-            <li onclick="filterCategory('all')">Всі товари</li>
-            <li onclick="filterCategory('toy')">🧸 Іграшки</li>
-            <li onclick="filterCategory('stroller')">🎀 Коляски</li>
-            <li onclick="filterCategory('seat')">💺 Автокрісла</li>
-            <li onclick="filterCategory('clothes')">👕 Одяг</li>
-            <li onclick="filterCategory('transport')">🚲 Транспорт</li>
-            <li onclick="filterCategory('sorter')">🧩 Сортери</li>
-            <li onclick="filterCategory('baby')">🍼 Для немовлят</li>
-            <li onclick="filterCategory('school')">🎒 Шкільні товари</li>
-        </ul>
-    </aside>
-
-    <main>
-        <div class="filters">
-            <select onchange="sortProducts(this.value)">
-                <option value="">Сортувати</option>
-                <option value="cheap">Дешеві → дорогі</option>
-                <option value="expensive">Дорогі → дешеві</option>
-                <option value="name">По назві</option>
-            </select>
-        </div>
-
-        <div id="products" class="products"></div>
-    </main>
-
-</div>
-
-<div id="cart" class="cart">
-    <h2>Кошик</h2>
-
-    <div id="cart-items"></div>
-
-    <h3 id="total"></h3>
-
-    <button onclick="clearCart()">Очистити</button>
-    <button onclick="checkout()">Оформити</button>
-
+<div class="login-box" id="loginBox">
+    <h2>🔒 Адмін вхід</h2>
+    <input id="loginUser" placeholder="Логін">
+    <input id="loginPass" type="password" placeholder="Пароль">
     <br><br>
-
-    <button onclick="closeCart()">👉 Продовжити пошук</button>
+    <button onclick="login()">Увійти</button>
 </div>
 
-<div id="checkout-modal" class="checkout-modal">
-    <div class="checkout-box">
-        <h2>Оформлення замовлення</h2>
+<div class="admin-box" id="adminBox">
 
-        <input type="text" id="order-name" placeholder="Ім'я">
-        <input type="text" id="order-surname" placeholder="Прізвище">
-        <input type="tel" id="order-phone" placeholder="Телефон">
+    <h2>🔧 Адмін панель</h2>
 
-        <select id="order-delivery" onchange="handleDeliveryTypeChange()">
-            <option value="Нова пошта">Нова пошта</option>
-            <option value="Укрпошта">Укрпошта</option>
+    <div class="panel-card">
+        <h3 class="section-title">📦 Додати / редагувати товар</h3>
+
+        <input id="prodId" placeholder="ID (залишити пустим для нового товару)">
+        <input id="prodName" placeholder="Назва">
+        <input id="prodPrice" type="number" placeholder="Ціна">
+        <input id="prodOld" type="number" placeholder="Стара ціна">
+        <input type="file" id="prodFile" accept="image/*">
+        <textarea id="prodDesc" placeholder="Опис"></textarea>
+
+        <select id="prodCategory">
+            <option value="toy">Іграшки</option>
+            <option value="stroller">Коляски</option>
+            <option value="seat">Автокрісла</option>
+            <option value="clothes">Одяг</option>
+            <option value="transport">Транспорт</option>
+            <option value="sorter">Сортери</option>
+            <option value="baby">Для немовлят</option>
+            <option value="school">Шкільні товари</option>
         </select>
 
-        <div id="np-city-wrap" class="np-field-wrap">
-            <input type="text" id="order-city" placeholder="Почніть вводити місто">
-            <div id="city-suggestions" class="np-suggestions"></div>
+        <div class="preview-box" id="previewBox">
+            <div class="muted">Поточне фото:</div>
+            <img id="previewImg" src="" alt="preview">
         </div>
 
-        <div id="np-warehouse-wrap" class="np-field-wrap">
-            <select id="order-address">
-                <option value="">Спочатку оберіть місто</option>
-            </select>
-        </div>
-
-        <div id="ukrposhta-wrap" style="display:none;">
-            <input type="text" id="order-city-manual" placeholder="Місто">
-            <input type="text" id="order-address-manual" placeholder="Відділення або адреса">
-        </div>
-
-        <div class="checkout-actions">
-            <button onclick="submitCheckout()">Підтвердити</button>
-            <button class="secondary-btn" onclick="closeCheckoutModal()">Скасувати</button>
+        <div class="form-actions">
+            <button onclick="saveProduct()">💾 Зберегти товар</button>
+            <button class="btn-secondary" onclick="clearForm()">Очистити форму</button>
         </div>
     </div>
-</div>
 
-<div class="social">
-    <a href="viber://chat?number=380684221803">Viber</a>
-    <a href="https://t.me/380684221803">Telegram</a>
-    <a href="https://www.instagram.com/kids.room.ua/">Instagram</a>
+    <div class="panel-card">
+        <h3 class="section-title">📦 Товари</h3>
+        <div id="list"></div>
+    </div>
+
+    <div class="panel-card">
+        <h3 class="section-title">🧾 Замовлення CRM</h3>
+        <div id="crmOrders">Завантаження замовлень...</div>
+    </div>
+
 </div>
 
 <script src="products.js"></script>
 <script src="crm.js"></script>
-<script src="cart.js"></script>
-<script src="script.js"></script>
+
+<script>
+function login() {
+    let user = document.getElementById("loginUser").value.trim();
+    let pass = document.getElementById("loginPass").value.trim();
+
+    if (user === "admin" && pass === "5265") {
+        document.getElementById("loginBox").style.display = "none";
+        document.getElementById("adminBox").style.display = "block";
+        renderList();
+        renderCRMOrders();
+    } else {
+        alert("Невірний логін або пароль ❌");
+    }
+}
+
+function saveLocalProducts() {
+    localStorage.setItem("products", JSON.stringify(products));
+}
+
+function clearForm() {
+    document.getElementById("prodId").value = "";
+    document.getElementById("prodName").value = "";
+    document.getElementById("prodPrice").value = "";
+    document.getElementById("prodOld").value = "";
+    document.getElementById("prodDesc").value = "";
+    document.getElementById("prodCategory").value = "toy";
+    document.getElementById("prodFile").value = "";
+
+    document.getElementById("previewImg").src = "";
+    document.getElementById("previewBox").style.display = "none";
+}
+
+function showPreview(src) {
+    if (!src) {
+        document.getElementById("previewImg").src = "";
+        document.getElementById("previewBox").style.display = "none";
+        return;
+    }
+
+    document.getElementById("previewImg").src = src;
+    document.getElementById("previewBox").style.display = "block";
+}
+
+function saveProduct() {
+    let id = document.getElementById("prodId").value.trim();
+    let name = document.getElementById("prodName").value.trim();
+    let price = parseInt(document.getElementById("prodPrice").value);
+    let old = parseInt(document.getElementById("prodOld").value);
+    let desc = document.getElementById("prodDesc").value.trim();
+    let cat = document.getElementById("prodCategory").value;
+    let file = document.getElementById("prodFile").files[0];
+
+    if (!name || !price) {
+        alert("Заповніть обов'язкові поля");
+        return;
+    }
+
+    function finish(img) {
+        let product = {
+            id: id || "prod_" + Date.now(),
+            name: name,
+            price: price,
+            old: old || price,
+            description: desc,
+            category: cat,
+            img: img || ""
+        };
+
+        let index = products.findIndex(p => p.id === id);
+
+        if (index >= 0) {
+            products[index] = product;
+        } else {
+            products.push(product);
+        }
+
+        saveLocalProducts();
+        renderList();
+        clearForm();
+        alert("Товар збережено ✅");
+    }
+
+    if (file) {
+        let reader = new FileReader();
+        reader.onload = e => finish(e.target.result);
+        reader.readAsDataURL(file);
+    } else {
+        let exist = products.find(p => p.id === id);
+        finish(exist ? exist.img : "");
+    }
+}
+
+function renderList() {
+    let list = document.getElementById("list");
+    list.innerHTML = "";
+
+    if (!products.length) {
+        list.innerHTML = "<div class='muted'>Товарів поки немає</div>";
+        return;
+    }
+
+    products.forEach(p => {
+        list.innerHTML += `
+        <div class="product-row">
+            <div class="product-info">
+                <img src="${p.img || ''}" alt="${p.name}">
+                <div>
+                    <b>${p.name}</b><br>
+                    ${p.price} грн
+                    <div class="product-meta">
+                        ID: ${p.id}<br>
+                        Категорія: ${getCategoryName(p.category)}
+                    </div>
+                </div>
+            </div>
+
+            <div class="row-actions">
+                <button onclick="editProduct('${p.id}')">✏ Редагувати</button>
+                <button class="btn-danger" onclick="deleteProduct('${p.id}')">🗑 Видалити</button>
+            </div>
+        </div>
+        `;
+    });
+}
+
+function getCategoryName(cat) {
+    const map = {
+        toy: "Іграшки",
+        stroller: "Коляски",
+        seat: "Автокрісла",
+        clothes: "Одяг",
+        transport: "Транспорт",
+        sorter: "Сортери",
+        baby: "Для немовлят",
+        school: "Шкільні товари"
+    };
+
+    return map[cat] || cat || "Без категорії";
+}
+
+function editProduct(id) {
+    let p = products.find(x => x.id === id);
+    if (!p) return;
+
+    document.getElementById("prodId").value = p.id || "";
+    document.getElementById("prodName").value = p.name || "";
+    document.getElementById("prodPrice").value = p.price || "";
+    document.getElementById("prodOld").value = p.old || "";
+    document.getElementById("prodDesc").value = p.description || "";
+    document.getElementById("prodCategory").value = p.category || "toy";
+
+    showPreview(p.img || "");
+
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
+}
+
+function deleteProduct(id) {
+    if (!confirm("Видалити товар?")) return;
+
+    products = products.filter(p => p.id !== id);
+    saveLocalProducts();
+    renderList();
+    clearForm();
+    alert("Товар видалено ✅");
+}
+
+function normalizeCity(city) {
+    if (!city) return "-";
+
+    let text = String(city).trim();
+
+    if (!text) return "-";
+
+    text = text.replace(/^м\.\s*/i, "");
+    text = text.replace(/^місто\s+/i, "");
+
+    if (text.includes(",")) {
+        text = text.split(",")[0].trim();
+    }
+
+    return text || "-";
+}
+
+function normalizeDelivery(order) {
+    if (order.delivery && String(order.delivery).trim()) {
+        return String(order.delivery).trim();
+    }
+
+    return "Нова пошта";
+}
+
+function normalizeAddress(address) {
+    if (!address) return "-";
+
+    let text = String(address).trim();
+
+    if (!text) return "-";
+
+    return text;
+}
+
+async function renderCRMOrders() {
+    let container = document.getElementById("crmOrders");
+    container.innerHTML = "Завантаження замовлень...";
+
+    try {
+        let orders = await getOrdersCRM();
+
+        if (!orders.length) {
+            container.innerHTML = "<div class='order-card'>Замовлень поки немає</div>";
+            return;
+        }
+
+        container.innerHTML = "";
+
+        orders.forEach(order => {
+            let itemsHtml = "";
+
+            if (Array.isArray(order.items)) {
+                order.items.forEach(item => {
+                    itemsHtml += `
+                    <div class="order-product">
+                        <img src="${item.img || ''}" alt="${item.name || 'Товар'}">
+                        <div>
+                            <div style="font-weight:bold;">${item.name || "Товар"}</div>
+                            <div>${item.qty || 1} × ${item.price || 0} грн</div>
+                        </div>
+                    </div>
+                    `;
+                });
+            }
+
+            let city = normalizeCity(order.city);
+            let delivery = normalizeDelivery(order);
+            let address = normalizeAddress(order.address);
+
+            container.innerHTML += `
+            <div class="order-card">
+                <b>Клієнт:</b> ${order.name || "-"}<br>
+                <b>Телефон:</b> ${order.phone || "-"}<br>
+                <b>Місто:</b> ${city}<br>
+                <b>Доставка:</b> ${delivery}<br>
+                <b>Відділення / адреса:</b> ${address}<br>
+                <b>Сума:</b> ${order.total || 0} грн<br>
+                <b>Статус:</b> ${order.status || "Новий"}<br>
+                <b>Створено:</b> ${order.created_at ? new Date(order.created_at).toLocaleString() : "-"}<br>
+                <b>Товари:</b>
+                ${itemsHtml || "<div style='margin-top:8px;'>Немає товарів</div>"}
+
+                <div class="order-actions">
+                    <select class="status-select" id="status-${order.id}">
+                        <option value="Новий" ${order.status === "Новий" ? "selected" : ""}>Новий</option>
+                        <option value="В роботі" ${order.status === "В роботі" ? "selected" : ""}>В роботі</option>
+                        <option value="Відправлено" ${order.status === "Відправлено" ? "selected" : ""}>Відправлено</option>
+                        <option value="Завершено" ${order.status === "Завершено" ? "selected" : ""}>Завершено</option>
+                        <option value="Скасовано" ${order.status === "Скасовано" ? "selected" : ""}>Скасовано</option>
+                    </select>
+
+                    <button onclick="changeStatus('${order.id}')">Змінити статус</button>
+                    <button class="btn-danger" onclick="removeOrder('${order.id}')">Видалити</button>
+                </div>
+            </div>
+            `;
+        });
+    } catch (error) {
+        console.error(error);
+        container.innerHTML = "<div class='order-card'>Помилка завантаження замовлень</div>";
+    }
+}
+
+async function changeStatus(id) {
+    let select = document.getElementById("status-" + id);
+    let newStatus = select.value;
+
+    try {
+        await updateOrderStatusCRM(id, newStatus);
+        alert("Статус оновлено ✅");
+        renderCRMOrders();
+    } catch (error) {
+        console.error(error);
+        alert("Не вдалося змінити статус");
+    }
+}
+
+async function removeOrder(id) {
+    if (!confirm("Видалити замовлення?")) return;
+
+    try {
+        await deleteOrderCRM(id);
+        alert("Замовлення видалено ✅");
+        renderCRMOrders();
+    } catch (error) {
+        console.error(error);
+        alert("Не вдалося видалити замовлення");
+    }
+}
+</script>
 
 </body>
 </html>
