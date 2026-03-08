@@ -70,6 +70,8 @@
       display:block;
       font-size:20px;
       line-height:1.1;
+      color:var(--kr-orange);
+      font-weight:800;
     }
 
     .product-brand-text small{
@@ -119,6 +121,7 @@
       min-width:52px;
       height:52px;
       padding:0 16px;
+      border:none;
       border-radius:16px;
       background:var(--kr-orange);
       color:#fff;
@@ -127,6 +130,7 @@
       justify-content:center;
       gap:8px;
       box-shadow:0 12px 28px rgba(255,107,0,0.28);
+      cursor:pointer;
     }
 
     .product-cart-fab.bump{
@@ -501,7 +505,13 @@
       border-radius:18px;
       object-fit:cover;
       box-shadow:0 18px 40px rgba(0,0,0,0.18);
-      transition:transform .75s cubic-bezier(.2,.8,.2,1), opacity .75s ease, left .75s cubic-bezier(.2,.8,.2,1), top .75s cubic-bezier(.2,.8,.2,1), width .75s cubic-bezier(.2,.8,.2,1), height .75s cubic-bezier(.2,.8,.2,1);
+      transition:
+        transform .75s cubic-bezier(.2,.8,.2,1),
+        opacity .75s ease,
+        left .75s cubic-bezier(.2,.8,.2,1),
+        top .75s cubic-bezier(.2,.8,.2,1),
+        width .75s cubic-bezier(.2,.8,.2,1),
+        height .75s cubic-bezier(.2,.8,.2,1);
     }
 
     @keyframes cartBump{
@@ -717,8 +727,14 @@
       return CATEGORY_NAMES[cat] || cat || 'Категорія';
     }
 
+    function refreshProductsSafe(){
+      if (typeof refreshProductsFromStorage === 'function') {
+        refreshProductsFromStorage();
+      }
+    }
+
     function getSelectedProduct(){
-      refreshProductsFromStorage();
+      refreshProductsSafe();
 
       let stored = null;
       try {
@@ -727,14 +743,14 @@
         stored = null;
       }
 
-      if (stored?.id) {
+      if (stored && stored.id && Array.isArray(window.products)) {
         const fresh = products.find(item => String(item.id) === String(stored.id));
         if (fresh) return fresh;
       }
 
       const params = new URLSearchParams(window.location.search);
       const byQuery = params.get('id');
-      if (byQuery) {
+      if (byQuery && Array.isArray(window.products)) {
         const fresh = products.find(item => String(item.id) === String(byQuery));
         if (fresh) return fresh;
       }
@@ -764,25 +780,38 @@
       if (countEl) countEl.textContent = count;
     }
 
+    function getCatalogReturnUrl(){
+      const saved = localStorage.getItem('catalogReturnUrl');
+      if (saved && typeof saved === 'string') return saved;
+      return 'index.html';
+    }
+
     function goBack(){
-      if (document.referrer && document.referrer.includes(location.host)) {
+      const savedUrl = getCatalogReturnUrl();
+
+      if (window.history.length > 1 && document.referrer && document.referrer.includes(location.host)) {
         history.back();
-      } else {
-        window.location.href = 'index.html';
+        return;
       }
+
+      window.location.href = savedUrl || 'index.html';
     }
 
     function goHomeToCart(){
-      window.location.href = 'index.html#cart';
+      const baseUrl = getCatalogReturnUrl() || 'index.html';
+      const cleanBase = baseUrl.split('#')[0];
+      window.location.href = cleanBase + '#cart';
     }
 
     function animateToCartFromProduct(){
       const image = document.getElementById('product-main-image');
       const cartButton = document.getElementById('product-cart-button');
 
-      if (!image || !cartButton) {
-        cartButton?.classList.add('bump');
-        setTimeout(() => cartButton?.classList.remove('bump'), 450);
+      if (!cartButton) return;
+
+      if (!image) {
+        cartButton.classList.add('bump');
+        setTimeout(() => cartButton.classList.remove('bump'), 450);
         return;
       }
 
@@ -818,6 +847,8 @@
       const crumb = document.getElementById('breadcrumb-name');
       const product = getSelectedProduct();
 
+      if (!container) return;
+
       if (!product) {
         if (crumb) crumb.textContent = 'Товар не знайдено';
         container.innerHTML = `
@@ -834,6 +865,7 @@
       const categoryName = getCategoryName(product.category);
       const discount = getDiscountPercent(product.old, product.price);
       const description = product.description || 'Якісний дитячий товар для щоденного використання.';
+
       if (crumb) crumb.textContent = product.name || 'Товар';
       document.title = `Kids Room — ${product.name || 'Товар'}`;
 
@@ -896,9 +928,11 @@
 
     function handleProductAddToCart(id){
       animateToCartFromProduct();
+
       if (typeof addToCart === 'function') {
         addToCart(id);
       }
+
       setTimeout(updateProductCartCount, 120);
     }
 
