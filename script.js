@@ -1,27 +1,54 @@
 const container = document.getElementById("products");
-let currentProducts = products;
+let currentProducts = Array.isArray(products) ? [...products] : [];
+
+function syncProductsAndRender(keepFilter = true) {
+    const prevSearch = document.getElementById("search")?.value?.toLowerCase().trim() || "";
+    const prevIds = keepFilter ? currentProducts.map(item => item.id) : [];
+
+    refreshProductsFromStorage();
+
+    if (keepFilter && prevIds.length) {
+        currentProducts = products.filter(item => prevIds.includes(item.id));
+        if (!currentProducts.length) currentProducts = [...products];
+    } else {
+        currentProducts = [...products];
+    }
+
+    if (prevSearch) {
+        const filtered = currentProducts.filter(p => p.name.toLowerCase().includes(prevSearch));
+        renderProducts(filtered);
+        return;
+    }
+
+    renderProducts(currentProducts);
+}
 
 /* РЕНДЕР ТОВАРІВ */
-
 function renderProducts(list) {
+    if (!container) return;
+
     container.innerHTML = "";
+
+    if (!Array.isArray(list) || list.length === 0) {
+        container.innerHTML = `
+        <div style="grid-column:1/-1; background:#fffdf9; padding:24px; border-radius:14px; box-shadow:0 6px 18px rgba(0,0,0,0.08); text-align:center;">
+            Товари поки що відсутні
+        </div>
+        `;
+        return;
+    }
 
     list.forEach(p => {
         container.innerHTML += `
         <div class="product" id="prod-${p.id}" onclick="openProduct('${p.id}')">
-
             <img src="${p.img}" alt="${p.name}">
-
             <h3>${p.name}</h3>
-
             <div class="price">
                 <span class="old-price" id="old-${p.id}">${p.old} грн</span>
                 <span>${p.price} грн</span>
             </div>
-
             <div class="quantity" onclick="event.stopPropagation()">
                 <button onclick="minus('${p.id}')">−</button>
-
                 <input
                     id="qty-${p.id}"
                     type="number"
@@ -29,64 +56,57 @@ function renderProducts(list) {
                     min="1"
                     class="qty-input"
                 >
-
                 <button onclick="plus('${p.id}')">+</button>
             </div>
-
             <button class="add-btn" onclick="event.stopPropagation(); addToCart('${p.id}')">
                 Додати в кошик
             </button>
-
         </div>
         `;
     });
 }
 
-renderProducts(products);
+syncProductsAndRender(false);
 
 /* ВІДКРИТТЯ ТОВАРУ В НОВІЙ ВКЛАДЦІ */
-
 function openProduct(id) {
-    let product = products.find(p => p.id === id);
-
+    refreshProductsFromStorage();
+    const product = products.find(p => p.id === id);
     if (!product) return;
 
     localStorage.setItem("selectedProduct", JSON.stringify(product));
-
     window.open("product.html", "_blank");
 }
 
 /* ПОШУК */
-
-document.getElementById("search").addEventListener("input", e => {
-    let value = e.target.value.toLowerCase().trim();
-
-    let filtered = currentProducts.filter(p =>
-        p.name.toLowerCase().includes(value)
-    );
-
-    renderProducts(filtered);
-});
+const searchEl = document.getElementById("search");
+if (searchEl) {
+    searchEl.addEventListener("input", e => {
+        const value = e.target.value.toLowerCase().trim();
+        const filtered = currentProducts.filter(p => p.name.toLowerCase().includes(value));
+        renderProducts(filtered);
+    });
+}
 
 /* КАТЕГОРІЇ */
-
 function filterCategory(cat) {
+    refreshProductsFromStorage();
+
     if (cat === "all") {
-        currentProducts = products;
+        currentProducts = [...products];
     } else {
         currentProducts = products.filter(p => p.category === cat);
     }
 
-    let search = document.getElementById("search");
+    const search = document.getElementById("search");
     if (search) search.value = "";
 
     renderProducts(currentProducts);
 }
 
 /* СОРТУВАННЯ */
-
 function sortProducts(type) {
-    let sorted = [...currentProducts];
+    const sorted = [...currentProducts];
 
     if (type === "cheap") {
         sorted.sort((a, b) => a.price - b.price);
@@ -97,48 +117,53 @@ function sortProducts(type) {
     }
 
     if (type === "name") {
-        sorted.sort((a, b) => a.name.localeCompare(b.name));
+        sorted.sort((a, b) => a.name.localeCompare(b.name, "uk"));
     }
 
     renderProducts(sorted);
 }
 
 /* HEADER SCROLL */
-
 let lastScroll = 0;
 const header = document.querySelector("header");
 
 window.addEventListener("scroll", () => {
-    let current = window.pageYOffset;
+    const current = window.pageYOffset;
 
-    if (current > lastScroll && current > 100) {
-        header.classList.add("hide");
-    } else {
-        header.classList.remove("hide");
+    if (header) {
+        if (current > lastScroll && current > 100) {
+            header.classList.add("hide");
+        } else {
+            header.classList.remove("hide");
+        }
     }
 
     lastScroll = current;
 });
 
 /* КІЛЬКІСТЬ */
-
 function plus(id) {
-    let el = document.getElementById("qty-" + id);
+    const el = document.getElementById("qty-" + id);
     if (!el) return;
-
-    el.value = parseInt(el.value) + 1;
+    el.value = parseInt(el.value || "1", 10) + 1;
 }
 
 function minus(id) {
-    let el = document.getElementById("qty-" + id);
+    const el = document.getElementById("qty-" + id);
     if (!el) return;
 
-    let val = parseInt(el.value);
+    const val = parseInt(el.value || "1", 10);
     if (val > 1) {
         el.value = val - 1;
     }
 }
 
-/* КОШИК */
+window.addEventListener("products:updated", () => syncProductsAndRender(false));
+window.addEventListener("storage", event => {
+    if (event.key === "products") {
+        syncProductsAndRender(false);
+    }
+});
 
+/* КОШИК */
 renderCart();
