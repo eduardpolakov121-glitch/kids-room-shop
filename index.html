@@ -7,13 +7,408 @@
 <title>Kids Room</title>
 <link rel="stylesheet" href="style.css">
 <style>
+.hero-selling{
+    margin:22px 20px 18px;
+    background:linear-gradient(135deg,#fff4e8 0%,#fffdf9 42%,#eef6fb 100%);
+    border:1px solid #ece7df;
+    border-radius:28px;
+    box-shadow:0 16px 38px rgba(0,0,0,0.08);
+    overflow:hidden;
+    position:relative;
+}
+.hero-selling::before{
+    content:"";
+    position:absolute;
+    width:260px;
+    height:260px;
+    border-radius:50%;
+    right:-60px;
+    top:-70px;
+    background:radial-gradient(circle,#ffd36f 0%,rgba(255,211,111,0) 70%);
+    opacity:.72;
+}
+.hero-selling::after{
+    content:"";
+    position:absolute;
+    width:220px;
+    height:220px;
+    border-radius:50%;
+    left:-70px;
+    bottom:-90px;
+    background:radial-gradient(circle,#ffd9c2 0%,rgba(255,217,194,0) 70%);
+    opacity:.7;
+}
+.hero-selling-inner{
+    position:relative;
+    z-index:1;
+    display:grid;
+    grid-template-columns:1.15fr .85fr;
+    gap:26px;
+    align-items:center;
+    padding:34px;
+}
+.hero-selling-copy h1{
+    margin:0 0 12px;
+    font-size:clamp(32px,4vw,54px);
+    line-height:1.04;
+    letter-spacing:-.03em;
+    color:#243041;
+}
+.hero-selling-copy p{
+    margin:0 0 18px;
+    color:#5f6c7d;
+    line-height:1.75;
+    font-size:17px;
+    max-width:700px;
+}
+.hero-selling-badges{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    margin-bottom:22px;
+}
+.hero-selling-badge{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    padding:10px 14px;
+    border-radius:999px;
+    background:#fff8ef;
+    border:1px solid #ffe0c2;
+    color:#a45b16;
+    font-size:14px;
+    font-weight:700;
+}
+.hero-selling-actions{
+    display:flex;
+    flex-wrap:wrap;
+    gap:12px;
+}
+.hero-selling-btn,
+.hero-selling-btn-secondary{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    min-height:54px;
+    padding:14px 22px;
+    border-radius:16px;
+    text-decoration:none;
+    font-weight:800;
+    transition:transform .18s ease, box-shadow .18s ease, background .18s ease;
+}
+.hero-selling-btn:hover,
+.hero-selling-btn-secondary:hover{
+    transform:translateY(-1px);
+}
+.hero-selling-btn{
+    background:linear-gradient(135deg,#ff6b00 0%,#ff8d38 100%);
+    color:#fff;
+    box-shadow:0 14px 28px rgba(255,107,0,0.24);
+}
+.hero-selling-btn-secondary{
+    background:#fff;
+    color:#243041;
+    border:1px solid #ece7df;
+    box-shadow:0 8px 22px rgba(0,0,0,0.05);
+}
+.hero-selling-visual{
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:14px;
+}
+.hero-visual-card{
+    background:#fffdf9;
+    border:1px solid #ece7df;
+    border-radius:22px;
+    box-shadow:0 10px 26px rgba(0,0,0,0.06);
+    padding:18px;
+    min-height:134px;
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+}
+.hero-visual-card strong{
+    color:#243041;
+    font-size:18px;
+}
+.hero-visual-card span{
+    color:#6f7b8c;
+    line-height:1.6;
+    font-size:14px;
+}
+
+.section-wrap{
+    margin:0 20px 18px;
+}
+.section-title-row{
+    display:flex;
+    align-items:flex-end;
+    justify-content:space-between;
+    gap:14px;
+    margin-bottom:14px;
+    flex-wrap:wrap;
+}
+.section-title-row h2{
+    margin:0;
+    color:#243041;
+    font-size:30px;
+    line-height:1.08;
+}
+.section-title-row p{
+    margin:0;
+    color:#6f7b8c;
+    line-height:1.6;
+}
+
+.benefits-grid{
+    display:grid;
+    grid-template-columns:repeat(4,minmax(0,1fr));
+    gap:16px;
+}
+.benefit-card{
+    background:#fffdf9;
+    border:1px solid #ece7df;
+    border-radius:22px;
+    box-shadow:0 10px 28px rgba(0,0,0,0.06);
+    padding:20px;
+}
+.benefit-card h3{
+    margin:0 0 8px;
+    color:#243041;
+    font-size:18px;
+}
+.benefit-card p{
+    margin:0;
+    color:#6f7b8c;
+    line-height:1.7;
+    font-size:14px;
+}
+
+.home-categories-grid{
+    display:grid;
+    grid-template-columns:repeat(4,minmax(0,1fr));
+    gap:16px;
+}
+.home-category-card{
+    background:linear-gradient(180deg,#fffdf9 0%,#fff7ef 100%);
+    border:1px solid #ece7df;
+    border-radius:22px;
+    box-shadow:0 10px 24px rgba(0,0,0,0.05);
+    padding:20px;
+    text-decoration:none;
+    color:#243041;
+    transition:transform .18s ease, box-shadow .18s ease;
+}
+.home-category-card:hover{
+    transform:translateY(-3px);
+    box-shadow:0 16px 30px rgba(0,0,0,0.09);
+}
+.home-category-card .icon{
+    font-size:34px;
+    margin-bottom:10px;
+    display:block;
+}
+.home-category-card strong{
+    display:block;
+    margin-bottom:8px;
+    font-size:18px;
+}
+.home-category-card span{
+    color:#6f7b8c;
+    line-height:1.6;
+    font-size:14px;
+}
+
+.product-showcase-grid{
+    display:grid;
+    grid-template-columns:repeat(4,minmax(0,1fr));
+    gap:18px;
+}
+.product-showcase-card{
+    background:#fffdf9;
+    border:1px solid #ece7df;
+    border-radius:22px;
+    box-shadow:0 10px 28px rgba(0,0,0,0.06);
+    overflow:hidden;
+    display:flex;
+    flex-direction:column;
+    min-height:100%;
+}
+.product-showcase-image{
+    background:#f6ece0;
+    height:210px;
+    overflow:hidden;
+}
+.product-showcase-image img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
+}
+.product-showcase-body{
+    padding:18px;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    flex:1;
+}
+.product-showcase-top{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+}
+.product-chip{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    padding:8px 10px;
+    border-radius:999px;
+    font-size:12px;
+    font-weight:800;
+}
+.product-chip.hit{
+    background:#fff1e6;
+    color:#ca6200;
+}
+.product-chip.new{
+    background:#edf8ff;
+    color:#23628d;
+}
+.product-chip.sale{
+    background:#fff0f0;
+    color:#c64c4c;
+}
+.product-showcase-card h3{
+    margin:0;
+    font-size:19px;
+    line-height:1.35;
+    color:#243041;
+}
+.product-showcase-card p{
+    margin:0;
+    color:#6f7b8c;
+    line-height:1.65;
+    font-size:14px;
+}
+.product-showcase-price{
+    margin-top:auto;
+    display:flex;
+    align-items:flex-end;
+    gap:10px;
+    flex-wrap:wrap;
+}
+.product-showcase-price .current{
+    color:#ff6600;
+    font-size:24px;
+    font-weight:800;
+}
+.product-showcase-price .old{
+    color:#8b95a3;
+    text-decoration:line-through;
+    font-size:15px;
+}
+.product-showcase-actions{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+}
+.product-showcase-actions button{
+    flex:1;
+    min-width:140px;
+    border:none;
+    border-radius:12px;
+    padding:12px 14px;
+    cursor:pointer;
+    font-weight:800;
+}
+.product-showcase-actions .primary{
+    background:#ff6600;
+    color:#fff;
+}
+.product-showcase-actions .secondary{
+    background:#f1f3f6;
+    color:#243041;
+}
+
+.how-order-grid{
+    display:grid;
+    grid-template-columns:repeat(4,minmax(0,1fr));
+    gap:16px;
+}
+.how-order-card{
+    background:#fffdf9;
+    border:1px solid #ece7df;
+    border-radius:22px;
+    box-shadow:0 10px 26px rgba(0,0,0,0.05);
+    padding:20px;
+}
+.how-order-step{
+    width:42px;
+    height:42px;
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:#ff6600;
+    color:#fff;
+    font-weight:800;
+    margin-bottom:12px;
+}
+.how-order-card h3{
+    margin:0 0 8px;
+    color:#243041;
+    font-size:18px;
+}
+.how-order-card p{
+    margin:0;
+    color:#6f7b8c;
+    line-height:1.7;
+    font-size:14px;
+}
+
+.cta-banner{
+    margin:0 20px 18px;
+    background:linear-gradient(135deg,#243041 0%,#33465f 100%);
+    border-radius:28px;
+    box-shadow:0 16px 36px rgba(36,48,65,0.22);
+    padding:28px;
+    color:#fff;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:18px;
+    flex-wrap:wrap;
+}
+.cta-banner h2{
+    margin:0 0 8px;
+    font-size:30px;
+}
+.cta-banner p{
+    margin:0;
+    color:rgba(255,255,255,0.82);
+    line-height:1.7;
+    max-width:760px;
+}
+.cta-banner a{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    min-height:54px;
+    padding:14px 22px;
+    background:#ff6600;
+    color:#fff;
+    text-decoration:none;
+    border-radius:16px;
+    font-weight:800;
+    box-shadow:0 14px 30px rgba(255,107,0,0.22);
+}
+
 .home-trust-strip{
     margin:0 20px 10px;
     display:grid;
     grid-template-columns:repeat(3,minmax(0,1fr));
     gap:16px;
 }
-
 .home-trust-card{
     background:#fffdf9;
     border:1px solid #ece7df;
@@ -21,13 +416,11 @@
     box-shadow:0 10px 26px rgba(0,0,0,0.05);
     padding:18px;
 }
-
 .home-trust-card h3{
     margin:0 0 8px;
     color:#243041;
     font-size:18px;
 }
-
 .home-trust-card p{
     margin:0;
     color:#6f7b8c;
@@ -43,41 +436,34 @@
     box-shadow:0 12px 30px rgba(0,0,0,0.06);
     padding:24px;
 }
-
 .site-footer-grid{
     display:grid;
     grid-template-columns:1.2fr 1fr 1fr;
     gap:22px;
 }
-
 .site-footer h3{
     margin:0 0 12px;
     color:#243041;
     font-size:20px;
 }
-
 .site-footer p{
     margin:0;
     color:#6f7b8c;
     line-height:1.7;
 }
-
 .site-footer-links{
     display:flex;
     flex-direction:column;
     gap:10px;
 }
-
 .site-footer-links a{
     color:#243041;
     text-decoration:none;
     font-weight:700;
 }
-
 .site-footer-links a:hover{
     color:#ff6600;
 }
-
 .site-footer-note{
     margin-top:18px;
     padding-top:16px;
@@ -87,45 +473,78 @@
     line-height:1.6;
 }
 
+@media (max-width:1100px){
+    .hero-selling-inner,
+    .benefits-grid,
+    .home-categories-grid,
+    .product-showcase-grid,
+    .how-order-grid{
+        grid-template-columns:repeat(2,minmax(0,1fr));
+    }
+    .hero-selling-inner{
+        grid-template-columns:1fr;
+    }
+    .site-footer-grid{
+        grid-template-columns:1fr 1fr;
+    }
+}
+
 @media (max-width:900px){
     .home-trust-strip,
     .site-footer-grid{
         grid-template-columns:1fr;
     }
-
+    .section-wrap,
+    .cta-banner,
+    .hero-selling{
+        margin-left:16px;
+        margin-right:16px;
+    }
     .home-trust-strip{
         margin:0 16px 8px;
     }
-
     .site-footer{
         margin:16px 16px 24px;
         padding:18px;
     }
 }
 
+@media (max-width:680px){
+    .benefits-grid,
+    .home-categories-grid,
+    .product-showcase-grid,
+    .how-order-grid,
+    .hero-selling-visual{
+        grid-template-columns:1fr;
+    }
+    .hero-selling-inner{
+        padding:20px;
+    }
+    .section-title-row h2,
+    .cta-banner h2{
+        font-size:26px;
+    }
+}
+
 @media (max-width:420px){
+    .section-wrap,
+    .cta-banner,
+    .hero-selling{
+        margin-left:10px;
+        margin-right:10px;
+    }
     .home-trust-strip{
         margin:0 10px 8px;
         gap:10px;
     }
-
     .home-trust-card{
         padding:14px;
         border-radius:16px;
     }
-
-    .home-trust-card h3{
-        font-size:16px;
-    }
-
     .site-footer{
         margin:12px 10px 20px;
         padding:16px;
         border-radius:18px;
-    }
-
-    .site-footer h3{
-        font-size:18px;
     }
 }
 </style>
@@ -149,6 +568,372 @@
 <div class="banner">
     <img src="banner.jpg" alt="Kids Room banner">
 </div>
+
+<section class="hero-selling">
+    <div class="hero-selling-inner">
+        <div class="hero-selling-copy">
+            <h1>Все для дитячої кімнати, прогулянок і щасливого дитинства</h1>
+            <p>
+                У Kids Room ви можете знайти іграшки, коляски, автокрісла, одяг, меблі,
+                шкільні товари та багато іншого. Простий каталог, зручне оформлення замовлення
+                і швидкий зв’язок з менеджером допоможуть зробити покупку легкою.
+            </p>
+
+            <div class="hero-selling-badges">
+                <span class="hero-selling-badge">🧸 Великий вибір категорій</span>
+                <span class="hero-selling-badge">🚚 Доставка по Україні</span>
+                <span class="hero-selling-badge">💬 Швидка консультація</span>
+            </div>
+
+            <div class="hero-selling-actions">
+                <a class="hero-selling-btn" href="#products">Перейти до товарів</a>
+                <a class="hero-selling-btn-secondary" href="delivery-payment.html">Доставка і оплата</a>
+            </div>
+        </div>
+
+        <div class="hero-selling-visual">
+            <div class="hero-visual-card">
+                <strong>👶 Товари для малюків</strong>
+                <span>Все необхідне для щоденного догляду, комфорту та розвитку дитини.</span>
+            </div>
+            <div class="hero-visual-card">
+                <strong>🎁 Ідеї для подарунків</strong>
+                <span>Іграшки, творчість, набори та корисні товари для дітей різного віку.</span>
+            </div>
+            <div class="hero-visual-card">
+                <strong>🏡 Затишок у дитячій</strong>
+                <span>Меблі, постіль і практичні речі для зручного простору дитини.</span>
+            </div>
+            <div class="hero-visual-card">
+                <strong>🛒 Швидке замовлення</strong>
+                <span>Обирайте товари, додавайте в кошик і оформлюйте замовлення за кілька хвилин.</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section-wrap">
+    <div class="section-title-row">
+        <h2>Чому обирають Kids Room</h2>
+        <p>Ми поєднали зручний каталог, зрозуміле оформлення замовлення та корисні категорії для дітей.</p>
+    </div>
+
+    <div class="benefits-grid">
+        <div class="benefit-card">
+            <h3>📦 Широкий асортимент</h3>
+            <p>На сайті зібрані популярні дитячі категорії — від іграшок до меблів та товарів для немовлят.</p>
+        </div>
+        <div class="benefit-card">
+            <h3>💳 Зручне оформлення</h3>
+            <p>Швидко додавайте товари в кошик, обирайте доставку та залишайте дані без зайвих кроків.</p>
+        </div>
+        <div class="benefit-card">
+            <h3>🚚 Доставка по Україні</h3>
+            <p>Підтримується оформлення замовлень з доставкою Новою поштою та Укрпоштою.</p>
+        </div>
+        <div class="benefit-card">
+            <h3>💬 Швидкий контакт</h3>
+            <p>Покупець може одразу перейти до Viber, Telegram або Instagram для уточнення деталей.</p>
+        </div>
+    </div>
+</section>
+
+<section class="section-wrap">
+    <div class="section-title-row">
+        <h2>Популярні категорії</h2>
+        <p>Найчастіше покупці починають пошук саме з цих розділів.</p>
+    </div>
+
+    <div class="home-categories-grid">
+        <a class="home-category-card" href="#products" onclick="filterCategory('toy')">
+            <span class="icon">🧸</span>
+            <strong>Іграшки</strong>
+            <span>Плюшеві, розвиваючі та сюжетні іграшки для щоденних ігор.</span>
+        </a>
+        <a class="home-category-card" href="#products" onclick="filterCategory('stroller')">
+            <span class="icon">🛒</span>
+            <strong>Коляски</strong>
+            <span>Зручні моделі для прогулянок, поїздок і щоденного комфорту.</span>
+        </a>
+        <a class="home-category-card" href="#products" onclick="filterCategory('clothes')">
+            <span class="icon">👕</span>
+            <strong>Одяг</strong>
+            <span>Практичний дитячий одяг для дому, садочка та прогулянок.</span>
+        </a>
+        <a class="home-category-card" href="#products" onclick="filterCategory('baby')">
+            <span class="icon">🍼</span>
+            <strong>Для немовлят</strong>
+            <span>Корисні товари для перших місяців життя та щоденного догляду.</span>
+        </a>
+    </div>
+</section>
+
+<section class="section-wrap">
+    <div class="section-title-row">
+        <h2>Хіти продажу</h2>
+        <p>Товари, з яких покупці найчастіше починають знайомство з магазином.</p>
+    </div>
+
+    <div class="product-showcase-grid">
+        <div class="product-showcase-card">
+            <div class="product-showcase-image">
+                <img src="product-placeholder.svg" alt="Хіт продажу 1">
+            </div>
+            <div class="product-showcase-body">
+                <div class="product-showcase-top">
+                    <span class="product-chip hit">ХІТ</span>
+                </div>
+                <h3>Плюшевий ведмедик Sweet Bear</h3>
+                <p>М'яка іграшка для обіймів, сну та затишних щоденних ігор.</p>
+                <div class="product-showcase-price">
+                    <span class="current">350 грн</span>
+                    <span class="old">450 грн</span>
+                </div>
+                <div class="product-showcase-actions">
+                    <button class="primary" onclick="filterCategory('toy'); window.location.hash='products';">Дивитися товари</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="product-showcase-card">
+            <div class="product-showcase-image">
+                <img src="product-placeholder.svg" alt="Хіт продажу 2">
+            </div>
+            <div class="product-showcase-body">
+                <div class="product-showcase-top">
+                    <span class="product-chip hit">ХІТ</span>
+                </div>
+                <h3>Прогулянкова коляска</h3>
+                <p>Практична модель для комфортних прогулянок і поїздок містом.</p>
+                <div class="product-showcase-price">
+                    <span class="current">3500 грн</span>
+                    <span class="old">4200 грн</span>
+                </div>
+                <div class="product-showcase-actions">
+                    <button class="primary" onclick="filterCategory('stroller'); window.location.hash='products';">Перейти в категорію</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="product-showcase-card">
+            <div class="product-showcase-image">
+                <img src="product-placeholder.svg" alt="Хіт продажу 3">
+            </div>
+            <div class="product-showcase-body">
+                <div class="product-showcase-top">
+                    <span class="product-chip hit">ХІТ</span>
+                </div>
+                <h3>Дерев'яний сортер</h3>
+                <p>Розвиваюча іграшка для моторики, логіки та базових форм.</p>
+                <div class="product-showcase-price">
+                    <span class="current">400 грн</span>
+                    <span class="old">520 грн</span>
+                </div>
+                <div class="product-showcase-actions">
+                    <button class="primary" onclick="filterCategory('sorter'); window.location.hash='products';">Обрати товар</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="product-showcase-card">
+            <div class="product-showcase-image">
+                <img src="product-placeholder.svg" alt="Хіт продажу 4">
+            </div>
+            <div class="product-showcase-body">
+                <div class="product-showcase-top">
+                    <span class="product-chip hit">ХІТ</span>
+                </div>
+                <h3>Автокрісло Basic</h3>
+                <p>Надійне рішення для безпечних поїздок із дитиною.</p>
+                <div class="product-showcase-price">
+                    <span class="current">1800 грн</span>
+                    <span class="old">2200 грн</span>
+                </div>
+                <div class="product-showcase-actions">
+                    <button class="primary" onclick="filterCategory('seat'); window.location.hash='products';">Переглянути</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section-wrap">
+    <div class="section-title-row">
+        <h2>Новинки</h2>
+        <p>Свіжі позиції для каталогу та оновлення асортименту.</p>
+    </div>
+
+    <div class="product-showcase-grid">
+        <div class="product-showcase-card">
+            <div class="product-showcase-image">
+                <img src="product-placeholder.svg" alt="Новинка 1">
+            </div>
+            <div class="product-showcase-body">
+                <div class="product-showcase-top">
+                    <span class="product-chip new">НОВИНКА</span>
+                </div>
+                <h3>Товар для творчості</h3>
+                <p>Набір для занять, фантазії та розвитку творчих навичок у дитини.</p>
+                <div class="product-showcase-price">
+                    <span class="current">390 грн</span>
+                    <span class="old">480 грн</span>
+                </div>
+                <div class="product-showcase-actions">
+                    <button class="primary" onclick="filterCategory('creativity'); window.location.hash='products';">У розділ творчості</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="product-showcase-card">
+            <div class="product-showcase-image">
+                <img src="product-placeholder.svg" alt="Новинка 2">
+            </div>
+            <div class="product-showcase-body">
+                <div class="product-showcase-top">
+                    <span class="product-chip new">НОВИНКА</span>
+                </div>
+                <h3>Шкільний набір</h3>
+                <p>Корисний комплект для навчання, школи та щоденних занять.</p>
+                <div class="product-showcase-price">
+                    <span class="current">450 грн</span>
+                    <span class="old">540 грн</span>
+                </div>
+                <div class="product-showcase-actions">
+                    <button class="primary" onclick="filterCategory('school'); window.location.hash='products';">У шкільні товари</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="product-showcase-card">
+            <div class="product-showcase-image">
+                <img src="product-placeholder.svg" alt="Новинка 3">
+            </div>
+            <div class="product-showcase-body">
+                <div class="product-showcase-top">
+                    <span class="product-chip new">НОВИНКА</span>
+                </div>
+                <h3>Дитяча постіль</h3>
+                <p>Комплект для затишного сну та комфортної атмосфери в кімнаті.</p>
+                <div class="product-showcase-price">
+                    <span class="current">790 грн</span>
+                    <span class="old">950 грн</span>
+                </div>
+                <div class="product-showcase-actions">
+                    <button class="primary" onclick="filterCategory('bedding'); window.location.hash='products';">Переглянути постіль</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="product-showcase-card">
+            <div class="product-showcase-image">
+                <img src="product-placeholder.svg" alt="Новинка 4">
+            </div>
+            <div class="product-showcase-body">
+                <div class="product-showcase-top">
+                    <span class="product-chip new">НОВИНКА</span>
+                </div>
+                <h3>Товар для годування</h3>
+                <p>Зручний аксесуар для комфортного прийому їжі вдома та в дорозі.</p>
+                <div class="product-showcase-price">
+                    <span class="current">320 грн</span>
+                    <span class="old">390 грн</span>
+                </div>
+                <div class="product-showcase-actions">
+                    <button class="primary" onclick="filterCategory('feeding'); window.location.hash='products';">До товарів</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section-wrap">
+    <div class="section-title-row">
+        <h2>Акції</h2>
+        <p>Пропозиції, які допомагають вигідніше зібрати замовлення.</p>
+    </div>
+
+    <div class="product-showcase-grid">
+        <div class="product-showcase-card">
+            <div class="product-showcase-image">
+                <img src="product-placeholder.svg" alt="Акція 1">
+            </div>
+            <div class="product-showcase-body">
+                <div class="product-showcase-top">
+                    <span class="product-chip sale">АКЦІЯ</span>
+                </div>
+                <h3>Дитячий костюм</h3>
+                <p>Зручний одяг для прогулянок, дому та активного дня дитини.</p>
+                <div class="product-showcase-price">
+                    <span class="current">520 грн</span>
+                    <span class="old">650 грн</span>
+                </div>
+                <div class="product-showcase-actions">
+                    <button class="primary" onclick="filterCategory('clothes'); window.location.hash='products';">У категорію</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="product-showcase-card">
+            <div class="product-showcase-image">
+                <img src="product-placeholder.svg" alt="Акція 2">
+            </div>
+            <div class="product-showcase-body">
+                <div class="product-showcase-top">
+                    <span class="product-chip sale">АКЦІЯ</span>
+                </div>
+                <h3>Товар для гігієни</h3>
+                <p>Практичний варіант для щоденного догляду та комфорту малюка.</p>
+                <div class="product-showcase-price">
+                    <span class="current">240 грн</span>
+                    <span class="old">300 грн</span>
+                </div>
+                <div class="product-showcase-actions">
+                    <button class="primary" onclick="filterCategory('hygiene'); window.location.hash='products';">Перейти до гігієни</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="product-showcase-card">
+            <div class="product-showcase-image">
+                <img src="product-placeholder.svg" alt="Акція 3">
+            </div>
+            <div class="product-showcase-body">
+                <div class="product-showcase-top">
+                    <span class="product-chip sale">АКЦІЯ</span>
+                </div>
+                <h3>Дитячий транспорт</h3>
+                <p>Модель для активного дозвілля та веселих прогулянок на вулиці.</p>
+                <div class="product-showcase-price">
+                    <span class="current">1500 грн</span>
+                    <span class="old">1780 грн</span>
+                </div>
+                <div class="product-showcase-actions">
+                    <button class="primary" onclick="filterCategory('transport'); window.location.hash='products';">До транспорту</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="product-showcase-card">
+            <div class="product-showcase-image">
+                <img src="product-placeholder.svg" alt="Акція 4">
+            </div>
+            <div class="product-showcase-body">
+                <div class="product-showcase-top">
+                    <span class="product-chip sale">АКЦІЯ</span>
+                </div>
+                <h3>Товари для немовлят</h3>
+                <p>Корисні щоденні позиції для догляду за найменшими дітьми.</p>
+                <div class="product-showcase-price">
+                    <span class="current">390 грн</span>
+                    <span class="old">470 грн</span>
+                </div>
+                <div class="product-showcase-actions">
+                    <button class="primary" onclick="filterCategory('baby'); window.location.hash='products';">Переглянути</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 
 <div id="sidebar-overlay" class="sidebar-overlay" onclick="closeCatalogMenu()"></div>
 
@@ -188,6 +973,36 @@
     </main>
 
 </div>
+
+<section class="section-wrap">
+    <div class="section-title-row">
+        <h2>Як оформити замовлення</h2>
+        <p>Від першого кліку до підтвердження замовлення — усе просто та зрозуміло.</p>
+    </div>
+
+    <div class="how-order-grid">
+        <div class="how-order-card">
+            <div class="how-order-step">1</div>
+            <h3>Оберіть товар</h3>
+            <p>Скористайтеся категоріями, пошуком або сортуванням, щоб знайти потрібний товар.</p>
+        </div>
+        <div class="how-order-card">
+            <div class="how-order-step">2</div>
+            <h3>Додайте в кошик</h3>
+            <p>Вкажіть кількість і натисніть кнопку додавання товару в кошик.</p>
+        </div>
+        <div class="how-order-card">
+            <div class="how-order-step">3</div>
+            <h3>Оформіть замовлення</h3>
+            <p>Заповніть ім’я, телефон і дані доставки через Нову пошту або Укрпошту.</p>
+        </div>
+        <div class="how-order-card">
+            <div class="how-order-step">4</div>
+            <h3>Отримайте підтвердження</h3>
+            <p>Після оформлення менеджер зв’яжеться з вами для підтвердження замовлення.</p>
+        </div>
+    </div>
+</section>
 
 <section class="home-trust-strip">
     <div class="home-trust-card">
@@ -266,6 +1081,17 @@
         </div>
     </div>
 </div>
+
+<section class="cta-banner">
+    <div>
+        <h2>Потрібна допомога з вибором товару?</h2>
+        <p>
+            Якщо вам потрібно уточнити наявність, характеристики або підібрати товар для дитини,
+            перейдіть на сторінку контактів і напишіть нам зручним способом.
+        </p>
+    </div>
+    <a href="contacts.html">Зв’язатися з нами</a>
+</section>
 
 <footer class="site-footer">
     <div class="site-footer-grid">
