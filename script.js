@@ -1,5 +1,9 @@
 const container = document.getElementById("products");
-let currentProducts = Array.isArray(products) ? [...products] : [];
+
+let currentProducts = [];
+let activeCategory = "all";
+let activeSort = "";
+let activeSearch = "";
 
 const mobileCatalogBreakpoint = 900;
 
@@ -36,30 +40,64 @@ function syncCatalogMenuOnResize() {
     }
 }
 
-function syncProductsAndRender(keepFilter = true) {
-    const prevSearch = document.getElementById("search")?.value?.toLowerCase().trim() || "";
-    const prevIds = keepFilter ? currentProducts.map(item => item.id) : [];
-
-    refreshProductsFromStorage();
-
-    if (keepFilter && prevIds.length) {
-        currentProducts = products.filter(item => prevIds.includes(item.id));
-        if (!currentProducts.length) currentProducts = [...products];
-    } else {
-        currentProducts = [...products];
-    }
-
-    if (prevSearch) {
-        const filtered = currentProducts.filter(p => p.name.toLowerCase().includes(prevSearch));
-        renderProducts(filtered);
-        return;
-    }
-
-    renderProducts(currentProducts);
-    closeCatalogMenu();
+function getBaseProducts() {
+    return Array.isArray(window.products) ? [...window.products] : [];
 }
 
-/* РЕНДЕР ТОВАРІВ */
+function updateActiveCategoryUI() {
+    const items = document.querySelectorAll(".sidebar li");
+    items.forEach(item => item.classList.remove("active", "selected"));
+
+    const activeItem = document.querySelector(`.sidebar li[data-category="${activeCategory}"]`);
+    if (activeItem) {
+        activeItem.classList.add("active", "selected");
+    }
+}
+
+function ensureSidebarCategoryMarkers() {
+    const items = document.querySelectorAll(".sidebar li");
+    items.forEach(item => {
+        if (item.dataset.category) return;
+
+        const onclickValue = item.getAttribute("onclick") || "";
+        const match = onclickValue.match(/filterCategory\('([^']+)'\)/);
+        if (match) {
+            item.dataset.category = match[1];
+        }
+    });
+
+    updateActiveCategoryUI();
+}
+
+function applyFiltersAndRender() {
+    let list = getBaseProducts();
+
+    if (activeCategory !== "all") {
+        list = list.filter(product => product.category === activeCategory);
+    }
+
+    if (activeSearch) {
+        const search = activeSearch.toLowerCase();
+        list = list.filter(product => String(product.name || "").toLowerCase().includes(search));
+    }
+
+    if (activeSort === "cheap") {
+        list.sort((a, b) => a.price - b.price);
+    }
+
+    if (activeSort === "expensive") {
+        list.sort((a, b) => b.price - a.price);
+    }
+
+    if (activeSort === "name") {
+        list.sort((a, b) => String(a.name || "").localeCompare(String(b.name || ""), "uk"));
+    }
+
+    currentProducts = list;
+    renderProducts(currentProducts);
+    updateActiveCategoryUI();
+}
+
 function renderProducts(list) {
     if (!container) return;
 
@@ -74,40 +112,45 @@ function renderProducts(list) {
         return;
     }
 
-    list.forEach(p => {
-        container.innerHTML += `
-        <div class="product" id="prod-${p.id}" onclick="openProduct('${p.id}')">
-            <img src="${p.img}" alt="${p.name}">
-            <h3>${p.name}</h3>
+    container.innerHTML = list.map(product => `
+        <div class="product" id="prod-${product.id}" onclick="openProduct('${product.id}')">
+            <img src="${getSafeProductImage(product)}" alt="${escapeHtmlAttr(product.name)}" onerror="this.onerror=null;this.src='${PRODUCT_PLACEHOLDER}'">
+            <h3>${escapeHtmlText(product.name)}</h3>
             <div class="price">
-                <span class="old-price" id="old-${p.id}">${p.old} грн</span>
-                <span>${p.price} грн</span>
+                <span class="old-price" id="old-${product.id}">${product.old} грн</span>
+                <span>${product.price} грн</span>
             </div>
             <div class="quantity" onclick="event.stopPropagation()">
-                <button onclick="minus('${p.id}')">−</button>
+                <button onclick="minus('${product.id}')">−</button>
                 <input
-                    id="qty-${p.id}"
+                    id="qty-${product.id}"
                     type="number"
                     value="1"
                     min="1"
                     class="qty-input"
                 >
-                <button onclick="plus('${p.id}')">+</button>
+                <button onclick="plus('${product.id}')">+</button>
             </div>
-            <button class="add-btn" onclick="event.stopPropagation(); addToCart('${p.id}')">
+            <button class="add-btn" onclick="event.stopPropagation(); addToCart('${product.id}')">
                 Додати в кошик
             </button>
         </div>
-        `;
-    });
+    `).join("");
 }
 
-syncProductsAndRender(false);
+function escapeHtmlText(value) {
+    return String(value || "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;");
+}
 
-/* ВІДКРИТТЯ ТОВАРУ В НОВІЙ ВКЛАДЦІ */
+function escapeHtmlAttr(value) {
+    return escapeHtmlText(value).replaceAll('"', "&quot;").replaceAll("'", "&#39;");
+}
+
 function openProduct(id) {
-    refreshProductsFromStorage();
-    const product = products.find(p => p.id === id);
+    const product = findProductById(id);
     if (!product) return;
 
     localStorage.setItem("selectedProduct", JSON.stringify(product));
@@ -115,53 +158,32 @@ function openProduct(id) {
     window.open("product.html", "_blank");
 }
 
-/* ПОШУК */
 const searchEl = document.getElementById("search");
 if (searchEl) {
-    searchEl.addEventListener("input", e => {
-        const value = e.target.value.toLowerCase().trim();
-        const filtered = currentProducts.filter(p => p.name.toLowerCase().includes(value));
-        renderProducts(filtered);
+    searchEl.addEventListener("input", event => {
+        activeSearch = event.target.value.trim();
+        applyFiltersAndRender();
     });
 }
 
-/* КАТЕГОРІЇ */
-function filterCategory(cat) {
-    refreshProductsFromStorage();
-
-    if (cat === "all") {
-        currentProducts = [...products];
-    } else {
-        currentProducts = products.filter(p => p.category === cat);
-    }
+function filterCategory(category) {
+    activeCategory = category || "all";
 
     const search = document.getElementById("search");
-    if (search) search.value = "";
+    if (search) {
+        search.value = "";
+    }
+    activeSearch = "";
 
-    renderProducts(currentProducts);
+    applyFiltersAndRender();
     closeCatalogMenu();
 }
 
-/* СОРТУВАННЯ */
 function sortProducts(type) {
-    const sorted = [...currentProducts];
-
-    if (type === "cheap") {
-        sorted.sort((a, b) => a.price - b.price);
-    }
-
-    if (type === "expensive") {
-        sorted.sort((a, b) => b.price - a.price);
-    }
-
-    if (type === "name") {
-        sorted.sort((a, b) => a.name.localeCompare(b.name, "uk"));
-    }
-
-    renderProducts(sorted);
+    activeSort = type || "";
+    applyFiltersAndRender();
 }
 
-/* HEADER SCROLL */
 let lastScroll = 0;
 const header = document.querySelector("header");
 
@@ -179,36 +201,50 @@ window.addEventListener("scroll", () => {
     lastScroll = current;
 });
 
-/* КІЛЬКІСТЬ */
 function plus(id) {
     const el = document.getElementById("qty-" + id);
     if (!el) return;
-    el.value = parseInt(el.value || "1", 10) + 1;
+
+    const value = parseInt(el.value || "1", 10);
+    el.value = Number.isNaN(value) || value < 1 ? 1 : value + 1;
 }
 
 function minus(id) {
     const el = document.getElementById("qty-" + id);
     if (!el) return;
 
-    const val = parseInt(el.value || "1", 10);
-    if (val > 1) {
-        el.value = val - 1;
+    const value = parseInt(el.value || "1", 10);
+    if (Number.isNaN(value) || value <= 1) {
+        el.value = 1;
+        return;
     }
+
+    el.value = value - 1;
 }
 
-window.addEventListener("products:updated", () => syncProductsAndRender(false));
+function handleProductsReady() {
+    ensureSidebarCategoryMarkers();
+    applyFiltersAndRender();
+}
+
+window.addEventListener("products:ready", handleProductsReady);
+window.addEventListener("products:updated", handleProductsReady);
+
 window.addEventListener("storage", event => {
     if (event.key === "products") {
-        syncProductsAndRender(false);
+        handleProductsReady();
     }
 });
 
-/* КОШИК */
 renderCart();
-
 
 window.addEventListener("resize", syncCatalogMenuOnResize);
 document.addEventListener("keydown", event => {
     if (event.key === "Escape") closeCatalogMenu();
 });
 syncCatalogMenuOnResize();
+ensureSidebarCategoryMarkers();
+
+if (typeof window.productsReady === "function" && window.productsReady()) {
+    handleProductsReady();
+}
