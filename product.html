@@ -738,9 +738,10 @@
 
     function sanitizeImage(src){
       if (!src || typeof src !== 'string') return fallbackImage();
+
       const value = src.trim();
       if (!value) return fallbackImage();
-      if (/^https?:\/\//i.test(value)) return fallbackImage();
+
       return value;
     }
 

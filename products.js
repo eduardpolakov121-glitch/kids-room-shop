@@ -59,9 +59,19 @@ function isExternalImage(url) {
     return /^https?:\/\//i.test(String(url || "").trim());
 }
 
+function isSupabaseStorageImage(url) {
+    return /^https?:\/\/[^\/]+\.supabase\.co\/storage\/v1\/object\/public\//i.test(String(url || "").trim());
+}
+
 function sanitizeProductImage(url) {
     const value = String(url || "").trim();
-    if (!value || isExternalImage(value)) return PRODUCT_PLACEHOLDER;
+
+    if (!value) return PRODUCT_PLACEHOLDER;
+
+    if (isExternalImage(value)) {
+        return value;
+    }
+
     return value;
 }
 
@@ -117,12 +127,6 @@ let products = getProductsFromStorage();
 if (products.length === 0) {
     products = DEFAULT_PRODUCTS.map(item => normalizeProduct(item));
     saveProducts();
-} else {
-    const hadExternalImages = products.some(item => isExternalImage(item.img));
-    if (hadExternalImages) {
-        products = products.map(item => normalizeProduct(item, item.id));
-        saveProducts();
-    }
 }
 
 function refreshProductsFromStorage() {
