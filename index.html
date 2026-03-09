@@ -15,6 +15,9 @@
 <header>
     <div class="logo">Kids Room</div>
     <input id="search" placeholder="🔍 Пошук товару">
+    <button class="catalog-toggle" id="catalog-toggle" type="button" onclick="toggleCatalogMenu()" aria-label="Відкрити каталог">
+        ⋮
+    </button>
     <div class="cart-button" onclick="toggleCart()">
         🛒 <span id="cart-count">0</span>
     </div>
@@ -24,9 +27,11 @@
     <img src="banner.jpg" alt="Kids Room banner">
 </div>
 
+<div id="sidebar-overlay" class="sidebar-overlay" onclick="closeCatalogMenu()"></div>
+
 <div class="container">
 
-    <aside class="sidebar">
+    <aside class="sidebar" id="catalog-sidebar">
         <h3>Каталог</h3>
         <ul>
             <li onclick="filterCategory('all')">✨ Всі товари</li>
@@ -108,6 +113,18 @@
         <div class="checkout-actions">
             <button onclick="submitCheckout()">Підтвердити</button>
             <button class="secondary-btn" onclick="closeCheckoutModal()">Скасувати</button>
+        </div>
+    </div>
+</div>
+
+<div id="checkout-success-modal" class="checkout-success-modal" onclick="closeSuccessModal(event)">
+    <div class="checkout-success-box">
+        <div class="checkout-success-icon">✅</div>
+        <h2>Ваше замовлення прийнято</h2>
+        <div class="checkout-success-order">Номер замовлення: <span id="success-order-number">—</span></div>
+        <p>Дякуємо за покупку у Kids Room. Наш менеджер зв'яжеться з вами найближчим часом для підтвердження замовлення.</p>
+        <div class="checkout-success-actions">
+            <button type="button" onclick="closeSuccessModal()">Повернутись до магазину</button>
         </div>
     </div>
 </div>

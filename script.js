@@ -1,6 +1,41 @@
 const container = document.getElementById("products");
 let currentProducts = Array.isArray(products) ? [...products] : [];
 
+const mobileCatalogBreakpoint = 900;
+
+function isMobileCatalogMode() {
+    return window.innerWidth <= mobileCatalogBreakpoint;
+}
+
+function toggleCatalogMenu() {
+    if (!isMobileCatalogMode()) return;
+
+    const sidebar = document.getElementById("catalog-sidebar");
+    const overlay = document.getElementById("sidebar-overlay");
+    if (!sidebar || !overlay) return;
+
+    const willOpen = !sidebar.classList.contains("open");
+    sidebar.classList.toggle("open", willOpen);
+    overlay.classList.toggle("active", willOpen);
+    document.body.classList.toggle("catalog-menu-open", willOpen);
+}
+
+function closeCatalogMenu() {
+    const sidebar = document.getElementById("catalog-sidebar");
+    const overlay = document.getElementById("sidebar-overlay");
+    if (!sidebar || !overlay) return;
+
+    sidebar.classList.remove("open");
+    overlay.classList.remove("active");
+    document.body.classList.remove("catalog-menu-open");
+}
+
+function syncCatalogMenuOnResize() {
+    if (!isMobileCatalogMode()) {
+        closeCatalogMenu();
+    }
+}
+
 function syncProductsAndRender(keepFilter = true) {
     const prevSearch = document.getElementById("search")?.value?.toLowerCase().trim() || "";
     const prevIds = keepFilter ? currentProducts.map(item => item.id) : [];
@@ -21,6 +56,7 @@ function syncProductsAndRender(keepFilter = true) {
     }
 
     renderProducts(currentProducts);
+    closeCatalogMenu();
 }
 
 /* РЕНДЕР ТОВАРІВ */
@@ -103,6 +139,7 @@ function filterCategory(cat) {
     if (search) search.value = "";
 
     renderProducts(currentProducts);
+    closeCatalogMenu();
 }
 
 /* СОРТУВАННЯ */
@@ -168,3 +205,10 @@ window.addEventListener("storage", event => {
 
 /* КОШИК */
 renderCart();
+
+
+window.addEventListener("resize", syncCatalogMenuOnResize);
+document.addEventListener("keydown", event => {
+    if (event.key === "Escape") closeCatalogMenu();
+});
+syncCatalogMenuOnResize();

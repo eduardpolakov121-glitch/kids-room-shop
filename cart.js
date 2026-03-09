@@ -4,6 +4,46 @@ const NOVA_POSHTA_API_KEY = "0cddc3bd30e2e4de2f2ce8f46313a168";
 const NOVA_POSHTA_API_URL = "https://api.novaposhta.ua/v2.0/json/";
 
 let selectedCity = null;
+let lastCheckoutOrderNumber = "";
+
+function getCheckoutSuccessOrderNumber(payload) {
+    const rawId = Array.isArray(payload) ? payload[0]?.id : payload?.id;
+    const rawString = String(rawId || "").trim();
+    const digits = rawString.replace(/\D/g, "");
+
+    if (digits.length >= 5) {
+        return "#" + digits.slice(-6);
+    }
+
+    if (rawString) {
+        return "#" + rawString.replace(/[^a-zA-Z0-9]/g, "").slice(-6).toUpperCase();
+    }
+
+    return "#KR" + String(Date.now()).slice(-6);
+}
+
+function openSuccessModal(orderNumber) {
+    const modal = document.getElementById("checkout-success-modal");
+    const number = document.getElementById("success-order-number");
+
+    lastCheckoutOrderNumber = orderNumber || getCheckoutSuccessOrderNumber(null);
+
+    if (number) number.textContent = lastCheckoutOrderNumber;
+    if (!modal) return;
+
+    modal.classList.add("open");
+    document.body.classList.add("success-modal-open");
+}
+
+function closeSuccessModal(event) {
+    if (event && event.target && event.target.id !== "checkout-success-modal") return;
+
+    const modal = document.getElementById("checkout-success-modal");
+    if (!modal) return;
+
+    modal.classList.remove("open");
+    document.body.classList.remove("success-modal-open");
+}
 
 /* КОРЗИНА */
 function toggleCart() {
@@ -320,7 +360,7 @@ async function submitCheckout() {
             throw new Error("Функція saveOrderCRM не завантажилась. Замініть файл crm.js на нову версію і оновіть сайт.");
         }
 
-        await crmSaver(order);
+        const savedOrder = await crmSaver(order);
 
         cart = [];
         saveCart();
@@ -339,7 +379,7 @@ async function submitCheckout() {
         closeCheckoutModal();
         closeCart();
 
-        alert("Замовлення оформлено");
+        openSuccessModal(getCheckoutSuccessOrderNumber(savedOrder));
     } catch (error) {
         console.error(error);
         alert("Помилка CRM: " + error.message);
