@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+всю жту информацию смести куда то мне кажеться она много занимает места,клиент впервіе зайлет и много информации а товар на много ниже <!DOCTYPE html>
 <html lang="uk">
 
 <head>
@@ -8,70 +8,58 @@
 <link rel="stylesheet" href="style.css">
 <style>
 .hero-selling{
-    margin:22px 20px 18px;
-    background:linear-gradient(135deg,#fff4e8 0%,#fffdf9 42%,#eef6fb 100%);
+    margin:16px 20px 16px;
+    background:linear-gradient(135deg,#fff4e8 0%,#fffdf9 52%,#eef6fb 100%);
     border:1px solid #ece7df;
-    border-radius:28px;
-    box-shadow:0 16px 38px rgba(0,0,0,0.08);
+    border-radius:24px;
+    box-shadow:0 14px 34px rgba(0,0,0,0.07);
     overflow:hidden;
     position:relative;
 }
 .hero-selling::before{
     content:"";
     position:absolute;
-    width:260px;
-    height:260px;
-    border-radius:50%;
-    right:-60px;
-    top:-70px;
-    background:radial-gradient(circle,#ffd36f 0%,rgba(255,211,111,0) 70%);
-    opacity:.72;
-}
-.hero-selling::after{
-    content:"";
-    position:absolute;
     width:220px;
     height:220px;
     border-radius:50%;
-    left:-70px;
-    bottom:-90px;
-    background:radial-gradient(circle,#ffd9c2 0%,rgba(255,217,194,0) 70%);
-    opacity:.7;
+    right:-70px;
+    top:-70px;
+    background:radial-gradient(circle,#ffd36f 0%,rgba(255,211,111,0) 70%);
+    opacity:.6;
 }
 .hero-selling-inner{
     position:relative;
     z-index:1;
-    display:grid;
-    grid-template-columns:1.15fr .85fr;
-    gap:26px;
-    align-items:center;
-    padding:34px;
+    padding:26px 28px;
+}
+.hero-selling-copy{
+    max-width:900px;
 }
 .hero-selling-copy h1{
-    margin:0 0 12px;
-    font-size:clamp(32px,4vw,54px);
-    line-height:1.04;
+    margin:0 0 10px;
+    font-size:clamp(30px,4vw,52px);
+    line-height:1.02;
     letter-spacing:-.03em;
     color:#243041;
 }
 .hero-selling-copy p{
-    margin:0 0 18px;
+    margin:0 0 14px;
     color:#5f6c7d;
-    line-height:1.75;
-    font-size:17px;
-    max-width:700px;
+    line-height:1.6;
+    font-size:16px;
+    max-width:820px;
 }
 .hero-selling-badges{
     display:flex;
     flex-wrap:wrap;
     gap:10px;
-    margin-bottom:22px;
+    margin-bottom:16px;
 }
 .hero-selling-badge{
     display:inline-flex;
     align-items:center;
     gap:8px;
-    padding:10px 14px;
+    padding:9px 13px;
     border-radius:999px;
     background:#fff8ef;
     border:1px solid #ffe0c2;
@@ -89,9 +77,9 @@
     display:inline-flex;
     align-items:center;
     justify-content:center;
-    min-height:54px;
-    padding:14px 22px;
-    border-radius:16px;
+    min-height:50px;
+    padding:12px 20px;
+    border-radius:15px;
     text-decoration:none;
     font-weight:800;
     transition:transform .18s ease, box-shadow .18s ease, background .18s ease;
@@ -103,132 +91,108 @@
 .hero-selling-btn{
     background:linear-gradient(135deg,#ff6b00 0%,#ff8d38 100%);
     color:#fff;
-    box-shadow:0 14px 28px rgba(255,107,0,0.24);
+    box-shadow:0 12px 24px rgba(255,107,0,0.22);
 }
 .hero-selling-btn-secondary{
     background:#fff;
     color:#243041;
     border:1px solid #ece7df;
-    box-shadow:0 8px 22px rgba(0,0,0,0.05);
-}
-.hero-selling-visual{
-    display:grid;
-    grid-template-columns:repeat(2,minmax(0,1fr));
-    gap:14px;
-}
-.hero-visual-card{
-    background:#fffdf9;
-    border:1px solid #ece7df;
-    border-radius:22px;
-    box-shadow:0 10px 26px rgba(0,0,0,0.06);
-    padding:18px;
-    min-height:134px;
-    display:flex;
-    flex-direction:column;
-    justify-content:space-between;
-}
-.hero-visual-card strong{
-    color:#243041;
-    font-size:18px;
-}
-.hero-visual-card span{
-    color:#6f7b8c;
-    line-height:1.6;
-    font-size:14px;
+    box-shadow:0 8px 20px rgba(0,0,0,0.05);
 }
 
 .section-wrap{
-    margin:0 20px 18px;
+    margin:0 20px 16px;
 }
 .section-title-row{
     display:flex;
     align-items:flex-end;
     justify-content:space-between;
     gap:14px;
-    margin-bottom:14px;
+    margin-bottom:12px;
     flex-wrap:wrap;
 }
 .section-title-row h2{
     margin:0;
     color:#243041;
-    font-size:30px;
+    font-size:28px;
     line-height:1.08;
 }
 .section-title-row p{
     margin:0;
     color:#6f7b8c;
-    line-height:1.6;
+    line-height:1.55;
+    font-size:15px;
 }
 
 .benefits-grid{
     display:grid;
     grid-template-columns:repeat(4,minmax(0,1fr));
-    gap:16px;
+    gap:14px;
 }
 .benefit-card{
     background:#fffdf9;
     border:1px solid #ece7df;
-    border-radius:22px;
-    box-shadow:0 10px 28px rgba(0,0,0,0.06);
-    padding:20px;
+    border-radius:20px;
+    box-shadow:0 10px 24px rgba(0,0,0,0.05);
+    padding:18px;
 }
 .benefit-card h3{
     margin:0 0 8px;
     color:#243041;
-    font-size:18px;
+    font-size:17px;
 }
 .benefit-card p{
     margin:0;
     color:#6f7b8c;
-    line-height:1.7;
+    line-height:1.65;
     font-size:14px;
 }
 
 .home-categories-grid{
     display:grid;
     grid-template-columns:repeat(4,minmax(0,1fr));
-    gap:16px;
+    gap:14px;
 }
 .home-category-card{
     background:linear-gradient(180deg,#fffdf9 0%,#fff7ef 100%);
     border:1px solid #ece7df;
-    border-radius:22px;
+    border-radius:20px;
     box-shadow:0 10px 24px rgba(0,0,0,0.05);
-    padding:20px;
+    padding:18px;
     text-decoration:none;
     color:#243041;
     transition:transform .18s ease, box-shadow .18s ease;
 }
 .home-category-card:hover{
     transform:translateY(-3px);
-    box-shadow:0 16px 30px rgba(0,0,0,0.09);
+    box-shadow:0 14px 28px rgba(0,0,0,0.08);
 }
 .home-category-card .icon{
-    font-size:34px;
-    margin-bottom:10px;
+    font-size:30px;
+    margin-bottom:8px;
     display:block;
 }
 .home-category-card strong{
     display:block;
-    margin-bottom:8px;
-    font-size:18px;
+    margin-bottom:6px;
+    font-size:17px;
 }
 .home-category-card span{
     color:#6f7b8c;
-    line-height:1.6;
+    line-height:1.55;
     font-size:14px;
 }
 
 .product-showcase-grid{
     display:grid;
     grid-template-columns:repeat(4,minmax(0,1fr));
-    gap:18px;
+    gap:16px;
 }
 .product-showcase-card{
     background:#fffdf9;
     border:1px solid #ece7df;
-    border-radius:22px;
-    box-shadow:0 10px 28px rgba(0,0,0,0.06);
+    border-radius:20px;
+    box-shadow:0 10px 24px rgba(0,0,0,0.05);
     overflow:hidden;
     display:flex;
     flex-direction:column;
@@ -236,7 +200,7 @@
 }
 .product-showcase-image{
     background:#f6ece0;
-    height:210px;
+    height:200px;
     overflow:hidden;
 }
 .product-showcase-image img{
@@ -246,7 +210,7 @@
     display:block;
 }
 .product-showcase-body{
-    padding:18px;
+    padding:16px;
     display:flex;
     flex-direction:column;
     gap:10px;
@@ -261,7 +225,7 @@
     display:inline-flex;
     align-items:center;
     justify-content:center;
-    padding:8px 10px;
+    padding:7px 10px;
     border-radius:999px;
     font-size:12px;
     font-weight:800;
@@ -280,14 +244,14 @@
 }
 .product-showcase-card h3{
     margin:0;
-    font-size:19px;
-    line-height:1.35;
+    font-size:18px;
+    line-height:1.32;
     color:#243041;
 }
 .product-showcase-card p{
     margin:0;
     color:#6f7b8c;
-    line-height:1.65;
+    line-height:1.6;
     font-size:14px;
 }
 .product-showcase-price{
@@ -299,7 +263,7 @@
 }
 .product-showcase-price .current{
     color:#ff6600;
-    font-size:24px;
+    font-size:22px;
     font-weight:800;
 }
 .product-showcase-price .old{
@@ -314,10 +278,10 @@
 }
 .product-showcase-actions button{
     flex:1;
-    min-width:140px;
+    min-width:120px;
     border:none;
     border-radius:12px;
-    padding:12px 14px;
+    padding:11px 14px;
     cursor:pointer;
     font-weight:800;
 }
@@ -325,26 +289,22 @@
     background:#ff6600;
     color:#fff;
 }
-.product-showcase-actions .secondary{
-    background:#f1f3f6;
-    color:#243041;
-}
 
 .how-order-grid{
     display:grid;
     grid-template-columns:repeat(4,minmax(0,1fr));
-    gap:16px;
+    gap:14px;
 }
 .how-order-card{
     background:#fffdf9;
     border:1px solid #ece7df;
-    border-radius:22px;
-    box-shadow:0 10px 26px rgba(0,0,0,0.05);
-    padding:20px;
+    border-radius:20px;
+    box-shadow:0 10px 24px rgba(0,0,0,0.05);
+    padding:18px;
 }
 .how-order-step{
-    width:42px;
-    height:42px;
+    width:40px;
+    height:40px;
     border-radius:50%;
     display:flex;
     align-items:center;
@@ -352,26 +312,26 @@
     background:#ff6600;
     color:#fff;
     font-weight:800;
-    margin-bottom:12px;
+    margin-bottom:10px;
 }
 .how-order-card h3{
     margin:0 0 8px;
     color:#243041;
-    font-size:18px;
+    font-size:17px;
 }
 .how-order-card p{
     margin:0;
     color:#6f7b8c;
-    line-height:1.7;
+    line-height:1.65;
     font-size:14px;
 }
 
 .cta-banner{
-    margin:0 20px 18px;
+    margin:0 20px 16px;
     background:linear-gradient(135deg,#243041 0%,#33465f 100%);
-    border-radius:28px;
-    box-shadow:0 16px 36px rgba(36,48,65,0.22);
-    padding:28px;
+    border-radius:24px;
+    box-shadow:0 16px 32px rgba(36,48,65,0.2);
+    padding:24px;
     color:#fff;
     display:flex;
     align-items:center;
@@ -381,75 +341,75 @@
 }
 .cta-banner h2{
     margin:0 0 8px;
-    font-size:30px;
+    font-size:28px;
 }
 .cta-banner p{
     margin:0;
     color:rgba(255,255,255,0.82);
-    line-height:1.7;
+    line-height:1.65;
     max-width:760px;
 }
 .cta-banner a{
     display:inline-flex;
     align-items:center;
     justify-content:center;
-    min-height:54px;
-    padding:14px 22px;
+    min-height:50px;
+    padding:12px 20px;
     background:#ff6600;
     color:#fff;
     text-decoration:none;
-    border-radius:16px;
+    border-radius:15px;
     font-weight:800;
-    box-shadow:0 14px 30px rgba(255,107,0,0.22);
+    box-shadow:0 12px 24px rgba(255,107,0,0.2);
 }
 
 .home-trust-strip{
-    margin:0 20px 10px;
+    margin:0 20px 8px;
     display:grid;
     grid-template-columns:repeat(3,minmax(0,1fr));
-    gap:16px;
+    gap:14px;
 }
 .home-trust-card{
     background:#fffdf9;
     border:1px solid #ece7df;
     border-radius:18px;
-    box-shadow:0 10px 26px rgba(0,0,0,0.05);
-    padding:18px;
+    box-shadow:0 10px 24px rgba(0,0,0,0.05);
+    padding:16px;
 }
 .home-trust-card h3{
     margin:0 0 8px;
     color:#243041;
-    font-size:18px;
+    font-size:17px;
 }
 .home-trust-card p{
     margin:0;
     color:#6f7b8c;
-    line-height:1.6;
+    line-height:1.55;
     font-size:14px;
 }
 
 .site-footer{
-    margin:18px 20px 28px;
+    margin:16px 20px 24px;
     background:#fffdf9;
     border:1px solid #ece7df;
-    border-radius:24px;
-    box-shadow:0 12px 30px rgba(0,0,0,0.06);
-    padding:24px;
+    border-radius:22px;
+    box-shadow:0 12px 28px rgba(0,0,0,0.05);
+    padding:22px;
 }
 .site-footer-grid{
     display:grid;
     grid-template-columns:1.2fr 1fr 1fr;
-    gap:22px;
+    gap:20px;
 }
 .site-footer h3{
     margin:0 0 12px;
     color:#243041;
-    font-size:20px;
+    font-size:19px;
 }
 .site-footer p{
     margin:0;
     color:#6f7b8c;
-    line-height:1.7;
+    line-height:1.65;
 }
 .site-footer-links{
     display:flex;
@@ -465,8 +425,8 @@
     color:#ff6600;
 }
 .site-footer-note{
-    margin-top:18px;
-    padding-top:16px;
+    margin-top:16px;
+    padding-top:14px;
     border-top:1px solid #ece7df;
     color:#6f7b8c;
     font-size:14px;
@@ -474,15 +434,11 @@
 }
 
 @media (max-width:1100px){
-    .hero-selling-inner,
     .benefits-grid,
     .home-categories-grid,
     .product-showcase-grid,
     .how-order-grid{
         grid-template-columns:repeat(2,minmax(0,1fr));
-    }
-    .hero-selling-inner{
-        grid-template-columns:1fr;
     }
     .site-footer-grid{
         grid-template-columns:1fr 1fr;
@@ -513,16 +469,18 @@
     .benefits-grid,
     .home-categories-grid,
     .product-showcase-grid,
-    .how-order-grid,
-    .hero-selling-visual{
+    .how-order-grid{
         grid-template-columns:1fr;
     }
     .hero-selling-inner{
-        padding:20px;
+        padding:18px;
     }
     .section-title-row h2,
     .cta-banner h2{
-        font-size:26px;
+        font-size:24px;
+    }
+    .hero-selling-copy p{
+        font-size:15px;
     }
 }
 
@@ -574,39 +532,19 @@
         <div class="hero-selling-copy">
             <h1>Все для дитячої кімнати, прогулянок і щасливого дитинства</h1>
             <p>
-                У Kids Room ви можете знайти іграшки, коляски, автокрісла, одяг, меблі,
-                шкільні товари та багато іншого. Простий каталог, зручне оформлення замовлення
-                і швидкий зв’язок з менеджером допоможуть зробити покупку легкою.
+                Іграшки, коляски, автокрісла, одяг, меблі та інші дитячі товари —
+                усе в одному магазині з простим оформленням замовлення.
             </p>
 
             <div class="hero-selling-badges">
-                <span class="hero-selling-badge">🧸 Великий вибір категорій</span>
+                <span class="hero-selling-badge">🧸 Великий вибір</span>
                 <span class="hero-selling-badge">🚚 Доставка по Україні</span>
-                <span class="hero-selling-badge">💬 Швидка консультація</span>
+                <span class="hero-selling-badge">💬 Швидкий зв’язок</span>
             </div>
 
             <div class="hero-selling-actions">
                 <a class="hero-selling-btn" href="#products">Перейти до товарів</a>
                 <a class="hero-selling-btn-secondary" href="delivery-payment.html">Доставка і оплата</a>
-            </div>
-        </div>
-
-        <div class="hero-selling-visual">
-            <div class="hero-visual-card">
-                <strong>👶 Товари для малюків</strong>
-                <span>Все необхідне для щоденного догляду, комфорту та розвитку дитини.</span>
-            </div>
-            <div class="hero-visual-card">
-                <strong>🎁 Ідеї для подарунків</strong>
-                <span>Іграшки, творчість, набори та корисні товари для дітей різного віку.</span>
-            </div>
-            <div class="hero-visual-card">
-                <strong>🏡 Затишок у дитячій</strong>
-                <span>Меблі, постіль і практичні речі для зручного простору дитини.</span>
-            </div>
-            <div class="hero-visual-card">
-                <strong>🛒 Швидке замовлення</strong>
-                <span>Обирайте товари, додавайте в кошик і оформлюйте замовлення за кілька хвилин.</span>
             </div>
         </div>
     </div>
