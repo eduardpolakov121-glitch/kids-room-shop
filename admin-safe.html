@@ -200,10 +200,53 @@ button:hover{ opacity:0.92; }
     </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-config.js"></script>
 <script src="products.js"></script>
 <script src="crm.js"></script>
 <script>
+const SUPABASE_CONFIG = window.KIDS_ROOM_SUPABASE_CONFIG || null;
+
+const supabaseClient = SUPABASE_CONFIG
+    ? window.supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey)
+    : null;
+
 const ADMIN_LOGIN_KEY = "kids_room_admin_login";
+
+function isSupabaseReady() {
+    return !!(SUPABASE_CONFIG && supabaseClient);
+}
+
+async function uploadImageToSupabase(file) {
+    if (!file) return "";
+
+    if (!isSupabaseReady()) {
+        throw new Error("Supabase не підключений");
+    }
+
+    const rawExt = String(file.name || "").split(".").pop() || "jpg";
+    const fileExt = rawExt.toLowerCase().replace(/[^a-z0-9]/g, "") || "jpg";
+    const fileName = `product-${Date.now()}-${Math.random().toString(36).slice(2, 10)}.${fileExt}`;
+    const filePath = `products/${fileName}`;
+
+    const { error: uploadError } = await supabaseClient.storage
+        .from(SUPABASE_CONFIG.bucket)
+        .upload(filePath, file, {
+            cacheControl: "3600",
+            upsert: false,
+            contentType: file.type || "image/jpeg"
+        });
+
+    if (uploadError) {
+        throw uploadError;
+    }
+
+    const { data } = supabaseClient.storage
+        .from(SUPABASE_CONFIG.bucket)
+        .getPublicUrl(filePath);
+
+    return data?.publicUrl || "";
+}
 
 function openAdminPanel() {
     document.getElementById("loginBox").style.display = "none";
@@ -256,7 +299,7 @@ function showPreview(src) {
     document.getElementById("previewBox").style.display = "block";
 }
 
-function saveProduct() {
+async function saveProduct() {
     const id = document.getElementById("prodId").value.trim();
     const name = document.getElementById("prodName").value.trim();
     const price = parseInt(document.getElementById("prodPrice").value, 10);
@@ -270,8 +313,15 @@ function saveProduct() {
         return;
     }
 
-    function finish(img) {
-        const exist = products.find(product => product.id === id);
+    const exist = products.find(product => product.id === id);
+
+    try {
+        let uploadedImage = exist?.img || PRODUCT_PLACEHOLDER;
+
+        if (file) {
+            uploadedImage = await uploadImageToSupabase(file);
+        }
+
         const product = normalizeProduct({
             id: id || "prod_" + Date.now(),
             name,
@@ -279,7 +329,7 @@ function saveProduct() {
             old: old || price,
             description: desc,
             category: cat,
-            img: img || exist?.img || PRODUCT_PLACEHOLDER
+            img: uploadedImage || exist?.img || PRODUCT_PLACEHOLDER
         }, id || undefined);
 
         const index = products.findIndex(item => item.id === product.id);
@@ -293,15 +343,9 @@ function saveProduct() {
         renderList();
         clearForm();
         alert("Товар збережено ✅");
-    }
-
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = e => finish(e.target.result);
-        reader.readAsDataURL(file);
-    } else {
-        const exist = products.find(product => product.id === id);
-        finish(exist ? exist.img : PRODUCT_PLACEHOLDER);
+    } catch (error) {
+        console.error("Помилка збереження товару:", error);
+        alert("Не вдалося завантажити фото або зберегти товар");
     }
 }
 
