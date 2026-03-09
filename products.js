@@ -55,23 +55,29 @@ const DEFAULT_PRODUCTS = [
     }
 ];
 
+const SUPABASE_PRODUCTS_CONFIG = {
+    url: "https://xhhzxiithajxgngmbzzd.supabase.co",
+    anonKey: "sb_publishable_cRp6r2C_3nszludByS9V9Q_sl1QlHg5",
+    table: "products"
+};
+
+const PRODUCTS_CACHE_KEY = "products";
+const PRODUCTS_SYNC_FLAG_KEY = "kids_room_products_last_sync";
+const PRODUCTS_INIT_FLAG_KEY = "kids_room_products_seeded";
+
+let products = [];
+let supabaseClientInstance = null;
+let supabaseReadyPromise = null;
+let productsLoadingPromise = null;
+
 function isExternalImage(url) {
     return /^https?:\/\//i.test(String(url || "").trim());
-}
-
-function isSupabaseStorageImage(url) {
-    return /^https?:\/\/[^\/]+\.supabase\.co\/storage\/v1\/object\/public\//i.test(String(url || "").trim());
 }
 
 function sanitizeProductImage(url) {
     const value = String(url || "").trim();
 
     if (!value) return PRODUCT_PLACEHOLDER;
-
-    if (isExternalImage(value)) {
-        return value;
-    }
-
     return value;
 }
 
@@ -84,8 +90,8 @@ function normalizeProduct(raw, fallbackId = null) {
         id: String(raw?.id || fallbackId || `prod_${Date.now()}`),
         name: String(raw?.name || "Без назви").trim(),
         category: knownCategory ? String(raw?.category).trim() : "toy",
-        price: Number.isFinite(price) ? price : 0,
-        old: Number.isFinite(oldPrice) ? oldPrice : 0,
+        price: Number.isFinite(price) ? Math.round(price) : 0,
+        old: Number.isFinite(oldPrice) ? Math.round(oldPrice) : 0,
         description: String(raw?.description || "").trim(),
         img: sanitizeProductImage(raw?.img)
     };
@@ -107,7 +113,7 @@ function getSafeProductImage(product) {
 
 function getProductsFromStorage() {
     try {
-        const stored = JSON.parse(localStorage.getItem("products") || "[]");
+        const stored = JSON.parse(localStorage.getItem(PRODUCTS_CACHE_KEY) || "[]");
         if (!Array.isArray(stored)) return [];
         return stored.map((item, index) => normalizeProduct(item, `prod_${index + 1}`));
     } catch (error) {
@@ -116,26 +122,304 @@ function getProductsFromStorage() {
     }
 }
 
-function saveProducts() {
-    products = products.map((item, index) => normalizeProduct(item, item?.id || `prod_${index + 1}`));
-    localStorage.setItem("products", JSON.stringify(products));
+function saveProductsToLocalCache(list) {
+    const normalized = Array.isArray(list)
+        ? list.map((item, index) => normalizeProduct(item, item?.id || `prod_${index + 1}`))
+        : [];
+
+    products = normalized;
+    localStorage.setItem(PRODUCTS_CACHE_KEY, JSON.stringify(products));
+    localStorage.setItem(PRODUCTS_SYNC_FLAG_KEY, String(Date.now()));
+    window.products = products;
     window.dispatchEvent(new CustomEvent("products:updated", { detail: products }));
+
+    if (typeof window.syncProductsAndRender === "function") {
+        window.syncProductsAndRender(false);
+    }
+
+    return products;
 }
 
-let products = getProductsFromStorage();
+function buildSupabaseProductPayload(product) {
+    const normalized = normalizeProduct(product, product?.id);
 
-if (products.length === 0) {
-    products = DEFAULT_PRODUCTS.map(item => normalizeProduct(item));
-    saveProducts();
+    return {
+        id: normalized.id,
+        name: normalized.name,
+        category: normalized.category,
+        price: normalized.price,
+        old: normalized.old,
+        description: normalized.description,
+        img: normalized.img
+    };
+}
+
+function escapeHtml(value) {
+    return String(value || "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#39;");
+}
+
+async function ensureSupabaseLoaded() {
+    if (supabaseClientInstance) return supabaseClientInstance;
+    if (supabaseReadyPromise) return supabaseReadyPromise;
+
+    supabaseReadyPromise = new Promise((resolve, reject) => {
+        const finish = () => {
+            try {
+                if (!window.supabase || typeof window.supabase.createClient !== "function") {
+                    throw new Error("Supabase library not found");
+                }
+
+                supabaseClientInstance = window.supabase.createClient(
+                    SUPABASE_PRODUCTS_CONFIG.url,
+                    SUPABASE_PRODUCTS_CONFIG.anonKey
+                );
+
+                resolve(supabaseClientInstance);
+            } catch (error) {
+                reject(error);
+            }
+        };
+
+        if (window.supabase && typeof window.supabase.createClient === "function") {
+            finish();
+            return;
+        }
+
+        const existingScript = document.querySelector('script[data-kids-room-supabase="true"]');
+        if (existingScript) {
+            existingScript.addEventListener("load", finish, { once: true });
+            existingScript.addEventListener("error", () => reject(new Error("Не вдалося завантажити Supabase library")), { once: true });
+            return;
+        }
+
+        const script = document.createElement("script");
+        script.src = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2";
+        script.async = true;
+        script.defer = true;
+        script.dataset.kidsRoomSupabase = "true";
+        script.onload = finish;
+        script.onerror = () => reject(new Error("Не вдалося завантажити Supabase library"));
+        document.head.appendChild(script);
+    });
+
+    return supabaseReadyPromise;
+}
+
+async function fetchProductsFromSupabase() {
+    const client = await ensureSupabaseLoaded();
+
+    const { data, error } = await client
+        .from(SUPABASE_PRODUCTS_CONFIG.table)
+        .select("id, name, category, price, old, description, img")
+        .order("created_at", { ascending: true });
+
+    if (error) throw error;
+
+    return Array.isArray(data)
+        ? data.map((item, index) => normalizeProduct(item, item?.id || `prod_${index + 1}`))
+        : [];
+}
+
+async function seedDefaultProductsToSupabase() {
+    const client = await ensureSupabaseLoaded();
+    const payload = DEFAULT_PRODUCTS.map(item => buildSupabaseProductPayload(item));
+
+    const { error } = await client
+        .from(SUPABASE_PRODUCTS_CONFIG.table)
+        .upsert(payload, { onConflict: "id" });
+
+    if (error) throw error;
+
+    localStorage.setItem(PRODUCTS_INIT_FLAG_KEY, "true");
+}
+
+async function deleteMissingProductsFromSupabase(currentProducts) {
+    const client = await ensureSupabaseLoaded();
+
+    const { data, error } = await client
+        .from(SUPABASE_PRODUCTS_CONFIG.table)
+        .select("id");
+
+    if (error) throw error;
+
+    const existingIds = Array.isArray(data) ? data.map(item => String(item.id)) : [];
+    const currentIds = currentProducts.map(item => String(item.id));
+    const idsToDelete = existingIds.filter(id => !currentIds.includes(id));
+
+    if (!idsToDelete.length) return;
+
+    const { error: deleteError } = await client
+        .from(SUPABASE_PRODUCTS_CONFIG.table)
+        .delete()
+        .in("id", idsToDelete);
+
+    if (deleteError) throw deleteError;
+}
+
+async function upsertProductsToSupabase(list) {
+    const client = await ensureSupabaseLoaded();
+    const normalized = Array.isArray(list)
+        ? list.map((item, index) => normalizeProduct(item, item?.id || `prod_${index + 1}`))
+        : [];
+
+    const payload = normalized.map(buildSupabaseProductPayload);
+
+    if (payload.length) {
+        const { error } = await client
+            .from(SUPABASE_PRODUCTS_CONFIG.table)
+            .upsert(payload, { onConflict: "id" });
+
+        if (error) throw error;
+    }
+
+    await deleteMissingProductsFromSupabase(normalized);
+
+    return normalized;
+}
+
+async function loadProductsFromSupabaseAndApply() {
+    try {
+        let remoteProducts = await fetchProductsFromSupabase();
+
+        if (!remoteProducts.length) {
+            await seedDefaultProductsToSupabase();
+            remoteProducts = await fetchProductsFromSupabase();
+        }
+
+        saveProductsToLocalCache(remoteProducts);
+        return remoteProducts;
+    } catch (error) {
+        console.error("Помилка завантаження товарів із Supabase:", error);
+        return products;
+    }
+}
+
+async function initializeProducts() {
+    if (productsLoadingPromise) return productsLoadingPromise;
+
+    productsLoadingPromise = (async () => {
+        const cached = getProductsFromStorage();
+
+        if (cached.length) {
+            saveProductsToLocalCache(cached);
+        } else {
+            saveProductsToLocalCache(DEFAULT_PRODUCTS);
+        }
+
+        await loadProductsFromSupabaseAndApply();
+        return products;
+    })();
+
+    return productsLoadingPromise;
+}
+
+async function refreshProductsFromSupabase() {
+    return await loadProductsFromSupabaseAndApply();
 }
 
 function refreshProductsFromStorage() {
     products = getProductsFromStorage();
+    window.products = products;
+
+    refreshProductsFromSupabase().catch(error => {
+        console.error("Не вдалося оновити товари з Supabase", error);
+    });
+
     return products;
 }
 
-window.addEventListener("storage", event => {
-    if (event.key === "products") {
-        refreshProductsFromStorage();
+async function saveProducts() {
+    const normalized = Array.isArray(products)
+        ? products.map((item, index) => normalizeProduct(item, item?.id || `prod_${index + 1}`))
+        : [];
+
+    saveProductsToLocalCache(normalized);
+
+    try {
+        await upsertProductsToSupabase(normalized);
+        await refreshProductsFromSupabase();
+    } catch (error) {
+        console.error("Помилка синхронізації товарів із Supabase:", error);
+        throw error;
     }
+
+    return products;
+}
+
+async function deleteProductFromSupabase(id) {
+    const client = await ensureSupabaseLoaded();
+
+    const { error } = await client
+        .from(SUPABASE_PRODUCTS_CONFIG.table)
+        .delete()
+        .eq("id", String(id));
+
+    if (error) throw error;
+
+    products = products.filter(product => String(product.id) !== String(id));
+    saveProductsToLocalCache(products);
+    return products;
+}
+
+async function saveSingleProductToSupabase(product) {
+    const client = await ensureSupabaseLoaded();
+    const payload = buildSupabaseProductPayload(product);
+
+    const { error } = await client
+        .from(SUPABASE_PRODUCTS_CONFIG.table)
+        .upsert(payload, { onConflict: "id" });
+
+    if (error) throw error;
+
+    const index = products.findIndex(item => String(item.id) === String(payload.id));
+    if (index >= 0) {
+        products[index] = normalizeProduct(payload, payload.id);
+    } else {
+        products.push(normalizeProduct(payload, payload.id));
+    }
+
+    saveProductsToLocalCache(products);
+    return products;
+}
+
+function findProductById(id) {
+    return products.find(item => String(item.id) === String(id)) || null;
+}
+
+window.PRODUCT_PLACEHOLDER = PRODUCT_PLACEHOLDER;
+window.CATEGORIES = CATEGORIES;
+window.DEFAULT_PRODUCTS = DEFAULT_PRODUCTS;
+window.products = products;
+window.normalizeProduct = normalizeProduct;
+window.getCategoryName = getCategoryName;
+window.getCategoryIcon = getCategoryIcon;
+window.getSafeProductImage = getSafeProductImage;
+window.getProductsFromStorage = getProductsFromStorage;
+window.refreshProductsFromStorage = refreshProductsFromStorage;
+window.refreshProductsFromSupabase = refreshProductsFromSupabase;
+window.saveProducts = saveProducts;
+window.deleteProductFromSupabase = deleteProductFromSupabase;
+window.saveSingleProductToSupabase = saveSingleProductToSupabase;
+window.findProductById = findProductById;
+window.escapeHtml = escapeHtml;
+
+window.addEventListener("storage", event => {
+    if (event.key === PRODUCTS_CACHE_KEY) {
+        products = getProductsFromStorage();
+        window.products = products;
+        window.dispatchEvent(new CustomEvent("products:updated", { detail: products }));
+
+        if (typeof window.syncProductsAndRender === "function") {
+            window.syncProductsAndRender(false);
+        }
+    }
+});
+
+initializeProducts().catch(error => {
+    console.error("Помилка ініціалізації товарів:", error);
 });
