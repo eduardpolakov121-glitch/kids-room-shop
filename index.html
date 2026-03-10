@@ -242,6 +242,10 @@
     background:#fff0f0;
     color:#c64c4c;
 }
+.product-chip.secondary{
+    background:#f2f4f7;
+    color:#506077;
+}
 .product-showcase-card h3{
     margin:0;
     font-size:18px;
@@ -569,7 +573,7 @@
 <section class="section-wrap">
     <div class="section-title-row">
         <h2>Хіти продажу</h2>
-        <p>Товари, з яких покупці найчастіше починають знайомство з магазином.</p>
+        <p>Товари, які ти сам позначиш як хіти, будуть показуватись тут.</p>
     </div>
     <div class="product-showcase-grid" id="home-hits-grid"></div>
 </section>
@@ -577,7 +581,7 @@
 <section class="section-wrap">
     <div class="section-title-row">
         <h2>Акції</h2>
-        <p>Пропозиції, які допомагають вигідніше зібрати замовлення.</p>
+        <p>Товари з позначкою акції потрапляють у цей блок на головній.</p>
     </div>
     <div class="product-showcase-grid" id="home-sales-grid"></div>
 </section>
@@ -585,7 +589,7 @@
 <section class="section-wrap">
     <div class="section-title-row">
         <h2>Новинки</h2>
-        <p>Свіжі позиції для каталогу та оновлення асортименту.</p>
+        <p>Додавай нові товари та став прапорець “Новинка”, щоб показувати їх тут.</p>
     </div>
     <div class="product-showcase-grid" id="home-new-grid"></div>
 </section>
@@ -940,18 +944,21 @@ function renderShowcaseGrid(elementId, list, type, emptyText) {
 function renderHomeDynamicSections() {
     const allProducts = Array.isArray(window.products) ? [...window.products] : [];
 
-    const hits = allProducts.slice(0, 4);
+    const hitProducts = allProducts.filter(product => product.is_hit);
+    const saleProducts = allProducts.filter(product => product.is_sale);
+    const newProducts = allProducts.filter(product => product.is_new);
 
-    const sales = [...allProducts]
-        .filter(product => Number(product.old || 0) > Number(product.price || 0))
-        .sort((a, b) => {
-            const discountA = getHomeDiscountPercent(a) || 0;
-            const discountB = getHomeDiscountPercent(b) || 0;
-            return discountB - discountA;
-        })
-        .slice(0, 4);
+    const hits = (hitProducts.length ? hitProducts : allProducts.slice(0, 4)).slice(0, 4);
 
-    const newest = [...allProducts].slice(-4).reverse();
+    const sales = (
+        saleProducts.length
+            ? saleProducts
+            : [...allProducts]
+                .filter(product => Number(product.old || 0) > Number(product.price || 0))
+                .sort((a, b) => (getHomeDiscountPercent(b) || 0) - (getHomeDiscountPercent(a) || 0))
+    ).slice(0, 4);
+
+    const newest = (newProducts.length ? newProducts : [...allProducts].slice(-4).reverse()).slice(0, 4);
 
     renderShowcaseGrid(
         "home-hits-grid",
@@ -964,14 +971,14 @@ function renderHomeDynamicSections() {
         "home-sales-grid",
         sales,
         "sale",
-        "Акційні товари з’являться, коли у товарів буде стара ціна вища за актуальну."
+        "Акційні товари з’являться, коли ти позначиш товари як акційні."
     );
 
     renderShowcaseGrid(
         "home-new-grid",
         newest,
         "new",
-        "Новинки з’являться після наповнення каталогу товарами."
+        "Новинки з’являться, коли ти позначиш товари як нові."
     );
 }
 
