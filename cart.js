@@ -11,13 +11,8 @@ function getCheckoutSuccessOrderNumber(payload) {
     const rawString = String(rawId || "").trim();
     const digits = rawString.replace(/\D/g, "");
 
-    if (digits.length >= 5) {
-        return "#" + digits.slice(-6);
-    }
-
-    if (rawString) {
-        return "#" + rawString.replace(/[^a-zA-Z0-9]/g, "").slice(-6).toUpperCase();
-    }
+    if (digits.length >= 5) return "#" + digits.slice(-6);
+    if (rawString) return "#" + rawString.replace(/[^a-zA-Z0-9]/g, "").slice(-6).toUpperCase();
 
     return "#KR" + String(Date.now()).slice(-6);
 }
@@ -85,7 +80,6 @@ function addToCart(id) {
 
     renderCart();
     saveCart();
-    renderCheckoutSummary();
     showToast("Товар додано в кошик");
 }
 
@@ -96,7 +90,6 @@ function cartPlus(id) {
     item.qty++;
     renderCart();
     saveCart();
-    renderCheckoutSummary();
 }
 
 function cartMinus(id) {
@@ -111,7 +104,6 @@ function cartMinus(id) {
 
     renderCart();
     saveCart();
-    renderCheckoutSummary();
 }
 
 function escapeCartHtml(value) {
@@ -126,20 +118,11 @@ function escapeCartHtml(value) {
 function buildCartFlags(product) {
     const parts = [];
 
-    if (product?.is_hit) {
-        parts.push(`<span class="cart-badge cart-badge-hit">ХІТ</span>`);
-    }
-
-    if (product?.is_sale) {
-        parts.push(`<span class="cart-badge cart-badge-sale">АКЦІЯ</span>`);
-    }
-
-    if (product?.is_new) {
-        parts.push(`<span class="cart-badge cart-badge-new">НОВИНКА</span>`);
-    }
+    if (product?.is_hit) parts.push(`<span class="cart-badge cart-badge-hit">ХІТ</span>`);
+    if (product?.is_sale) parts.push(`<span class="cart-badge cart-badge-sale">АКЦІЯ</span>`);
+    if (product?.is_new) parts.push(`<span class="cart-badge cart-badge-new">НОВИНКА</span>`);
 
     if (!parts.length) return "";
-
     return `<div class="cart-badges">${parts.join("")}</div>`;
 }
 
@@ -161,6 +144,23 @@ function ensureCartBadgeStyles() {
         margin-bottom:10px;
     }
 
+    .cart-item-left{
+        display:flex;
+        align-items:flex-start;
+        gap:12px;
+        flex:1;
+        min-width:0;
+    }
+
+    .cart-item-image{
+        width:62px;
+        height:62px;
+        border-radius:12px;
+        object-fit:cover;
+        background:#f1f3f7;
+        flex-shrink:0;
+    }
+
     .cart-item-main{
         min-width:0;
         flex:1;
@@ -179,16 +179,14 @@ function ensureCartBadgeStyles() {
         font-size:14px;
     }
 
-    .cart-badges,
-    .checkout-summary-badges{
+    .cart-badges{
         display:flex;
         flex-wrap:wrap;
         gap:6px;
         margin-bottom:8px;
     }
 
-    .cart-badge,
-    .checkout-summary-badge{
+    .cart-badge{
         display:inline-flex;
         align-items:center;
         justify-content:center;
@@ -199,20 +197,17 @@ function ensureCartBadgeStyles() {
         line-height:1;
     }
 
-    .cart-badge-hit,
-    .checkout-summary-badge-hit{
+    .cart-badge-hit{
         background:#fff1e6;
         color:#ca6200;
     }
 
-    .cart-badge-sale,
-    .checkout-summary-badge-sale{
+    .cart-badge-sale{
         background:#fff0f0;
         color:#c64c4c;
     }
 
-    .cart-badge-new,
-    .checkout-summary-badge-new{
+    .cart-badge-new{
         background:#edf8ff;
         color:#23628d;
     }
@@ -237,57 +232,6 @@ function ensureCartBadgeStyles() {
         cursor:pointer;
         font-weight:800;
     }
-
-    .checkout-summary-box{
-        margin:14px 0;
-        padding:14px;
-        border-radius:16px;
-        background:#fffdf9;
-        border:1px solid #ece7df;
-    }
-
-    .checkout-summary-title{
-        font-size:15px;
-        font-weight:800;
-        color:#243041;
-        margin-bottom:10px;
-    }
-
-    .checkout-summary-list{
-        display:flex;
-        flex-direction:column;
-        gap:10px;
-        max-height:220px;
-        overflow:auto;
-    }
-
-    .checkout-summary-item{
-        padding:10px 12px;
-        border-radius:12px;
-        background:#fafbfd;
-        border:1px solid #eef1f5;
-    }
-
-    .checkout-summary-name{
-        font-weight:800;
-        color:#243041;
-        line-height:1.4;
-        margin-bottom:6px;
-    }
-
-    .checkout-summary-meta{
-        color:#6f7b8c;
-        font-size:14px;
-        line-height:1.5;
-    }
-
-    .checkout-summary-total{
-        margin-top:12px;
-        padding-top:10px;
-        border-top:1px solid #ece7df;
-        font-weight:800;
-        color:#243041;
-    }
     `;
     document.head.appendChild(style);
 }
@@ -309,12 +253,19 @@ function renderCart() {
         sum += p.price * p.qty;
         qty += p.qty;
 
+        const image = typeof getSafeProductImage === "function"
+            ? getSafeProductImage(p)
+            : (p.img || PRODUCT_PLACEHOLDER);
+
         items.innerHTML += `
         <div class="cart-item">
-            <div class="cart-item-main">
-                ${buildCartFlags(p)}
-                <div class="cart-item-name">${escapeCartHtml(p.name)}</div>
-                <div class="cart-item-price">${Number(p.price || 0)} грн</div>
+            <div class="cart-item-left">
+                <img class="cart-item-image" src="${escapeCartHtml(image)}" alt="${escapeCartHtml(p.name)}" onerror="this.onerror=null;this.src='product-placeholder.svg'">
+                <div class="cart-item-main">
+                    ${buildCartFlags(p)}
+                    <div class="cart-item-name">${escapeCartHtml(p.name)}</div>
+                    <div class="cart-item-price">${Number(p.price || 0)} грн</div>
+                </div>
             </div>
             <div class="cart-item-controls">
                 <button onclick="cartMinus('${escapeCartHtml(p.id)}')">−</button>
@@ -330,78 +281,6 @@ function renderCart() {
     window.dispatchEvent(new CustomEvent("cart:updated", { detail: cart }));
 }
 
-function buildCheckoutSummaryFlags(product) {
-    const parts = [];
-
-    if (product?.is_hit) {
-        parts.push(`<span class="checkout-summary-badge checkout-summary-badge-hit">ХІТ</span>`);
-    }
-
-    if (product?.is_sale) {
-        parts.push(`<span class="checkout-summary-badge checkout-summary-badge-sale">АКЦІЯ</span>`);
-    }
-
-    if (product?.is_new) {
-        parts.push(`<span class="checkout-summary-badge checkout-summary-badge-new">НОВИНКА</span>`);
-    }
-
-    if (!parts.length) return "";
-
-    return `<div class="checkout-summary-badges">${parts.join("")}</div>`;
-}
-
-function ensureCheckoutSummaryRoot() {
-    const modalBox = document.querySelector("#checkout-modal .checkout-box");
-    if (!modalBox) return null;
-
-    let root = document.getElementById("checkout-summary-box");
-    if (root) return root;
-
-    root = document.createElement("div");
-    root.id = "checkout-summary-box";
-    root.className = "checkout-summary-box";
-
-    const actions = modalBox.querySelector(".checkout-actions");
-    if (actions) {
-        modalBox.insertBefore(root, actions);
-    } else {
-        modalBox.appendChild(root);
-    }
-
-    return root;
-}
-
-function renderCheckoutSummary() {
-    ensureCartBadgeStyles();
-
-    const root = ensureCheckoutSummaryRoot();
-    if (!root) return;
-
-    if (!Array.isArray(cart) || !cart.length) {
-        root.innerHTML = `
-            <div class="checkout-summary-title">Ваше замовлення</div>
-            <div class="checkout-summary-meta">Кошик порожній</div>
-        `;
-        return;
-    }
-
-    const itemsHtml = cart.map(item => `
-        <div class="checkout-summary-item">
-            ${buildCheckoutSummaryFlags(item)}
-            <div class="checkout-summary-name">${escapeCartHtml(item.name)}</div>
-            <div class="checkout-summary-meta">${Number(item.qty || 1)} × ${Number(item.price || 0)} грн</div>
-        </div>
-    `).join("");
-
-    const total = cart.reduce((sum, item) => sum + Number(item.price || 0) * Number(item.qty || 0), 0);
-
-    root.innerHTML = `
-        <div class="checkout-summary-title">Ваше замовлення</div>
-        <div class="checkout-summary-list">${itemsHtml}</div>
-        <div class="checkout-summary-total">Разом: ${total} грн</div>
-    `;
-}
-
 function checkout() {
     if (cart.length === 0) {
         alert("Кошик порожній");
@@ -410,7 +289,6 @@ function checkout() {
 
     document.getElementById("checkout-modal").classList.add("open");
     handleDeliveryTypeChange();
-    renderCheckoutSummary();
 }
 
 function closeCheckoutModal() {
@@ -438,9 +316,7 @@ function handleDeliveryTypeChange() {
 async function callNP(model, method, props) {
     const res = await fetch(NOVA_POSHTA_API_URL, {
         method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
             apiKey: NOVA_POSHTA_API_KEY,
             modelName: model,
@@ -477,45 +353,36 @@ async function handleCityInput() {
         return;
     }
 
-    const result = await callNP("Address", "searchSettlements", {
-        CityName: val,
-        Limit: 20
-    });
+    const cities = await callNP("AddressGeneral", "searchSettlements", { CityName: val, Limit: 10 });
 
     list.innerHTML = "";
 
-    if (!result.length) {
+    if (!cities.length || !cities[0].Addresses?.length) {
         list.style.display = "none";
         return;
     }
 
-    list.style.display = "block";
+    cities[0].Addresses.forEach(city => {
+        const item = document.createElement("div");
+        item.className = "np-suggestion-item";
+        item.innerText = city.Present;
+        item.onclick = async () => {
+            input.value = city.Present;
+            list.style.display = "none";
+            list.innerHTML = "";
 
-    result.forEach(item => {
-        if (!item.Addresses || !item.Addresses.length) return;
-
-        item.Addresses.forEach(city => {
-            const div = document.createElement("div");
-            div.className = "np-suggestion-item";
-            div.textContent = city.Present;
-
-            div.onclick = async () => {
-                input.value = city.Present;
-                selectedCity = {
-                    ref: city.Ref,
-                    name: city.Present
-                };
-
-                list.style.display = "none";
-                list.innerHTML = "";
-
-                const warehouses = await loadWarehouses(city.Ref);
-                fillWarehouses(warehouses);
+            selectedCity = {
+                ref: city.Ref,
+                name: city.Present
             };
 
-            list.appendChild(div);
-        });
+            const warehouses = await loadWarehouses(city.Ref);
+            fillWarehouses(warehouses);
+        };
+        list.appendChild(item);
     });
+
+    list.style.display = "block";
 }
 
 function resetWarehouses(placeholder = "Спочатку оберіть місто") {
@@ -616,7 +483,6 @@ async function submitCheckout() {
         cart = [];
         saveCart();
         renderCart();
-        renderCheckoutSummary();
 
         document.getElementById("order-name").value = "";
         document.getElementById("order-surname").value = "";
@@ -660,7 +526,6 @@ function clearCart() {
     cart = [];
     saveCart();
     renderCart();
-    renderCheckoutSummary();
 }
 
 function saveCart() {
@@ -675,7 +540,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const list = document.getElementById("city-suggestions");
 
     handleDeliveryTypeChange();
-    renderCheckoutSummary();
 
     if (cityInput) {
         cityInput.addEventListener("input", handleCityInput);

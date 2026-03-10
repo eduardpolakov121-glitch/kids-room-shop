@@ -8,8 +8,6 @@
   <style>
     :root{
       --kr-orange:#ff6b00;
-      --kr-orange-dark:#ea5a00;
-      --kr-bg:#f5f2ec;
       --kr-card:#fffdf9;
       --kr-text:#243041;
       --kr-muted:#6f7b8c;
@@ -58,12 +56,7 @@
       align-items:center;
       justify-content:center;
       font-size:24px;
-      box-shadow:inset 0 0 0 1px rgba(255,107,0,0.08);
       flex-shrink:0;
-    }
-
-    .product-brand-text{
-      min-width:0;
     }
 
     .product-brand-text .logo{
@@ -79,9 +72,6 @@
       color:var(--kr-muted);
       margin-top:3px;
       font-size:13px;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
     }
 
     .product-topbar-actions{
@@ -157,7 +147,7 @@
     }
 
     .product-shell{
-      max-width:1280px;
+      max-width:1320px;
       margin:0 auto;
       padding:28px 20px 48px;
       box-sizing:border-box;
@@ -188,15 +178,23 @@
       color:var(--kr-orange);
     }
 
+    .product-page-grid{
+      display:grid;
+      grid-template-columns:minmax(0,1fr) 360px;
+      gap:24px;
+      align-items:start;
+    }
+
     .product-layout{
       display:grid;
-      grid-template-columns:minmax(0,1.04fr) minmax(360px,0.96fr);
-      gap:28px;
+      grid-template-columns:minmax(0,1fr);
+      gap:24px;
       align-items:start;
     }
 
     .product-gallery,
-    .product-info-card{
+    .product-info-card,
+    .product-related-side{
       background:var(--kr-card);
       border:1px solid rgba(236,231,223,0.95);
       border-radius:30px;
@@ -217,32 +215,6 @@
       display:flex;
       align-items:center;
       justify-content:center;
-      box-shadow:inset 0 0 0 1px rgba(255,255,255,0.45);
-    }
-
-    .product-gallery-frame::before,
-    .product-gallery-frame::after{
-      content:"";
-      position:absolute;
-      border-radius:50%;
-      pointer-events:none;
-      opacity:.65;
-    }
-
-    .product-gallery-frame::before{
-      width:240px;
-      height:240px;
-      background:radial-gradient(circle,#ffd36f 0%,rgba(255,211,111,0) 70%);
-      top:-34px;
-      right:-18px;
-    }
-
-    .product-gallery-frame::after{
-      width:200px;
-      height:200px;
-      background:radial-gradient(circle,#ffd9c2 0%,rgba(255,217,194,0) 70%);
-      bottom:-40px;
-      left:-24px;
     }
 
     .product-main-image{
@@ -292,24 +264,13 @@
       font-size:12px;
       font-weight:800;
       line-height:1;
-      box-shadow:0 8px 18px rgba(0,0,0,0.08);
       background:#fff;
+      box-shadow:0 8px 18px rgba(0,0,0,0.08);
     }
 
-    .product-flag.hit{
-      background:#fff1e6;
-      color:#ca6200;
-    }
-
-    .product-flag.sale{
-      background:#fff0f0;
-      color:#c64c4c;
-    }
-
-    .product-flag.new{
-      background:#edf8ff;
-      color:#23628d;
-    }
+    .product-flag.hit{ background:#fff1e6; color:#ca6200; }
+    .product-flag.sale{ background:#fff0f0; color:#c64c4c; }
+    .product-flag.new{ background:#edf8ff; color:#23628d; }
 
     .product-info-card{
       padding:28px;
@@ -515,49 +476,19 @@
       line-height:1.6;
     }
 
-    .product-empty{
-      background:var(--kr-card);
-      border-radius:28px;
-      border:1px solid var(--kr-line);
-      box-shadow:var(--kr-shadow);
-      padding:40px 28px;
-      text-align:center;
-      max-width:720px;
-      margin:48px auto 0;
-    }
-
-    .product-empty h1{
-      margin:0 0 10px;
-      color:var(--kr-text);
-    }
-
-    .product-empty p{
-      color:var(--kr-muted);
-      margin:0 0 18px;
-      line-height:1.7;
-    }
-
-    .product-related{
-      margin-top:28px;
-      background:var(--kr-card);
-      border:1px solid rgba(236,231,223,0.95);
-      border-radius:30px;
-      box-shadow:var(--kr-shadow);
-      padding:24px;
+    .product-related-side{
+      padding:18px;
+      position:sticky;
+      top:88px;
     }
 
     .product-related-head{
-      display:flex;
-      align-items:flex-end;
-      justify-content:space-between;
-      gap:14px;
-      flex-wrap:wrap;
-      margin-bottom:16px;
+      margin-bottom:14px;
     }
 
     .product-related-head h2{
-      margin:0;
-      font-size:30px;
+      margin:0 0 6px;
+      font-size:24px;
       line-height:1.08;
       color:var(--kr-text);
     }
@@ -565,37 +496,35 @@
     .product-related-head p{
       margin:0;
       color:var(--kr-muted);
-      line-height:1.6;
-      font-size:15px;
+      line-height:1.55;
+      font-size:14px;
     }
 
-    .product-related-grid{
-      display:grid;
-      grid-template-columns:repeat(4,minmax(0,1fr));
-      gap:16px;
+    .product-related-list{
+      display:flex;
+      flex-direction:column;
+      gap:12px;
     }
 
     .product-related-card{
       background:#fffdf9;
       border:1px solid #ece7df;
-      border-radius:22px;
-      box-shadow:0 10px 24px rgba(0,0,0,0.05);
+      border-radius:18px;
+      box-shadow:0 8px 22px rgba(0,0,0,0.05);
       overflow:hidden;
-      display:flex;
-      flex-direction:column;
       cursor:pointer;
       transition:transform .18s ease, box-shadow .18s ease;
     }
 
     .product-related-card:hover{
-      transform:translateY(-3px);
-      box-shadow:0 16px 30px rgba(0,0,0,0.09);
+      transform:translateY(-2px);
+      box-shadow:0 14px 28px rgba(0,0,0,0.08);
     }
 
     .product-related-image{
       position:relative;
       background:#f6ece0;
-      height:210px;
+      height:180px;
       overflow:hidden;
     }
 
@@ -614,7 +543,7 @@
       display:flex;
       flex-wrap:wrap;
       gap:6px;
-      max-width:80%;
+      max-width:85%;
     }
 
     .product-related-flag{
@@ -630,32 +559,20 @@
       box-shadow:0 6px 14px rgba(0,0,0,0.08);
     }
 
-    .product-related-flag.hit{
-      background:#fff1e6;
-      color:#ca6200;
-    }
-
-    .product-related-flag.sale{
-      background:#fff0f0;
-      color:#c64c4c;
-    }
-
-    .product-related-flag.new{
-      background:#edf8ff;
-      color:#23628d;
-    }
+    .product-related-flag.hit{ background:#fff1e6; color:#ca6200; }
+    .product-related-flag.sale{ background:#fff0f0; color:#c64c4c; }
+    .product-related-flag.new{ background:#edf8ff; color:#23628d; }
 
     .product-related-body{
-      padding:16px;
+      padding:14px;
       display:flex;
       flex-direction:column;
-      gap:10px;
-      flex:1;
+      gap:8px;
     }
 
     .product-related-name{
       margin:0;
-      font-size:18px;
+      font-size:17px;
       line-height:1.35;
       color:var(--kr-text);
     }
@@ -663,44 +580,46 @@
     .product-related-desc{
       margin:0;
       color:var(--kr-muted);
-      line-height:1.6;
-      font-size:14px;
+      line-height:1.55;
+      font-size:13px;
     }
 
     .product-related-price{
-      margin-top:auto;
       display:flex;
       align-items:flex-end;
-      gap:10px;
+      gap:8px;
       flex-wrap:wrap;
+      margin-top:4px;
     }
 
     .product-related-price .current{
       color:var(--kr-orange);
-      font-size:22px;
+      font-size:20px;
       font-weight:800;
     }
 
     .product-related-price .old{
       color:#97a0ab;
       text-decoration:line-through;
-      font-size:14px;
+      font-size:13px;
     }
 
     .product-related-actions{
       display:flex;
-      gap:10px;
+      gap:8px;
       flex-wrap:wrap;
+      margin-top:4px;
     }
 
     .product-related-actions button{
       flex:1;
-      min-width:120px;
+      min-width:110px;
       border:none;
       border-radius:12px;
-      padding:12px 14px;
+      padding:10px 12px;
       cursor:pointer;
       font-weight:800;
+      font-size:13px;
     }
 
     .product-related-actions .primary{
@@ -711,6 +630,17 @@
     .product-related-actions .secondary{
       background:#f1f3f6;
       color:var(--kr-text);
+    }
+
+    .product-empty{
+      background:var(--kr-card);
+      border-radius:28px;
+      border:1px solid var(--kr-line);
+      box-shadow:var(--kr-shadow);
+      padding:40px 28px;
+      text-align:center;
+      max-width:720px;
+      margin:48px auto 0;
     }
 
     .fly-clone{
@@ -736,68 +666,39 @@
     }
 
     @media (max-width:1100px){
-      .product-layout{
+      .product-page-grid{
         grid-template-columns:1fr;
       }
-      .product-gallery-frame{
-        min-height:460px;
+      .product-related-side{
+        position:static;
       }
-      .product-related-grid{
-        grid-template-columns:repeat(2,minmax(0,1fr));
+      .product-gallery-frame{
+        min-height:420px;
       }
     }
 
     @media (max-width:768px){
-      .product-topbar-inner{
-        padding:12px 14px;
-      }
-      .product-brand-logo{
-        width:42px;
-        height:42px;
-        border-radius:14px;
-      }
-      .product-brand-text .logo{
-        font-size:18px;
-      }
-      .product-topbar-actions{
-        gap:8px;
-      }
-      .product-mini-btn{
-        padding:10px 12px;
-      }
       .product-shell{
         padding:18px 12px 30px;
       }
       .product-gallery,
       .product-info-card,
-      .product-related{
+      .product-related-side{
         border-radius:24px;
       }
       .product-gallery{
         padding:14px;
       }
       .product-gallery-frame{
-        min-height:320px;
+        min-height:300px;
         border-radius:20px;
       }
-      .product-info-card{
+      .product-info-card,
+      .product-related-side{
         padding:18px;
-      }
-      .product-title{
-        font-size:34px;
-      }
-      .product-price-current{
-        font-size:34px;
-      }
-      .product-desc{
-        font-size:16px;
       }
       .product-feature-list{
         grid-template-columns:1fr;
-      }
-      .product-buy-box{
-        padding:14px;
-        border-radius:20px;
       }
       .product-buy-top{
         flex-direction:column;
@@ -810,48 +711,17 @@
       .product-secondary-btn{
         width:100%;
       }
-      .product-cart-fab{
-        min-width:50px;
-        height:50px;
-        padding:0 14px;
-      }
-      .product-related{
-        padding:18px;
-      }
     }
 
     @media (max-width:520px){
-      .product-brand-text small{
-        display:none;
-      }
-      .product-topbar-actions{
-        width:100%;
-        justify-content:space-between;
-      }
-      .product-mini-btn{
-        flex:1;
-      }
-      .product-cart-fab{
-        min-width:56px;
-      }
-      .product-breadcrumbs{
-        font-size:13px;
-        margin-bottom:14px;
-      }
-      .product-gallery-frame{
-        min-height:270px;
+      .product-page-grid{
+        gap:16px;
       }
       .product-title{
         font-size:28px;
       }
-      .product-price-row{
-        gap:10px;
-      }
       .product-price-current{
         font-size:30px;
-      }
-      .product-price-old{
-        font-size:18px;
       }
       .product-qty{
         width:100%;
@@ -863,15 +733,6 @@
       }
       .product-qty-control input{
         flex:1;
-      }
-      .product-image-flags{
-        max-width:85%;
-      }
-      .product-related-grid{
-        grid-template-columns:1fr;
-      }
-      .product-related-head h2{
-        font-size:24px;
       }
     }
   </style>
@@ -915,7 +776,6 @@
     function plus(id){
       const el = document.getElementById("qty-" + id);
       if (!el) return;
-
       const value = parseInt(el.value || "1", 10);
       el.value = isNaN(value) || value < 1 ? 1 : value + 1;
     }
@@ -923,13 +783,11 @@
     function minus(id){
       const el = document.getElementById("qty-" + id);
       if (!el) return;
-
       const value = parseInt(el.value || "1", 10);
       if (isNaN(value) || value <= 1) {
         el.value = 1;
         return;
       }
-
       el.value = value - 1;
     }
 
@@ -952,17 +810,8 @@
     function fallbackImage(){
       return 'data:image/svg+xml;utf8,' + encodeURIComponent(`
         <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="900" viewBox="0 0 1200 900">
-          <defs>
-            <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0%" stop-color="#fbefe1"/>
-              <stop offset="100%" stop-color="#f0e0cf"/>
-            </linearGradient>
-          </defs>
-          <rect width="1200" height="900" rx="48" fill="url(#g)"/>
-          <circle cx="600" cy="210" r="118" fill="#f3c87c" opacity="0.9"/>
-          <rect x="270" y="390" width="660" height="115" rx="56" fill="#f79a4b"/>
-          <rect x="350" y="545" width="500" height="66" rx="33" fill="#f2bb82"/>
-          <text x="600" y="725" text-anchor="middle" font-family="Arial, sans-serif" font-size="82" font-weight="700" fill="#c56617">Kids Room</text>
+          <rect width="1200" height="900" rx="48" fill="#f3e4d3"/>
+          <text x="600" y="470" text-anchor="middle" font-family="Arial, sans-serif" font-size="82" font-weight="700" fill="#c56617">Kids Room</text>
         </svg>
       `);
     }
@@ -1011,22 +860,18 @@
 
     function buildProductFlags(product){
       const items = [];
-
       if (product?.is_hit) items.push('<span class="product-flag hit">ХІТ</span>');
       if (product?.is_sale) items.push('<span class="product-flag sale">АКЦІЯ</span>');
       if (product?.is_new) items.push('<span class="product-flag new">НОВИНКА</span>');
-
       if (!items.length) return '';
       return `<div class="product-image-flags">${items.join('')}</div>`;
     }
 
     function buildRelatedFlags(product){
       const items = [];
-
       if (product?.is_hit) items.push('<span class="product-related-flag hit">ХІТ</span>');
       if (product?.is_sale) items.push('<span class="product-related-flag sale">АКЦІЯ</span>');
       if (product?.is_new) items.push('<span class="product-related-flag new">НОВИНКА</span>');
-
       if (!items.length) return '';
       return `<div class="product-related-flags">${items.join('')}</div>`;
     }
@@ -1118,9 +963,24 @@
 
     function addRelatedToCart(id, event){
       if (event) event.stopPropagation();
+
+      const tempId = "qty-" + id;
+      let tempInput = document.getElementById(tempId);
+
+      if (!tempInput) {
+        tempInput = document.createElement("input");
+        tempInput.type = "hidden";
+        tempInput.id = tempId;
+        tempInput.value = "1";
+        document.body.appendChild(tempInput);
+      }
+
+      tempInput.value = "1";
+
       if (typeof addToCart === 'function') {
         addToCart(id);
       }
+
       setTimeout(updateProductCartCount, 120);
     }
 
@@ -1131,16 +991,25 @@
         .filter(item => String(item.id) !== String(product.id) && String(item.category) === String(product.category))
         .slice(0, 4);
 
-      if (!related.length) return '';
+      if (!related.length) {
+        return `
+          <aside class="product-related-side">
+            <div class="product-related-head">
+              <h2>Схожі товари</h2>
+              <p>Поки що в цій категорії немає інших товарів.</p>
+            </div>
+          </aside>
+        `;
+      }
 
       return `
-        <section class="product-related">
+        <aside class="product-related-side">
           <div class="product-related-head">
             <h2>Схожі товари</h2>
-            <p>Інші товари з цієї ж категорії, які можуть вам сподобатися.</p>
+            <p>Інші товари з цієї ж категорії.</p>
           </div>
 
-          <div class="product-related-grid">
+          <div class="product-related-list">
             ${related.map(item => `
               <article class="product-related-card" onclick="openRelatedProduct('${escapeHtml(item.id)}')">
                 <div class="product-related-image">
@@ -1150,7 +1019,7 @@
 
                 <div class="product-related-body">
                   <h3 class="product-related-name">${escapeHtml(item.name)}</h3>
-                  <p class="product-related-desc">${escapeHtml(item.description || 'Якісний дитячий товар для щоденного використання.').slice(0, 95)}${(item.description || '').length > 95 ? '…' : ''}</p>
+                  <p class="product-related-desc">${escapeHtml(item.description || 'Якісний дитячий товар для щоденного використання.').slice(0, 82)}${(item.description || '').length > 82 ? '…' : ''}</p>
 
                   <div class="product-related-price">
                     <span class="current">${Number(item.price || 0)} грн</span>
@@ -1165,7 +1034,7 @@
               </article>
             `).join('')}
           </div>
-        </section>
+        </aside>
       `;
     }
 
@@ -1199,63 +1068,65 @@
       document.title = `Kids Room — ${product.name || 'Товар'}`;
 
       container.innerHTML = `
-        <section class="product-layout">
-          <div class="product-gallery">
-            <div class="product-gallery-frame">
-              ${flagsHtml}
-              <img id="product-main-image" class="product-main-image" src="${imageSrc}" alt="${escapeHtml(product.name)}" onerror="this.onerror=null;this.src=fallbackImage();">
-              <div class="product-image-chip">🧸 ${categoryName}</div>
-            </div>
-          </div>
-
-          <article class="product-info-card">
-            <div class="product-badges">
-              <span class="product-badge">📦 Швидка обробка замовлення</span>
-              <span class="product-badge">🛡️ Перевірений товар</span>
-              ${product.is_hit ? `<span class="product-badge">🔥 Хіт продажу</span>` : ``}
-              ${product.is_sale ? `<span class="product-badge">🏷️ Акційна пропозиція</span>` : ``}
-              ${product.is_new ? `<span class="product-badge">✨ Новинка</span>` : ``}
+        <div class="product-page-grid">
+          <section class="product-layout">
+            <div class="product-gallery">
+              <div class="product-gallery-frame">
+                ${flagsHtml}
+                <img id="product-main-image" class="product-main-image" src="${imageSrc}" alt="${escapeHtml(product.name)}" onerror="this.onerror=null;this.src=fallbackImage();">
+                <div class="product-image-chip">🧸 ${escapeHtml(categoryName)}</div>
+              </div>
             </div>
 
-            <h1 class="product-title">${escapeHtml(product.name)}</h1>
+            <article class="product-info-card">
+              <div class="product-badges">
+                <span class="product-badge">📦 Швидка обробка замовлення</span>
+                <span class="product-badge">🛡️ Перевірений товар</span>
+                ${product.is_hit ? `<span class="product-badge">🔥 Хіт продажу</span>` : ``}
+                ${product.is_sale ? `<span class="product-badge">🏷️ Акційна пропозиція</span>` : ``}
+                ${product.is_new ? `<span class="product-badge">✨ Новинка</span>` : ``}
+              </div>
 
-            <div class="product-price-row">
-              <div class="product-price-current">${Number(product.price || 0)} грн</div>
-              ${Number(product.old || 0) > Number(product.price || 0) ? `<div class="product-price-old">${Number(product.old || 0)} грн</div>` : ''}
-              ${discount ? `<div class="product-discount">-${discount}%</div>` : ''}
-            </div>
+              <h1 class="product-title">${escapeHtml(product.name)}</h1>
 
-            <p class="product-desc">${escapeHtml(description)}</p>
+              <div class="product-price-row">
+                <div class="product-price-current">${Number(product.price || 0)} грн</div>
+                ${Number(product.old || 0) > Number(product.price || 0) ? `<div class="product-price-old">${Number(product.old || 0)} грн</div>` : ''}
+                ${discount ? `<div class="product-discount">-${discount}%</div>` : ''}
+              </div>
 
-            <ul class="product-feature-list">
-              <li><strong>Категорія</strong>${escapeHtml(categoryName)}</li>
-              <li><strong>Наявність</strong>Актуальна на момент перегляду сторінки</li>
-            </ul>
+              <p class="product-desc">${escapeHtml(description)}</p>
 
-            <div class="product-buy-box">
-              <div class="product-buy-top">
-                <div class="product-stock">✅ Є в наявності</div>
-                <div class="product-qty">
-                  <span class="product-qty-label">Кількість</span>
-                  <div class="product-qty-control">
-                    <button type="button" onclick="minus('${escapeHtml(product.id)}')">−</button>
-                    <input id="qty-${escapeHtml(product.id)}" type="number" value="1" min="1" inputmode="numeric">
-                    <button type="button" onclick="plus('${escapeHtml(product.id)}')">+</button>
+              <ul class="product-feature-list">
+                <li><strong>Категорія</strong>${escapeHtml(categoryName)}</li>
+                <li><strong>Наявність</strong>Актуальна на момент перегляду сторінки</li>
+              </ul>
+
+              <div class="product-buy-box">
+                <div class="product-buy-top">
+                  <div class="product-stock">✅ Є в наявності</div>
+                  <div class="product-qty">
+                    <span class="product-qty-label">Кількість</span>
+                    <div class="product-qty-control">
+                      <button type="button" onclick="minus('${escapeHtml(product.id)}')">−</button>
+                      <input id="qty-${escapeHtml(product.id)}" type="number" value="1" min="1" inputmode="numeric">
+                      <button type="button" onclick="plus('${escapeHtml(product.id)}')">+</button>
+                    </div>
                   </div>
                 </div>
+
+                <div class="product-actions">
+                  <button class="product-primary-btn" type="button" onclick="handleProductAddToCart('${escapeHtml(product.id)}')">🛒 Додати в кошик</button>
+                  <button class="product-secondary-btn" type="button" onclick="goBack()">← Повернутись до товарів</button>
+                </div>
+
+                <div class="product-note">Після натискання товар одразу додається в кошик. Менеджер підтвердить замовлення після оформлення.</div>
               </div>
+            </article>
+          </section>
 
-              <div class="product-actions">
-                <button class="product-primary-btn" type="button" onclick="handleProductAddToCart('${escapeHtml(product.id)}')">🛒 Додати в кошик</button>
-                <button class="product-secondary-btn" type="button" onclick="goBack()">← Повернутись до товарів</button>
-              </div>
-
-              <div class="product-note">Після натискання товар одразу додається в кошик. Менеджер підтвердить замовлення після оформлення.</div>
-            </div>
-          </article>
-        </section>
-
-        ${relatedHtml}
+          ${relatedHtml}
+        </div>
       `;
     }
 

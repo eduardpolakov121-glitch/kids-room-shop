@@ -869,7 +869,6 @@ function getHomeDiscountPercent(product) {
     const currentPrice = Number(product?.price || 0);
 
     if (!oldPrice || !currentPrice || oldPrice <= currentPrice) return null;
-
     return Math.round(((oldPrice - currentPrice) / oldPrice) * 100);
 }
 
@@ -886,6 +885,33 @@ function goToCategory(categoryId) {
     window.location.hash = "products";
 }
 
+function addHomeProductToCart(id, event) {
+    if (event) event.stopPropagation();
+
+    const qtyInput = document.getElementById("home-qty-" + id);
+    let qty = parseInt(qtyInput ? qtyInput.value : "1", 10);
+
+    if (isNaN(qty) || qty < 1) qty = 1;
+
+    const tempId = "qty-" + id;
+    let tempInput = document.getElementById(tempId);
+
+    if (!tempInput) {
+        tempInput = document.createElement("input");
+        tempInput.type = "hidden";
+        tempInput.id = tempId;
+        document.body.appendChild(tempInput);
+    }
+
+    tempInput.value = qty;
+
+    if (typeof addToCart === "function") {
+        addToCart(id);
+    }
+
+    if (qtyInput) qtyInput.value = "1";
+}
+
 function buildShowcaseCard(product, type) {
     const image = typeof getSafeProductImage === "function"
         ? getSafeProductImage(product)
@@ -897,11 +923,7 @@ function buildShowcaseCard(product, type) {
         ? getCategoryName(product.category)
         : (product.category || "Товар");
 
-    const actionText = type === "sale"
-        ? "Дивитися товар"
-        : type === "new"
-        ? "Відкрити новинку"
-        : "Переглянути товар";
+    const actionText = "Відкрити товар";
 
     return `
         <div class="product-showcase-card">
@@ -920,9 +942,13 @@ function buildShowcaseCard(product, type) {
                     ${Number(product.old || 0) > Number(product.price || 0) ? `<span class="old">${Number(product.old || 0)} грн</span>` : ""}
                     ${discount ? `<span class="product-chip sale">-${discount}%</span>` : ""}
                 </div>
+                <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+                    <span style="font-size:13px;color:#6f7b8c;font-weight:700;">Кількість</span>
+                    <input id="home-qty-${escapeHomeHtml(product.id)}" type="number" min="1" value="1" style="width:74px;padding:10px 12px;border:1px solid #e1e5eb;border-radius:12px;font-weight:800;">
+                </div>
                 <div class="product-showcase-actions">
-                    <button class="primary" onclick="openHomeProduct('${escapeHomeHtml(product.id)}')">${actionText}</button>
-                    <button class="secondary" onclick="goToCategory('${escapeHomeHtml(product.category)}')">У категорію</button>
+                    <button class="primary" onclick="event.stopPropagation(); addHomeProductToCart('${escapeHomeHtml(product.id)}', event)">У кошик</button>
+                    <button class="secondary" onclick="event.stopPropagation(); openHomeProduct('${escapeHomeHtml(product.id)}')">${actionText}</button>
                 </div>
             </div>
         </div>
@@ -960,26 +986,9 @@ function renderHomeDynamicSections() {
 
     const newest = (newProducts.length ? newProducts : [...allProducts].slice(-4).reverse()).slice(0, 4);
 
-    renderShowcaseGrid(
-        "home-hits-grid",
-        hits,
-        "hit",
-        "Хіти продажу з’являться після додавання товарів."
-    );
-
-    renderShowcaseGrid(
-        "home-sales-grid",
-        sales,
-        "sale",
-        "Акційні товари з’являться, коли ти позначиш товари як акційні."
-    );
-
-    renderShowcaseGrid(
-        "home-new-grid",
-        newest,
-        "new",
-        "Новинки з’являться, коли ти позначиш товари як нові."
-    );
+    renderShowcaseGrid("home-hits-grid", hits, "hit", "Хіти продажу з’являться після додавання товарів.");
+    renderShowcaseGrid("home-sales-grid", sales, "sale", "Акційні товари з’являться, коли ти позначиш товари як акційні.");
+    renderShowcaseGrid("home-new-grid", newest, "new", "Новинки з’являться, коли ти позначиш товари як нові.");
 }
 
 window.addEventListener("products:ready", renderHomeDynamicSections);
