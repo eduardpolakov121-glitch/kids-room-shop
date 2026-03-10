@@ -272,6 +272,45 @@
       gap:8px;
     }
 
+    .product-image-flags{
+      position:absolute;
+      top:20px;
+      left:20px;
+      z-index:3;
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      max-width:70%;
+    }
+
+    .product-flag{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      padding:8px 12px;
+      border-radius:999px;
+      font-size:12px;
+      font-weight:800;
+      line-height:1;
+      box-shadow:0 8px 18px rgba(0,0,0,0.08);
+      background:#fff;
+    }
+
+    .product-flag.hit{
+      background:#fff1e6;
+      color:#ca6200;
+    }
+
+    .product-flag.sale{
+      background:#fff0f0;
+      color:#c64c4c;
+    }
+
+    .product-flag.new{
+      background:#edf8ff;
+      color:#23628d;
+    }
+
     .product-info-card{
       padding:28px;
       box-sizing:border-box;
@@ -642,6 +681,9 @@
       .product-qty-control input{
         flex:1;
       }
+      .product-image-flags{
+        max-width:85%;
+      }
     }
   </style>
 </head>
@@ -780,6 +822,26 @@
       return Math.round(((oldVal - curVal) / oldVal) * 100);
     }
 
+    function buildProductFlags(product){
+      const items = [];
+
+      if (product?.is_hit) {
+        items.push('<span class="product-flag hit">ХІТ</span>');
+      }
+
+      if (product?.is_sale) {
+        items.push('<span class="product-flag sale">АКЦІЯ</span>');
+      }
+
+      if (product?.is_new) {
+        items.push('<span class="product-flag new">НОВИНКА</span>');
+      }
+
+      if (!items.length) return '';
+
+      return `<div class="product-image-flags">${items.join('')}</div>`;
+    }
+
     function updateProductCartCount(){
       let count = 0;
       try {
@@ -872,6 +934,7 @@
       const categoryName = getCategoryName(product.category);
       const discount = getDiscountPercent(product.old, product.price);
       const description = product.description || 'Якісний дитячий товар для щоденного використання.';
+      const flagsHtml = buildProductFlags(product);
 
       if (crumb) crumb.textContent = product.name || 'Товар';
       document.title = `Kids Room — ${product.name || 'Товар'}`;
@@ -880,6 +943,7 @@
         <section class="product-layout">
           <div class="product-gallery">
             <div class="product-gallery-frame">
+              ${flagsHtml}
               <img id="product-main-image" class="product-main-image" src="${imageSrc}" alt="${product.name}" onerror="this.onerror=null;this.src=fallbackImage();">
               <div class="product-image-chip">🧸 ${categoryName}</div>
             </div>
@@ -889,6 +953,9 @@
             <div class="product-badges">
               <span class="product-badge">📦 Швидка обробка замовлення</span>
               <span class="product-badge">🛡️ Перевірений товар</span>
+              ${product.is_hit ? `<span class="product-badge">🔥 Хіт продажу</span>` : ``}
+              ${product.is_sale ? `<span class="product-badge">🏷️ Акційна пропозиція</span>` : ``}
+              ${product.is_new ? `<span class="product-badge">✨ Новинка</span>` : ``}
             </div>
 
             <h1 class="product-title">${product.name}</h1>

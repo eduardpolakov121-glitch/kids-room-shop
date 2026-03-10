@@ -71,6 +71,15 @@ function addToCart(id) {
 
     if (item) {
         item.qty += qty;
+        item.is_hit = !!product.is_hit;
+        item.is_sale = !!product.is_sale;
+        item.is_new = !!product.is_new;
+        item.img = product.img;
+        item.old = product.old;
+        item.price = product.price;
+        item.name = product.name;
+        item.category = product.category;
+        item.description = product.description;
     } else {
         cart.push({ ...product, qty });
     }
@@ -103,12 +112,136 @@ function cartMinus(id) {
     saveCart();
 }
 
+function escapeCartHtml(value) {
+    return String(value || "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#39;");
+}
+
+function buildCartFlags(product) {
+    const parts = [];
+
+    if (product?.is_hit) {
+        parts.push(`<span class="cart-badge cart-badge-hit">ХІТ</span>`);
+    }
+
+    if (product?.is_sale) {
+        parts.push(`<span class="cart-badge cart-badge-sale">АКЦІЯ</span>`);
+    }
+
+    if (product?.is_new) {
+        parts.push(`<span class="cart-badge cart-badge-new">НОВИНКА</span>`);
+    }
+
+    if (!parts.length) return "";
+
+    return `<div class="cart-badges">${parts.join("")}</div>`;
+}
+
+function ensureCartBadgeStyles() {
+    if (document.getElementById("kids-room-cart-badge-styles")) return;
+
+    const style = document.createElement("style");
+    style.id = "kids-room-cart-badge-styles";
+    style.textContent = `
+    .cart-item{
+        display:flex;
+        justify-content:space-between;
+        align-items:flex-start;
+        gap:12px;
+        padding:12px;
+        border-radius:14px;
+        background:#fffdf9;
+        border:1px solid #ece7df;
+        margin-bottom:10px;
+    }
+
+    .cart-item-main{
+        min-width:0;
+        flex:1;
+    }
+
+    .cart-item-name{
+        font-weight:800;
+        color:#243041;
+        line-height:1.4;
+        margin-bottom:6px;
+    }
+
+    .cart-item-price{
+        color:#6f7b8c;
+        line-height:1.5;
+        font-size:14px;
+    }
+
+    .cart-badges{
+        display:flex;
+        flex-wrap:wrap;
+        gap:6px;
+        margin-bottom:8px;
+    }
+
+    .cart-badge{
+        display:inline-flex;
+        align-items:center;
+        justify-content:center;
+        padding:6px 10px;
+        border-radius:999px;
+        font-size:11px;
+        font-weight:800;
+        line-height:1;
+    }
+
+    .cart-badge-hit{
+        background:#fff1e6;
+        color:#ca6200;
+    }
+
+    .cart-badge-sale{
+        background:#fff0f0;
+        color:#c64c4c;
+    }
+
+    .cart-badge-new{
+        background:#edf8ff;
+        color:#23628d;
+    }
+
+    .cart-item-controls{
+        display:flex;
+        align-items:center;
+        gap:8px;
+        white-space:nowrap;
+        font-weight:800;
+        color:#243041;
+    }
+
+    .cart-item-controls button{
+        width:32px;
+        height:32px;
+        border:none;
+        border-radius:10px;
+        background:#f1f3f6;
+        color:#243041;
+        font-size:18px;
+        cursor:pointer;
+        font-weight:800;
+    }
+    `;
+    document.head.appendChild(style);
+}
+
 function renderCart() {
     const items = document.getElementById("cart-items");
     const count = document.getElementById("cart-count");
     const total = document.getElementById("total");
 
     if (!items || !count || !total) return;
+
+    ensureCartBadgeStyles();
 
     items.innerHTML = "";
 
@@ -121,14 +254,15 @@ function renderCart() {
 
         items.innerHTML += `
         <div class="cart-item">
-            <div>
-                ${p.name}<br>
-                ${p.price} грн
+            <div class="cart-item-main">
+                ${buildCartFlags(p)}
+                <div class="cart-item-name">${escapeCartHtml(p.name)}</div>
+                <div class="cart-item-price">${Number(p.price || 0)} грн</div>
             </div>
-            <div>
-                <button onclick="cartMinus('${p.id}')">−</button>
-                ${p.qty}
-                <button onclick="cartPlus('${p.id}')">+</button>
+            <div class="cart-item-controls">
+                <button onclick="cartMinus('${escapeCartHtml(p.id)}')">−</button>
+                <span>${p.qty}</span>
+                <button onclick="cartPlus('${escapeCartHtml(p.id)}')">+</button>
             </div>
         </div>
         `;
@@ -136,6 +270,7 @@ function renderCart() {
 
     count.innerText = qty;
     total.innerText = "Разом: " + sum + " грн";
+    window.dispatchEvent(new CustomEvent("cart:updated", { detail: cart }));
 }
 
 /* МОДАЛКА */
@@ -216,68 +351,50 @@ async function handleCityInput() {
         return;
     }
 
-    const result = await callNP("Address", "searchSettlements", {
-        CityName: val,
-        Limit: 20
-    });
+    const cities = await callNP("AddressGeneral", "searchSettlements", { CityName: val, Limit: 10 });
 
     list.innerHTML = "";
 
-    if (!result.length) {
+    if (!cities.length || !cities[0].Addresses?.length) {
         list.style.display = "none";
         return;
     }
 
-    list.style.display = "block";
+    cities[0].Addresses.forEach(city => {
+        const item = document.createElement("div");
+        item.className = "np-suggestion-item";
+        item.innerText = city.Present;
+        item.onclick = async () => {
+            input.value = city.Present;
+            list.style.display = "none";
+            list.innerHTML = "";
 
-    result.forEach(item => {
-        if (!item.Addresses || !item.Addresses.length) return;
-
-        item.Addresses.forEach(city => {
-            const cityName = city.Present || city.MainDescription || city.Description || "Місто";
-            const cityRefForWarehouses = city.DeliveryCity || city.Ref || "";
-
-            if (!cityRefForWarehouses) return;
-
-            const div = document.createElement("div");
-            div.className = "np-suggestion-item";
-            div.innerText = cityName;
-
-            div.onclick = async () => {
-                input.value = cityName;
-                selectedCity = {
-                    name: cityName,
-                    ref: cityRefForWarehouses
-                };
-                list.style.display = "none";
-                list.innerHTML = "";
-                await fillWarehouses(cityRefForWarehouses);
+            selectedCity = {
+                ref: city.Ref,
+                name: city.Present
             };
 
-            list.appendChild(div);
-        });
+            const warehouses = await loadWarehouses(city.Ref);
+            fillWarehouses(warehouses);
+        };
+        list.appendChild(item);
     });
+
+    list.style.display = "block";
 }
 
-/* ВІДДІЛЕННЯ */
-function resetWarehouses(text) {
+function resetWarehouses(placeholder = "Спочатку оберіть місто") {
     const select = document.getElementById("order-address");
     if (!select) return;
-    select.innerHTML = `<option value="">${text}</option>`;
+
+    select.innerHTML = `<option value="">${placeholder}</option>`;
 }
 
-async function fillWarehouses(cityRef) {
+function fillWarehouses(warehouses) {
     const select = document.getElementById("order-address");
-    resetWarehouses("Завантаження...");
+    if (!select) return;
 
-    const warehouses = await loadWarehouses(cityRef);
-
-    if (!warehouses.length) {
-        resetWarehouses("Немає відділень");
-        return;
-    }
-
-    select.innerHTML = `<option value="">Оберіть відділення</option>`;
+    resetWarehouses("Оберіть відділення");
 
     warehouses.forEach(w => {
         const text = w.Description || w.ShortAddress || "Відділення";
@@ -414,6 +531,7 @@ function clearCart() {
 
 function saveCart() {
     localStorage.setItem("cart", JSON.stringify(cart));
+    window.dispatchEvent(new CustomEvent("cart:updated", { detail: cart }));
 }
 
 /* INIT */

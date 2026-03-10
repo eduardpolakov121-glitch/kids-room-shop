@@ -98,6 +98,57 @@ function applyFiltersAndRender() {
     updateActiveCategoryUI();
 }
 
+function escapeHtmlText(value) {
+    return String(value || "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;");
+}
+
+function escapeHtmlAttr(value) {
+    return escapeHtmlText(value).replaceAll('"', "&quot;").replaceAll("'", "&#39;");
+}
+
+function buildProductBadges(product) {
+    const badges = [];
+
+    if (product?.is_hit) {
+        badges.push(`<span class="catalog-badge badge-hit">ХІТ</span>`);
+    }
+
+    if (product?.is_sale) {
+        badges.push(`<span class="catalog-badge badge-sale">АКЦІЯ</span>`);
+    }
+
+    if (product?.is_new) {
+        badges.push(`<span class="catalog-badge badge-new">НОВИНКА</span>`);
+    }
+
+    if (!badges.length) return "";
+
+    return `<div class="catalog-badges">${badges.join("")}</div>`;
+}
+
+function buildProductPrice(product) {
+    const currentPrice = Number(product?.price || 0);
+    const oldPrice = Number(product?.old || 0);
+
+    if (oldPrice > currentPrice) {
+        return `
+            <div class="price">
+                <span class="old-price" id="old-${product.id}">${oldPrice} грн</span>
+                <span>${currentPrice} грн</span>
+            </div>
+        `;
+    }
+
+    return `
+        <div class="price">
+            <span>${currentPrice} грн</span>
+        </div>
+    `;
+}
+
 function renderProducts(list) {
     if (!container) return;
 
@@ -113,40 +164,87 @@ function renderProducts(list) {
     }
 
     container.innerHTML = list.map(product => `
-        <div class="product" id="prod-${product.id}" onclick="openProduct('${product.id}')">
-            <img src="${getSafeProductImage(product)}" alt="${escapeHtmlAttr(product.name)}" onerror="this.onerror=null;this.src='${PRODUCT_PLACEHOLDER}'">
-            <h3>${escapeHtmlText(product.name)}</h3>
-            <div class="price">
-                <span class="old-price" id="old-${product.id}">${product.old} грн</span>
-                <span>${product.price} грн</span>
+        <div class="product product-card-with-badges" id="prod-${product.id}" onclick="openProduct('${escapeHtmlAttr(product.id)}')">
+            <div class="product-image-wrap">
+                ${buildProductBadges(product)}
+                <img src="${getSafeProductImage(product)}" alt="${escapeHtmlAttr(product.name)}" onerror="this.onerror=null;this.src='${PRODUCT_PLACEHOLDER}'">
             </div>
+
+            <h3>${escapeHtmlText(product.name)}</h3>
+
+            ${buildProductPrice(product)}
+
             <div class="quantity" onclick="event.stopPropagation()">
-                <button onclick="minus('${product.id}')">−</button>
+                <button onclick="minus('${escapeHtmlAttr(product.id)}')">−</button>
                 <input
-                    id="qty-${product.id}"
+                    id="qty-${escapeHtmlAttr(product.id)}"
                     type="number"
                     value="1"
                     min="1"
                     class="qty-input"
                 >
-                <button onclick="plus('${product.id}')">+</button>
+                <button onclick="plus('${escapeHtmlAttr(product.id)}')">+</button>
             </div>
-            <button class="add-btn" onclick="event.stopPropagation(); addToCart('${product.id}')">
+
+            <button class="add-btn" onclick="event.stopPropagation(); addToCart('${escapeHtmlAttr(product.id)}')">
                 Додати в кошик
             </button>
         </div>
     `).join("");
+
+    injectCatalogBadgeStyles();
 }
 
-function escapeHtmlText(value) {
-    return String(value || "")
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;");
-}
+function injectCatalogBadgeStyles() {
+    if (document.getElementById("kids-room-catalog-badge-styles")) return;
 
-function escapeHtmlAttr(value) {
-    return escapeHtmlText(value).replaceAll('"', "&quot;").replaceAll("'", "&#39;");
+    const style = document.createElement("style");
+    style.id = "kids-room-catalog-badge-styles";
+    style.textContent = `
+    .product-card-with-badges .product-image-wrap{
+        position:relative;
+    }
+
+    .product-card-with-badges .catalog-badges{
+        position:absolute;
+        top:10px;
+        left:10px;
+        display:flex;
+        flex-wrap:wrap;
+        gap:6px;
+        z-index:2;
+        pointer-events:none;
+    }
+
+    .product-card-with-badges .catalog-badge{
+        display:inline-flex;
+        align-items:center;
+        justify-content:center;
+        padding:6px 10px;
+        border-radius:999px;
+        font-size:11px;
+        font-weight:800;
+        line-height:1;
+        box-shadow:0 6px 14px rgba(0,0,0,0.08);
+        background:#fff;
+    }
+
+    .product-card-with-badges .badge-hit{
+        background:#fff1e6;
+        color:#ca6200;
+    }
+
+    .product-card-with-badges .badge-sale{
+        background:#fff0f0;
+        color:#c64c4c;
+    }
+
+    .product-card-with-badges .badge-new{
+        background:#edf8ff;
+        color:#23628d;
+    }
+    `;
+    document.head.appendChild(style);
 }
 
 function openProduct(id) {
