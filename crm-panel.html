@@ -126,7 +126,7 @@
     }
     .drawer-head{padding:18px 20px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:12px}
     .drawer-head h2{margin:0;font-size:22px}
-    .drawer-body{padding:18px 20px 108px;overflow:auto}
+    .drawer-body{padding:18px 20px 132px;overflow:auto}
     .drawer-footer{
       position:absolute;
       left:0;
@@ -138,6 +138,18 @@
       display:flex;
       gap:10px;
       flex-wrap:wrap;
+      align-items:center;
+      justify-content:space-between;
+    }
+    .footer-total{
+      font-size:20px;
+      font-weight:800;
+      color:#243041;
+    }
+    .footer-actions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
     }
     .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
     .panel{background:#f8faff;border:1px solid var(--line);border-radius:18px;padding:16px;margin-bottom:14px}
@@ -146,7 +158,6 @@
     .field label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
     .field input,.field select,.field textarea{width:100%;padding:12px 13px;border:1px solid var(--line);border-radius:12px;background:#fff;font-size:14px}
     .field textarea{min-height:92px;resize:vertical}
-    .field.inline-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
     .items{display:flex;flex-direction:column;gap:10px}
     .item{
       display:flex;
@@ -190,6 +201,27 @@
     .item-flag.hit{background:#fff1e6;color:#ca6200}
     .item-flag.sale{background:#fff0f0;color:#c64c4c}
     .item-flag.new{background:#edf8ff;color:#23628d}
+    .item-remove-btn{
+      border:none;
+      background:#fff0f0;
+      color:#c64c4c;
+      border-radius:10px;
+      padding:8px 10px;
+      cursor:pointer;
+      font-weight:800;
+      flex-shrink:0;
+    }
+    .order-products-editor{
+      margin-top:12px;
+      padding-top:12px;
+      border-top:1px solid var(--line);
+    }
+    .editor-row{
+      display:grid;
+      grid-template-columns:1fr 110px auto;
+      gap:10px;
+      align-items:end;
+    }
     .history-line{padding:10px 0;border-bottom:1px dashed var(--line);font-size:14px}
     .history-line:last-child{border-bottom:none}
     .duplicate-list{
@@ -243,7 +275,7 @@
     }
     @media (max-width:980px){
       .layout{padding:16px}
-      .stats,.toolbar,.grid-2,.field.inline-2{grid-template-columns:1fr}
+      .stats,.toolbar,.grid-2{grid-template-columns:1fr}
       .list-head{display:none}
       .order-row{grid-template-columns:1fr;gap:8px}
       .order-row > div{justify-self:start;width:100%}
@@ -268,6 +300,19 @@
       }
       .duplicate-right{
         text-align:left;
+      }
+      .editor-row{
+        grid-template-columns:1fr;
+      }
+      .drawer-footer{
+        flex-direction:column;
+        align-items:flex-start;
+      }
+      .footer-actions{
+        width:100%;
+      }
+      .footer-actions .btn{
+        width:100%;
       }
     }
   </style>
@@ -355,58 +400,83 @@
           <div>
             <div class="panel">
               <h3>Клієнт</h3>
-              <div class="field inline-2">
-                <div>
-                  <label>Ім'я</label>
-                  <input id="dFirstName" autocomplete="off">
-                </div>
-                <div>
-                  <label>Прізвище</label>
-                  <input id="dLastName" autocomplete="off">
-                </div>
+              <div class="field">
+                <label>ФІО</label>
+                <input id="dName" autocomplete="off">
               </div>
-              <div class="field"><label>Повне ім'я</label><input id="dName" autocomplete="off"></div>
-              <div class="field"><label>Телефон</label><input id="dPhone" autocomplete="off"></div>
-              <div class="field"><label>Місто</label><input id="dCity" autocomplete="off"></div>
-              <div class="field"><label>Тип доставки</label>
+              <div class="field">
+                <label>Моб. тел</label>
+                <input id="dPhone" autocomplete="off">
+              </div>
+              <div class="field">
+                <label>Місто</label>
+                <input id="dCity" autocomplete="off">
+              </div>
+              <div class="field">
+                <label>Тип доставки</label>
                 <select id="dDelivery">
                   <option value="Нова пошта">Нова пошта</option>
                   <option value="Укрпошта">Укрпошта</option>
                   <option value="Інше">Інше</option>
                 </select>
               </div>
-              <div class="field"><label>Адреса / відділення / індекс</label><textarea id="dAddress" autocomplete="off"></textarea></div>
-              <div class="field"><label>ТТН</label><input id="dTtn" autocomplete="off" placeholder="Введіть номер ТТН"></div>
+              <div class="field">
+                <label>Адреса / відділення / індекс</label>
+                <textarea id="dAddress" autocomplete="off"></textarea>
+              </div>
+              <div class="field">
+                <label>ТТН</label>
+                <input id="dTtn" autocomplete="off" placeholder="Введіть номер ТТН">
+              </div>
             </div>
 
             <div class="panel">
               <h3>Коментарі</h3>
-              <div class="field"><label>Коментар оператора</label><textarea id="dOperatorComment" placeholder="Результат дзвінка, уточнення, домовленості"></textarea></div>
-              <div class="field"><label>Коментар адміністратора</label><textarea id="dManagerComment" placeholder="Службова нотатка, внутрішня позначка"></textarea></div>
+              <div class="field">
+                <label>Коментар оператора</label>
+                <textarea id="dOperatorComment" placeholder="Результат дзвінка, уточнення, домовленості"></textarea>
+              </div>
+              <div class="field">
+                <label>Коментар адміністратора</label>
+                <textarea id="dManagerComment" placeholder="Службова нотатка, внутрішня позначка"></textarea>
+              </div>
             </div>
           </div>
 
           <div>
             <div class="panel">
-              <h3>Етап і статус</h3>
-              <div class="field"><label>Вкладка / етап</label><select id="dStage"></select></div>
-              <div class="field"><label>Підпис статусу</label><input id="dStatus" autocomplete="off"></div>
-              <div class="field inline-2">
-                <div>
-                  <label>Дата створення</label>
-                  <input id="dCreated" readonly>
-                </div>
-                <div>
-                  <label>Оновлено</label>
-                  <input id="dUpdated" readonly>
-                </div>
+              <h3>Етап замовлення</h3>
+              <div class="field">
+                <label>Вкладка / етап</label>
+                <select id="dStage"></select>
               </div>
-              <div class="field"><label>Сума</label><input id="dTotal" type="number" min="0" step="0.01"></div>
+              <div class="field">
+                <label>Дата створення</label>
+                <input id="dCreated" readonly>
+              </div>
+              <div class="field">
+                <label>Оновлено</label>
+                <input id="dUpdated" readonly>
+              </div>
             </div>
 
             <div class="panel">
               <h3>Товари</h3>
               <div id="dItems" class="items"></div>
+
+              <div id="orderProductsEditor" class="order-products-editor hidden">
+                <div class="editor-row">
+                  <div class="field" style="margin-bottom:0;">
+                    <label>Додати товар</label>
+                    <select id="addProductSelect"></select>
+                  </div>
+                  <div class="field" style="margin-bottom:0;">
+                    <label>К-сть</label>
+                    <input id="addProductQty" type="number" min="1" value="1">
+                  </div>
+                  <button class="btn primary" type="button" onclick="addSelectedProductToOrder()">Додати</button>
+                </div>
+              </div>
             </div>
 
             <div class="panel">
@@ -422,8 +492,11 @@
         </div>
       </div>
       <div class="drawer-footer">
-        <button id="saveOrderBtn" class="btn success" onclick="saveDrawerOrder()">Зберегти</button>
-        <button id="deleteOrderBtn" class="btn danger" onclick="deleteCurrentOrder()">Видалити</button>
+        <div class="footer-total" id="drawerTotalBottom">Разом: 0 грн</div>
+        <div class="footer-actions">
+          <button id="saveOrderBtn" class="btn success" onclick="saveDrawerOrder()">Зберегти</button>
+          <button id="deleteOrderBtn" class="btn danger" onclick="deleteCurrentOrder()">Видалити</button>
+        </div>
       </div>
     </div>
   </div>
@@ -463,6 +536,7 @@
     let allOrders = [];
     let selectedOrder = null;
     let activeStage = 'accepted';
+    let editingItems = [];
 
     function formatMoney(value){
       const num = Number(value || 0);
@@ -633,6 +707,76 @@
       return `<div class="item-flags">${parts.join('')}</div>`;
     }
 
+    function recalcDrawerTotal(){
+      const total = editingItems.reduce((sum, item) => sum + (Number(item.price || 0) * Number(item.qty || 1)), 0);
+      const totalEl = document.getElementById('drawerTotalBottom');
+      if (totalEl) {
+        totalEl.textContent = 'Разом: ' + formatMoney(total);
+      }
+      return total;
+    }
+
+    function fillAddProductSelect(){
+      const select = document.getElementById('addProductSelect');
+      if (!select) return;
+
+      const list = Array.isArray(window.products) ? window.products : [];
+      select.innerHTML = `
+        <option value="">Оберіть товар</option>
+        ${list.map(product => `<option value="${escapeHtml(product.id)}">${escapeHtml(product.name)} — ${escapeHtml(formatMoney(product.price || 0))}</option>`).join('')}
+      `;
+    }
+
+    function removeItemFromOrder(index){
+      if (currentProfile?.role !== 'admin') return;
+      editingItems.splice(index, 1);
+      renderItems(editingItems);
+    }
+
+    function addSelectedProductToOrder(){
+      if (currentProfile?.role !== 'admin') return;
+
+      const select = document.getElementById('addProductSelect');
+      const qtyInput = document.getElementById('addProductQty');
+      if (!select || !qtyInput) return;
+
+      const productId = String(select.value || '').trim();
+      let qty = parseInt(qtyInput.value || '1', 10);
+
+      if (!productId) return;
+      if (!Number.isFinite(qty) || qty < 1) qty = 1;
+
+      const product = Array.isArray(window.products)
+        ? window.products.find(item => String(item.id) === productId)
+        : null;
+
+      if (!product) return;
+
+      const existing = editingItems.find(item => String(item.id) === productId);
+
+      if (existing) {
+        existing.qty = Number(existing.qty || 1) + qty;
+      } else {
+        editingItems.push({
+          id: product.id,
+          name: product.name,
+          category: product.category || '',
+          price: Number(product.price || 0),
+          old: Number(product.old || 0),
+          description: product.description || '',
+          img: product.img || '',
+          is_hit: !!product.is_hit,
+          is_sale: !!product.is_sale,
+          is_new: !!product.is_new,
+          qty
+        });
+      }
+
+      qtyInput.value = '1';
+      select.value = '';
+      renderItems(editingItems);
+    }
+
     async function loginCRM(){
       authError('');
       const email = document.getElementById('loginEmail').value.trim();
@@ -691,6 +835,8 @@
       document.getElementById('deleteOrderBtn').style.display = currentProfile.role === 'admin' ? 'inline-flex' : 'none';
 
       renderStageSelect();
+      await initializeProducts();
+      fillAddProductSelect();
       await refreshOrders();
     }
 
@@ -936,11 +1082,13 @@
       selectedOrder = allOrders.find(item => item.id === orderId);
       if (!selectedOrder) return;
 
+      editingItems = Array.isArray(selectedOrder.items)
+        ? selectedOrder.items.map(item => ({ ...item }))
+        : [];
+
       document.getElementById('drawerTitle').textContent = getOrderName(selectedOrder);
       document.getElementById('drawerSub').textContent = `Замовлення #${shortId(selectedOrder.id)} • ${formatDate(selectedOrder.created_at)}`;
-      document.getElementById('dFirstName').value = selectedOrder.customer_first_name || '';
-      document.getElementById('dLastName').value = selectedOrder.customer_last_name || '';
-      document.getElementById('dName').value = selectedOrder.name || '';
+      document.getElementById('dName').value = selectedOrder.name || getOrderName(selectedOrder);
       document.getElementById('dPhone').value = selectedOrder.phone || '';
       document.getElementById('dCity').value = selectedOrder.city || '';
       document.getElementById('dDelivery').value = selectedOrder.delivery || 'Нова пошта';
@@ -949,18 +1097,20 @@
       document.getElementById('dOperatorComment').value = selectedOrder.operator_comment || '';
       document.getElementById('dManagerComment').value = selectedOrder.manager_comment || '';
       document.getElementById('dStage').value = selectedOrder.status_group || 'accepted';
-      document.getElementById('dStatus').value = selectedOrder.status || STAGES[selectedOrder.status_group || 'accepted'].status;
       document.getElementById('dCreated').value = formatDate(selectedOrder.created_at);
       document.getElementById('dUpdated').value = formatDate(selectedOrder.updated_at || selectedOrder.created_at);
-      document.getElementById('dTotal').value = Number(selectedOrder.total || 0);
 
       const onlyOperator = currentProfile.role === 'operator';
       document.getElementById('dManagerComment').readOnly = onlyOperator;
       document.getElementById('dStage').disabled = onlyOperator;
-      document.getElementById('dStatus').readOnly = onlyOperator;
-      document.getElementById('dTotal').readOnly = onlyOperator;
 
-      renderItems(selectedOrder.items || []);
+      const editor = document.getElementById('orderProductsEditor');
+      if (editor) {
+        editor.classList.toggle('hidden', onlyOperator);
+      }
+
+      fillAddProductSelect();
+      renderItems(editingItems);
       renderDuplicates(selectedOrder);
       renderHistory(selectedOrder);
 
@@ -972,22 +1122,26 @@
 
       if (!Array.isArray(items) || !items.length) {
         root.innerHTML = '<div class="empty" style="padding:12px 0">Немає товарів</div>';
+        recalcDrawerTotal();
         return;
       }
 
-      root.innerHTML = items.map(item => `
+      root.innerHTML = items.map((item, index) => `
         <div class="item">
           <div class="item-left">
             <img class="item-image" src="${escapeHtml(getSafeItemImage(item))}" alt="${escapeHtml(item.name || 'Товар')}" onerror="this.onerror=null;this.src='product-placeholder.svg'">
             <div class="item-main">
               ${renderItemFlags(item)}
               <div class="item-name">${escapeHtml(item.name || 'Товар')}</div>
-              <div class="item-sub">Кількість: ${Number(item.qty || 1)} • Ціна: ${formatMoney(item.price || 0)}</div>
+              <div class="item-sub">К-сть: ${Number(item.qty || 1)} • Ціна: ${formatMoney(item.price || 0)}</div>
             </div>
           </div>
           <div class="item-total">${formatMoney((Number(item.price || 0) * Number(item.qty || 1)))}</div>
+          ${currentProfile?.role === 'admin' ? `<button class="item-remove-btn" type="button" onclick="event.stopPropagation(); removeItemFromOrder(${index})">✕</button>` : ''}
         </div>
       `).join('');
+
+      recalcDrawerTotal();
     }
 
     function renderDuplicates(order){
@@ -1017,7 +1171,6 @@
         `Створено: ${formatDate(order.created_at)}`,
         `Оновлено: ${formatDate(order.updated_at || order.created_at)}`,
         `Поточний етап: ${STAGES[order.status_group || 'accepted']?.title || '-'}`,
-        `Статус: ${order.status || '-'}`,
         `ТТН: ${order.ttn || '-'}`,
         `Джерело: ${order.source || 'website'}`,
         hasDuplicates(order) ? `Повторні замовлення: ${getDuplicateOrders(order).length}` : 'Повторні замовлення: 0'
@@ -1026,77 +1179,38 @@
       document.getElementById('dHistory').innerHTML = lines.map(line => `<div class="history-line">${escapeHtml(line)}</div>`).join('');
     }
 
-    function inferTerminalStageFromStatus(text){
-      const value = String(text || '').toLowerCase();
-
-      if (
-        value.includes('відм') ||
-        value.includes('отказ') ||
-        value.includes('не забрал') ||
-        value.includes('не забрали') ||
-        value.includes('не отримав') ||
-        value.includes('не забрав')
-      ) {
-        return 'refused';
-      }
-
-      if (
-        value.includes('повернен') ||
-        value.includes('возврат') ||
-        value.includes('return')
-      ) {
-        return 'returned';
-      }
-
-      if (
-        value.includes('заверш') ||
-        value.includes('забрав') ||
-        value.includes('забрали') ||
-        value.includes('отримав') ||
-        value.includes('отримали') ||
-        value.includes('вручено')
-      ) {
-        return 'completed';
-      }
-
-      return null;
-    }
-
     async function saveDrawerOrder(){
       if (!selectedOrder) return;
 
-      const stageFromSelect = document.getElementById('dStage').value;
-      const statusText = document.getElementById('dStatus').value.trim();
-      const inferredTerminalStage = inferTerminalStageFromStatus(statusText);
-      const finalStage = inferredTerminalStage || stageFromSelect;
+      const finalStage = document.getElementById('dStage').value;
+
+      const fullName = document.getElementById('dName').value.trim();
+      const nameParts = fullName.split(/\s+/).filter(Boolean);
 
       const payload = {
-        customer_first_name: document.getElementById('dFirstName').value.trim(),
-        customer_last_name: document.getElementById('dLastName').value.trim(),
-        name: document.getElementById('dName').value.trim(),
+        customer_first_name: nameParts[0] || '',
+        customer_last_name: nameParts.slice(1).join(' '),
+        name: fullName,
         phone: document.getElementById('dPhone').value.trim(),
         city: document.getElementById('dCity').value.trim(),
         delivery: document.getElementById('dDelivery').value.trim(),
         address: document.getElementById('dAddress').value.trim(),
         ttn: document.getElementById('dTtn').value.trim(),
         operator_comment: document.getElementById('dOperatorComment').value.trim(),
+        items: editingItems,
+        total: recalcDrawerTotal() / 1,
         updated_at: new Date().toISOString()
       };
 
       if (currentProfile.role === 'admin') {
         payload.status_group = finalStage;
-        payload.status = statusText || STAGES[finalStage].status;
+        payload.status = STAGES[finalStage].status;
         payload.day_bucket = STAGES[finalStage].day;
         payload.manager_comment = document.getElementById('dManagerComment').value.trim();
-        payload.total = Number(document.getElementById('dTotal').value || 0);
 
         if (selectedOrder.status_group !== finalStage) {
           payload.moved_at = new Date().toISOString();
         }
-      }
-
-      if (!payload.name) {
-        payload.name = [payload.customer_first_name, payload.customer_last_name].filter(Boolean).join(' ').trim();
       }
 
       const { error } = await supabaseClient
@@ -1141,6 +1255,7 @@
     function forceCloseDrawer(){
       document.getElementById('drawerWrap').classList.remove('open');
       selectedOrder = null;
+      editingItems = [];
     }
 
     bootCRM().catch(error => {
