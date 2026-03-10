@@ -808,27 +808,32 @@
     };
 
     function fallbackImage(){
-      return 'data:image/svg+xml;utf8,' + encodeURIComponent(`
-        <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="900" viewBox="0 0 1200 900">
-          <rect width="1200" height="900" rx="48" fill="#f3e4d3"/>
-          <text x="600" y="470" text-anchor="middle" font-family="Arial, sans-serif" font-size="82" font-weight="700" fill="#c56617">Kids Room</text>
-        </svg>
-      `);
+      return "product-placeholder.svg";
     }
 
     function sanitizeImage(src){
-      if (!src || typeof src !== 'string') return fallbackImage();
-      const value = src.trim();
-      if (!value) return fallbackImage();
-      return value;
+      if (typeof sanitizeProductImage === "function") {
+        return sanitizeProductImage(src);
+      }
+
+      const value = String(src || "").trim();
+      return value || fallbackImage();
+    }
+
+    function getProductImage(product){
+      if (typeof getSafeProductImage === "function") {
+        return getSafeProductImage(product);
+      }
+
+      return sanitizeImage(product?.img);
     }
 
     function getCategoryName(cat){
-      return CATEGORY_NAMES[cat] || cat || 'Категорія';
+      return CATEGORY_NAMES[cat] || cat || "Категорія";
     }
 
     function refreshProductsSafe(){
-      if (typeof refreshProductsFromStorage === 'function') {
+      if (typeof refreshProductsFromStorage === "function") {
         refreshProductsFromStorage();
       }
     }
@@ -838,13 +843,13 @@
 
       let stored = null;
       try {
-        stored = JSON.parse(localStorage.getItem('selectedProduct') || 'null');
+        stored = JSON.parse(localStorage.getItem("selectedProduct") || "null");
       } catch (e) {
         stored = null;
       }
 
       if (stored && stored.id && Array.isArray(window.products)) {
-        const fresh = products.find(item => String(item.id) === String(stored.id));
+        const fresh = window.products.find(item => String(item.id) === String(stored.id));
         if (fresh) return fresh;
       }
 
@@ -863,8 +868,8 @@
       if (product?.is_hit) items.push('<span class="product-flag hit">ХІТ</span>');
       if (product?.is_sale) items.push('<span class="product-flag sale">АКЦІЯ</span>');
       if (product?.is_new) items.push('<span class="product-flag new">НОВИНКА</span>');
-      if (!items.length) return '';
-      return `<div class="product-image-flags">${items.join('')}</div>`;
+      if (!items.length) return "";
+      return `<div class="product-image-flags">${items.join("")}</div>`;
     }
 
     function buildRelatedFlags(product){
@@ -872,23 +877,23 @@
       if (product?.is_hit) items.push('<span class="product-related-flag hit">ХІТ</span>');
       if (product?.is_sale) items.push('<span class="product-related-flag sale">АКЦІЯ</span>');
       if (product?.is_new) items.push('<span class="product-related-flag new">НОВИНКА</span>');
-      if (!items.length) return '';
-      return `<div class="product-related-flags">${items.join('')}</div>`;
+      if (!items.length) return "";
+      return `<div class="product-related-flags">${items.join("")}</div>`;
     }
 
     function escapeHtml(value){
-      return String(value || '')
-        .replaceAll('&', '&amp;')
-        .replaceAll('<', '&lt;')
-        .replaceAll('>', '&gt;')
-        .replaceAll('"', '&quot;')
-        .replaceAll("'", '&#39;');
+      return String(value || "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#39;");
     }
 
     function updateProductCartCount(){
       let count = 0;
       try {
-        const cartData = JSON.parse(localStorage.getItem('cart') || '[]');
+        const cartData = JSON.parse(localStorage.getItem("cart") || "[]");
         if (Array.isArray(cartData)) {
           count = cartData.reduce((sum, item) => sum + Number(item.qty || 0), 0);
         }
@@ -896,32 +901,32 @@
         count = 0;
       }
 
-      const countEl = document.getElementById('product-cart-count');
+      const countEl = document.getElementById("product-cart-count");
       if (countEl) countEl.textContent = count;
     }
 
     function goBack(){
       const ref = document.referrer || "";
-      if (ref && ref.includes(location.host) && !ref.includes('product.html')) {
+      if (ref && ref.includes(location.host) && !ref.includes("product.html")) {
         window.location.href = ref;
         return;
       }
-      window.location.href = 'index.html';
+      window.location.href = "index.html";
     }
 
     function goHomeToCart(){
-      window.location.href = 'index.html#cart';
+      window.location.href = "index.html#cart";
     }
 
     function animateToCartFromProduct(){
-      const image = document.getElementById('product-main-image');
-      const cartButton = document.getElementById('product-cart-button');
+      const image = document.getElementById("product-main-image");
+      const cartButton = document.getElementById("product-cart-button");
 
       if (!cartButton) return;
 
       if (!image) {
-        cartButton.classList.add('bump');
-        setTimeout(() => cartButton.classList.remove('bump'), 450);
+        cartButton.classList.add("bump");
+        setTimeout(() => cartButton.classList.remove("bump"), 450);
         return;
       }
 
@@ -929,26 +934,26 @@
       const cartRect = cartButton.getBoundingClientRect();
 
       const clone = image.cloneNode(true);
-      clone.className = 'fly-clone';
-      clone.style.left = imgRect.left + 'px';
-      clone.style.top = imgRect.top + 'px';
-      clone.style.width = imgRect.width + 'px';
-      clone.style.height = imgRect.height + 'px';
+      clone.className = "fly-clone";
+      clone.style.left = imgRect.left + "px";
+      clone.style.top = imgRect.top + "px";
+      clone.style.width = imgRect.width + "px";
+      clone.style.height = imgRect.height + "px";
       document.body.appendChild(clone);
 
       requestAnimationFrame(() => {
-        clone.style.left = (cartRect.left + cartRect.width / 2 - 30) + 'px';
-        clone.style.top = (cartRect.top + cartRect.height / 2 - 30) + 'px';
-        clone.style.width = '60px';
-        clone.style.height = '60px';
-        clone.style.transform = 'scale(.2) rotate(10deg)';
-        clone.style.opacity = '.2';
+        clone.style.left = (cartRect.left + cartRect.width / 2 - 30) + "px";
+        clone.style.top = (cartRect.top + cartRect.height / 2 - 30) + "px";
+        clone.style.width = "60px";
+        clone.style.height = "60px";
+        clone.style.transform = "scale(.2) rotate(10deg)";
+        clone.style.opacity = ".2";
       });
 
       setTimeout(() => {
         clone.remove();
-        cartButton.classList.add('bump');
-        setTimeout(() => cartButton.classList.remove('bump'), 450);
+        cartButton.classList.add("bump");
+        setTimeout(() => cartButton.classList.remove("bump"), 450);
       }, 760);
     }
 
@@ -957,8 +962,8 @@
       const product = products.find(item => String(item.id) === String(id));
       if (!product) return;
 
-      localStorage.setItem('selectedProduct', JSON.stringify(product));
-      window.location.href = 'product.html';
+      localStorage.setItem("selectedProduct", JSON.stringify(product));
+      window.location.href = "product.html";
     }
 
     function addRelatedToCart(id, event){
@@ -977,7 +982,7 @@
 
       tempInput.value = "1";
 
-      if (typeof addToCart === 'function') {
+      if (typeof addToCart === "function") {
         addToCart(id);
       }
 
@@ -985,7 +990,7 @@
     }
 
     function buildRelatedSection(product){
-      if (!product || !Array.isArray(window.products)) return '';
+      if (!product || !Array.isArray(window.products)) return "";
 
       const related = products
         .filter(item => String(item.id) !== String(product.id) && String(item.category) === String(product.category))
@@ -1014,16 +1019,16 @@
               <article class="product-related-card" onclick="openRelatedProduct('${escapeHtml(item.id)}')">
                 <div class="product-related-image">
                   ${buildRelatedFlags(item)}
-                  <img src="${escapeHtml(sanitizeImage(item.img))}" alt="${escapeHtml(item.name)}" onerror="this.onerror=null;this.src=fallbackImage();">
+                  <img src="${escapeHtml(getProductImage(item))}" alt="${escapeHtml(item.name)}" onerror="this.onerror=null;this.src='product-placeholder.svg';">
                 </div>
 
                 <div class="product-related-body">
                   <h3 class="product-related-name">${escapeHtml(item.name)}</h3>
-                  <p class="product-related-desc">${escapeHtml(item.description || 'Якісний дитячий товар для щоденного використання.').slice(0, 82)}${(item.description || '').length > 82 ? '…' : ''}</p>
+                  <p class="product-related-desc">${escapeHtml(item.description || "Якісний дитячий товар для щоденного використання.").slice(0, 82)}${(item.description || "").length > 82 ? "…" : ""}</p>
 
                   <div class="product-related-price">
                     <span class="current">${Number(item.price || 0)} грн</span>
-                    ${Number(item.old || 0) > Number(item.price || 0) ? `<span class="old">${Number(item.old || 0)} грн</span>` : ''}
+                    ${Number(item.old || 0) > Number(item.price || 0) ? `<span class="old">${Number(item.old || 0)} грн</span>` : ""}
                   </div>
 
                   <div class="product-related-actions">
@@ -1032,21 +1037,21 @@
                   </div>
                 </div>
               </article>
-            `).join('')}
+            `).join("")}
           </div>
         </aside>
       `;
     }
 
     function renderProductPage(){
-      const container = document.getElementById('product-page');
-      const crumb = document.getElementById('breadcrumb-name');
+      const container = document.getElementById("product-page");
+      const crumb = document.getElementById("breadcrumb-name");
       const product = getSelectedProduct();
 
       if (!container) return;
 
       if (!product) {
-        if (crumb) crumb.textContent = 'Товар не знайдено';
+        if (crumb) crumb.textContent = "Товар не знайдено";
         container.innerHTML = `
           <section class="product-empty">
             <h1>Товар не знайдено</h1>
@@ -1057,15 +1062,15 @@
         return;
       }
 
-      const imageSrc = sanitizeImage(product.img);
+      const imageSrc = getProductImage(product);
       const categoryName = getCategoryName(product.category);
       const discount = getDiscountPercent(product.old, product.price);
-      const description = product.description || 'Якісний дитячий товар для щоденного використання.';
+      const description = product.description || "Якісний дитячий товар для щоденного використання.";
       const flagsHtml = buildProductFlags(product);
       const relatedHtml = buildRelatedSection(product);
 
-      if (crumb) crumb.textContent = product.name || 'Товар';
-      document.title = `Kids Room — ${product.name || 'Товар'}`;
+      if (crumb) crumb.textContent = product.name || "Товар";
+      document.title = `Kids Room — ${product.name || "Товар"}`;
 
       container.innerHTML = `
         <div class="product-page-grid">
@@ -1073,7 +1078,7 @@
             <div class="product-gallery">
               <div class="product-gallery-frame">
                 ${flagsHtml}
-                <img id="product-main-image" class="product-main-image" src="${imageSrc}" alt="${escapeHtml(product.name)}" onerror="this.onerror=null;this.src=fallbackImage();">
+                <img id="product-main-image" class="product-main-image" src="${escapeHtml(imageSrc)}" alt="${escapeHtml(product.name)}" onerror="this.onerror=null;this.src='product-placeholder.svg';">
                 <div class="product-image-chip">🧸 ${escapeHtml(categoryName)}</div>
               </div>
             </div>
@@ -1091,8 +1096,8 @@
 
               <div class="product-price-row">
                 <div class="product-price-current">${Number(product.price || 0)} грн</div>
-                ${Number(product.old || 0) > Number(product.price || 0) ? `<div class="product-price-old">${Number(product.old || 0)} грн</div>` : ''}
-                ${discount ? `<div class="product-discount">-${discount}%</div>` : ''}
+                ${Number(product.old || 0) > Number(product.price || 0) ? `<div class="product-price-old">${Number(product.old || 0)} грн</div>` : ""}
+                ${discount ? `<div class="product-discount">-${discount}%</div>` : ""}
               </div>
 
               <p class="product-desc">${escapeHtml(description)}</p>
@@ -1133,7 +1138,7 @@
     function handleProductAddToCart(id){
       animateToCartFromProduct();
 
-      if (typeof addToCart === 'function') {
+      if (typeof addToCart === "function") {
         addToCart(id);
       }
 
@@ -1143,13 +1148,13 @@
     renderProductPage();
     updateProductCartCount();
 
-    window.addEventListener('storage', event => {
-      if (event.key === 'cart') updateProductCartCount();
-      if (event.key === 'products') renderProductPage();
+    window.addEventListener("storage", event => {
+      if (event.key === "cart") updateProductCartCount();
+      if (event.key === "products") renderProductPage();
     });
 
-    window.addEventListener('products:updated', renderProductPage);
-    window.addEventListener('cart:updated', updateProductCartCount);
+    window.addEventListener("products:updated", renderProductPage);
+    window.addEventListener("cart:updated", updateProductCartCount);
   </script>
 </body>
 </html>

@@ -213,7 +213,25 @@ function toBool(value) {
 
 function sanitizeProductImage(url) {
     const value = String(url || "").trim();
-    return value || PRODUCT_PLACEHOLDER;
+
+    if (!value) return PRODUCT_PLACEHOLDER;
+    if (value === PRODUCT_PLACEHOLDER) return PRODUCT_PLACEHOLDER;
+
+    const lower = value.toLowerCase();
+
+    if (
+        lower.startsWith("http://") ||
+        lower.startsWith("https://") ||
+        lower.startsWith("./") ||
+        lower.startsWith("../") ||
+        lower.startsWith("/") ||
+        lower.startsWith("data:image/") ||
+        lower === "product-placeholder.svg"
+    ) {
+        return value;
+    }
+
+    return PRODUCT_PLACEHOLDER;
 }
 
 function normalizeProduct(raw, fallbackId = null) {
@@ -475,6 +493,7 @@ window.saveProducts = saveProducts;
 window.saveSingleProductToSupabase = saveSingleProductToSupabase;
 window.deleteProductFromSupabase = deleteProductFromSupabase;
 window.findProductById = findProductById;
+window.sanitizeProductImage = sanitizeProductImage;
 
 window.addEventListener("storage", event => {
     if (event.key === PRODUCTS_CACHE_KEY) {

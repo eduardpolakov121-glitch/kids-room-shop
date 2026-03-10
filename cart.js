@@ -67,7 +67,7 @@ function normalizeCartItem(product, qty = 1) {
         category: String(product?.category || ""),
         description: String(product?.description || ""),
         img: getCartItemImage(product),
-        qty: Number(qty || product?.qty || 1),
+        qty: Math.max(1, Number(qty || product?.qty || 1)),
         is_hit: !!product?.is_hit,
         is_sale: !!product?.is_sale,
         is_new: !!product?.is_new
@@ -159,6 +159,10 @@ function escapeCartHtml(value) {
 function getCartItemImage(product) {
     if (typeof getSafeProductImage === "function") {
         return getSafeProductImage(product);
+    }
+
+    if (typeof sanitizeProductImage === "function") {
+        return sanitizeProductImage(product?.img);
     }
 
     const value = String(product?.img || "").trim();
@@ -650,3 +654,18 @@ window.addEventListener("storage", event => {
         renderCart();
     }
 });
+
+window.toggleCart = toggleCart;
+window.closeCart = closeCart;
+window.addToCart = addToCart;
+window.cartPlus = cartPlus;
+window.cartMinus = cartMinus;
+window.renderCart = renderCart;
+window.checkout = checkout;
+window.closeCheckoutModal = closeCheckoutModal;
+window.handleDeliveryTypeChange = handleDeliveryTypeChange;
+window.handleCityInput = handleCityInput;
+window.submitCheckout = submitCheckout;
+window.closeSuccessModal = closeSuccessModal;
+window.clearCart = clearCart;
+window.getCartItemImage = getCartItemImage;

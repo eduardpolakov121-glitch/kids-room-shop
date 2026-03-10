@@ -294,10 +294,11 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="products.js"></script>
   <script>
     const SUPABASE_URL = "https://xhhzxiithajxgngmbzzd.supabase.co";
     const SUPABASE_KEY = "sb_publishable_cRp6r2C_3nszludByS9V9Q_sl1QlHg5";
-    const PRODUCT_PLACEHOLDER = "product-placeholder.svg";
+    const PRODUCT_PLACEHOLDER_LOCAL = "product-placeholder.svg";
 
     const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
       auth: {
@@ -371,8 +372,16 @@
     }
 
     function getSafeItemImage(item){
+      if (typeof getSafeProductImage === "function") {
+        return getSafeProductImage(item);
+      }
+
+      if (typeof sanitizeProductImage === "function") {
+        return sanitizeProductImage(item?.img);
+      }
+
       const value = String(item?.img || '').trim();
-      return value || PRODUCT_PLACEHOLDER;
+      return value || PRODUCT_PLACEHOLDER_LOCAL;
     }
 
     function renderItemFlags(item){
@@ -418,12 +427,14 @@
         .select('*')
         .eq('id', userId)
         .single();
+
       if (error) throw error;
       return data;
     }
 
     async function bootCRM(){
       const { data: { session } } = await supabaseClient.auth.getSession();
+
       if (!session?.user) {
         document.getElementById('authView').classList.remove('hidden');
         document.getElementById('appView').classList.add('hidden');
@@ -513,6 +524,7 @@
     function renderStats(){
       const list = getFilteredOrders();
       const today = new Date();
+
       const sameDay = order => {
         const d = new Date(order.created_at);
         return d.getFullYear() === today.getFullYear()
@@ -613,6 +625,7 @@
 
     function renderItems(items){
       const root = document.getElementById('dItems');
+
       if (!Array.isArray(items) || !items.length) {
         root.innerHTML = '<div class="empty" style="padding:12px 0">Немає товарів</div>';
         return;
@@ -641,6 +654,7 @@
         `Статус: ${order.status || '-'}`,
         `Джерело: ${order.source || 'website'}`
       ];
+
       document.getElementById('dHistory').innerHTML = lines.map(line => `<div class="history-line">${escapeHtml(line)}</div>`).join('');
     }
 
@@ -666,6 +680,7 @@
         payload.day_bucket = STAGES[stage].day;
         payload.manager_comment = document.getElementById('dManagerComment').value.trim();
         payload.total = Number(document.getElementById('dTotal').value || 0);
+
         if (selectedOrder.status_group !== stage) {
           payload.moved_at = new Date().toISOString();
         }
