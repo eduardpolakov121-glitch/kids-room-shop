@@ -120,7 +120,7 @@ button:hover{ opacity:0.92; }
 }
 .order-product{
     display:flex;
-    align-items:center;
+    align-items:flex-start;
     gap:12px;
     padding:10px;
     margin-top:8px;
@@ -136,6 +136,40 @@ button:hover{ opacity:0.92; }
     background:#f1f1f1;
     flex-shrink:0;
 }
+.order-product-main{
+    flex:1;
+    min-width:0;
+}
+.order-product-name{
+    font-weight:800;
+    color:#243041;
+    line-height:1.35;
+    margin-bottom:4px;
+}
+.order-product-price{
+    color:#6b7890;
+    font-size:14px;
+}
+.order-product-flags{
+    display:flex;
+    flex-wrap:wrap;
+    gap:6px;
+    margin-bottom:6px;
+}
+.order-product-flag{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    padding:5px 9px;
+    border-radius:999px;
+    font-size:11px;
+    font-weight:800;
+    line-height:1;
+}
+.order-product-flag.hit{ background:#fff1e6; color:#ca6200; }
+.order-product-flag.sale{ background:#fff0f0; color:#c64c4c; }
+.order-product-flag.new{ background:#edf8ff; color:#23628d; }
+
 .topbar{
     display:flex;
     justify-content:space-between;
@@ -414,19 +448,23 @@ async function saveProduct() {
 function renderFlags(product) {
     const parts = [];
 
-    if (product.is_hit) {
-        parts.push(`<span class="flag-badge flag-hit">ХІТ</span>`);
-    }
-    if (product.is_sale) {
-        parts.push(`<span class="flag-badge flag-sale">АКЦІЯ</span>`);
-    }
-    if (product.is_new) {
-        parts.push(`<span class="flag-badge flag-new">НОВИНКА</span>`);
-    }
+    if (product.is_hit) parts.push(`<span class="flag-badge flag-hit">ХІТ</span>`);
+    if (product.is_sale) parts.push(`<span class="flag-badge flag-sale">АКЦІЯ</span>`);
+    if (product.is_new) parts.push(`<span class="flag-badge flag-new">НОВИНКА</span>`);
 
     if (!parts.length) return "";
-
     return `<div class="product-flags">${parts.join("")}</div>`;
+}
+
+function renderOrderItemFlags(item) {
+    const parts = [];
+
+    if (item?.is_hit) parts.push(`<span class="order-product-flag hit">ХІТ</span>`);
+    if (item?.is_sale) parts.push(`<span class="order-product-flag sale">АКЦІЯ</span>`);
+    if (item?.is_new) parts.push(`<span class="order-product-flag new">НОВИНКА</span>`);
+
+    if (!parts.length) return "";
+    return `<div class="order-product-flags">${parts.join("")}</div>`;
 }
 
 function renderList() {
@@ -537,9 +575,10 @@ async function renderCRMOrders() {
                     itemsHtml += `
                     <div class="order-product">
                         <img src="${getSafeProductImage(item)}" alt="${item.name || 'Товар'}" onerror="this.onerror=null;this.src='${PRODUCT_PLACEHOLDER}'">
-                        <div>
-                            <div style="font-weight:bold;">${item.name || "Товар"}</div>
-                            <div>${item.qty || 1} × ${item.price || 0} грн</div>
+                        <div class="order-product-main">
+                            ${renderOrderItemFlags(item)}
+                            <div class="order-product-name">${item.name || "Товар"}</div>
+                            <div class="order-product-price">${item.qty || 1} × ${item.price || 0} грн</div>
                         </div>
                     </div>
                     `;
