@@ -58,6 +58,34 @@ function closeCart() {
     overlay.classList.remove("active");
 }
 
+function normalizeCartItem(product, qty = 1) {
+    return {
+        id: String(product?.id || ""),
+        name: String(product?.name || "Товар"),
+        price: Number(product?.price || 0),
+        old: Number(product?.old || 0),
+        category: String(product?.category || ""),
+        description: String(product?.description || ""),
+        img: getCartItemImage(product),
+        qty: Number(qty || product?.qty || 1),
+        is_hit: !!product?.is_hit,
+        is_sale: !!product?.is_sale,
+        is_new: !!product?.is_new
+    };
+}
+
+function syncCartWithProducts() {
+    if (!Array.isArray(window.products) || !window.products.length) return;
+
+    cart = cart.map(item => {
+        const fresh = window.products.find(p => String(p.id) === String(item.id));
+        if (!fresh) return normalizeCartItem(item, item.qty);
+        return normalizeCartItem({ ...item, ...fresh }, item.qty);
+    });
+
+    localStorage.setItem("cart", JSON.stringify(cart));
+}
+
 function addToCart(id) {
     if (typeof refreshProductsFromStorage === "function") {
         refreshProductsFromStorage();
@@ -68,24 +96,27 @@ function addToCart(id) {
 
     if (isNaN(qty) || qty < 1) qty = 1;
 
-    const product = Array.isArray(window.products) ? window.products.find(p => String(p.id) === String(id)) : null;
+    const product = Array.isArray(window.products)
+        ? window.products.find(p => String(p.id) === String(id))
+        : null;
+
     if (!product) return;
 
     const item = cart.find(p => String(p.id) === String(id));
 
     if (item) {
         item.qty += qty;
+        item.name = product.name;
+        item.price = Number(product.price || 0);
+        item.old = Number(product.old || 0);
+        item.category = product.category || "";
+        item.description = product.description || "";
+        item.img = getCartItemImage(product);
         item.is_hit = !!product.is_hit;
         item.is_sale = !!product.is_sale;
         item.is_new = !!product.is_new;
-        item.img = product.img;
-        item.old = product.old;
-        item.price = product.price;
-        item.name = product.name;
-        item.category = product.category;
-        item.description = product.description;
     } else {
-        cart.push({ ...product, qty });
+        cart.push(normalizeCartItem(product, qty));
     }
 
     renderCart();
@@ -265,6 +296,8 @@ function renderCart() {
     if (!items || !count || !total) return;
 
     ensureCartBadgeStyles();
+    syncCartWithProducts();
+
     items.innerHTML = "";
 
     let sum = 0;
@@ -279,7 +312,12 @@ function renderCart() {
         items.innerHTML += `
         <div class="cart-item">
             <div class="cart-item-left">
-                <img class="cart-item-image" src="${escapeCartHtml(image)}" alt="${escapeCartHtml(p.name)}" onerror="this.onerror=null;this.src='product-placeholder.svg'">
+                <img
+                    class="cart-item-image"
+                    src="${escapeCartHtml(image)}"
+                    alt="${escapeCartHtml(p.name)}"
+                    onerror="this.onerror=null;this.src='product-placeholder.svg'"
+                >
                 <div class="cart-item-main">
                     ${buildCartFlags(p)}
                     <div class="cart-item-name">${escapeCartHtml(p.name)}</div>
@@ -493,7 +531,7 @@ async function submitCheckout() {
         city,
         delivery,
         address,
-        items: cart,
+        items: cart.map(item => normalizeCartItem(item, item.qty)),
         total: cart.reduce((s, p) => s + Number(p.price || 0) * Number(p.qty || 0), 0),
         status: "Новий",
         status_group: "new",
@@ -596,5 +634,19 @@ document.addEventListener("DOMContentLoaded", () => {
                 list.style.display = "block";
             }
         });
+    }
+});
+
+window.addEventListener("products:updated", () => {
+    renderCart();
+});
+
+window.addEventListener("storage", event => {
+    if (event.key === "cart") {
+        cart = JSON.parse(localStorage.getItem("cart") || "[]");
+        renderCart();
+    }
+    if (event.key === "products") {
+        renderCart();
     }
 });
