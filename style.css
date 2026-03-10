@@ -1757,8 +1757,8 @@ box-shadow:0 10px 24px rgba(255,102,0,0.22);
 100%{transform:scale(1);opacity:1;}
 }
 
-
 /* FINAL MOBILE OVERRIDES */
+
 @media (max-width: 900px){
 .catalog-toggle{
 display:flex;
@@ -1785,7 +1785,6 @@ right:10px;
 top:12px;
 }
 }
-
 
 @media (max-width: 360px){
 .products{

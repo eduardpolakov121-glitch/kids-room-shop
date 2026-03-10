@@ -6,6 +6,11 @@ let activeSort = "";
 let activeSearch = "";
 
 const mobileCatalogBreakpoint = 900;
+const SPECIAL_CATEGORY_MAP = {
+    hits: product => !!product?.is_hit,
+    sale: product => !!product?.is_sale,
+    new: product => !!product?.is_new
+};
 
 function isMobileCatalogMode() {
     return window.innerWidth <= mobileCatalogBreakpoint;
@@ -44,6 +49,20 @@ function getBaseProducts() {
     return Array.isArray(window.products) ? [...window.products] : [];
 }
 
+function isSpecialCategory(category) {
+    return Object.prototype.hasOwnProperty.call(SPECIAL_CATEGORY_MAP, category);
+}
+
+function matchesActiveCategory(product, category) {
+    if (category === "all") return true;
+
+    if (isSpecialCategory(category)) {
+        return SPECIAL_CATEGORY_MAP[category](product);
+    }
+
+    return product.category === category;
+}
+
 function updateActiveCategoryUI() {
     const items = document.querySelectorAll(".sidebar li");
     items.forEach(item => item.classList.remove("active", "selected"));
@@ -72,13 +91,14 @@ function ensureSidebarCategoryMarkers() {
 function applyFiltersAndRender() {
     let list = getBaseProducts();
 
-    if (activeCategory !== "all") {
-        list = list.filter(product => product.category === activeCategory);
-    }
+    list = list.filter(product => matchesActiveCategory(product, activeCategory));
 
     if (activeSearch) {
         const search = activeSearch.toLowerCase();
-        list = list.filter(product => String(product.name || "").toLowerCase().includes(search));
+        list = list.filter(product =>
+            String(product.name || "").toLowerCase().includes(search) ||
+            String(product.description || "").toLowerCase().includes(search)
+        );
     }
 
     if (activeSort === "cheap") {

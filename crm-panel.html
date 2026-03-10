@@ -49,7 +49,7 @@
     .tab-count{padding:4px 8px;border-radius:999px;background:rgba(255,255,255,.8);color:#28324a;font-size:12px;font-weight:700}
     .tab-btn.active .tab-count{background:rgba(255,255,255,.22);color:#fff}
     .list-card{background:var(--panel);border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow);overflow:hidden}
-    .list-head,.order-row{display:grid;grid-template-columns:130px 1.2fr 1fr 1.2fr 140px 160px 130px;gap:12px;align-items:center}
+    .list-head,.order-row{display:grid;grid-template-columns:110px 1.1fr .9fr .95fr 1.35fr 145px 160px 120px;gap:12px;align-items:center}
     .list-head{padding:16px 18px;background:#f8faff;border-bottom:1px solid var(--line);font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
     .order-row{padding:16px 18px;border-bottom:1px solid var(--line);cursor:pointer;transition:.15s;background:#fff}
     .order-row:last-child{border-bottom:none}
@@ -61,6 +61,32 @@
     .stage-pill{display:inline-flex;align-items:center;justify-content:center;min-height:34px;padding:6px 12px;border-radius:999px;background:#fff1e7;color:#d86b14;font-size:12px;font-weight:700;justify-self:start}
     .sum{font-weight:700;font-size:16px}
     .empty{padding:28px;text-align:center;color:var(--muted)}
+    .order-comment-cell{
+      align-self:stretch;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      text-align:center;
+      min-height:64px;
+      padding:10px 12px;
+      border-radius:14px;
+      background:#f8faff;
+      border:1px solid var(--line);
+      color:#44516c;
+      font-size:13px;
+      line-height:1.45;
+      font-weight:700;
+      overflow:hidden;
+      word-break:break-word;
+    }
+    .order-comment-cell.empty{
+      background:#fcfcfd;
+      color:#a0a8b7;
+      font-weight:600;
+      border-style:dashed;
+      min-height:64px;
+      padding:10px 12px;
+    }
     .drawer-wrap{position:fixed;inset:0;background:rgba(10,18,34,.42);display:none;z-index:60}
     .drawer-wrap.open{display:block}
     .drawer{position:absolute;top:0;right:0;height:100%;width:min(920px,100%);background:#fff;box-shadow:-12px 0 40px rgba(0,0,0,.18);display:flex;flex-direction:column}
@@ -127,17 +153,22 @@
     .auth-card input{width:100%;padding:14px;border:1px solid var(--line);border-radius:14px;margin-bottom:12px;font-size:15px}
     .auth-card button{width:100%;padding:14px;border:none;border-radius:14px;background:var(--accent);color:#fff;font-size:16px;font-weight:700;cursor:pointer}
     .auth-note{margin-top:14px;font-size:13px;color:var(--muted)}
-    @media (max-width:1280px){
+    @media (max-width:1400px){
       .stats{grid-template-columns:repeat(2,1fr)}
       .toolbar{grid-template-columns:1fr 1fr}
-      .list-head,.order-row{grid-template-columns:110px 1.2fr 1fr 1fr 120px 140px 120px}
+      .list-head,.order-row{grid-template-columns:100px 1.05fr .9fr .9fr 1.2fr 130px 145px 110px}
     }
     @media (max-width:980px){
       .layout{padding:16px}
       .stats,.toolbar,.grid-2,.field.inline-2{grid-template-columns:1fr}
       .list-head{display:none}
       .order-row{grid-template-columns:1fr;gap:8px}
-      .order-row > div{justify-self:start}
+      .order-row > div{justify-self:start;width:100%}
+      .order-comment-cell,.order-comment-cell.empty{
+        justify-content:flex-start;
+        text-align:left;
+        min-height:auto;
+      }
       .drawer{width:100%}
       .app-header{padding:16px;align-items:flex-start}
       .header-actions{justify-content:flex-start}
@@ -180,7 +211,7 @@
       </section>
 
       <section class="toolbar">
-        <input id="searchInput" placeholder="Пошук: ім'я, телефон, місто" oninput="applyFilters()" autocomplete="off" spellcheck="false">
+        <input id="searchInput" placeholder="Пошук: ім'я, телефон, місто, коментар" oninput="applyFilters()" autocomplete="off" spellcheck="false">
         <select id="deliveryFilter" onchange="applyFilters()">
           <option value="all">Вся доставка</option>
           <option value="Нова пошта">Нова пошта</option>
@@ -203,6 +234,7 @@
           <div>Клієнт</div>
           <div>Телефон</div>
           <div>Доставка</div>
+          <div>Коментар</div>
           <div>Етап</div>
           <div>Створено</div>
           <div>Сума</div>
@@ -315,9 +347,9 @@
       day3: { title: 'День 3', status: 'День 3', day: 3 },
       shipped: { title: 'Відправлено', status: 'Відправлено', day: 0 },
       completed: { title: 'Завершено', status: 'Завершено', day: 0 },
-      cancelled: { title: 'Скасовано', status: 'Скасовано', day: 0 }
+      refused: { title: 'Відмова', status: 'Відмова', day: 0 }
     };
-    const STAGE_ORDER = ['new','day1','day2','day3','shipped','completed','cancelled'];
+    const STAGE_ORDER = ['new','day1','day2','day3','shipped','completed','refused'];
 
     let currentUser = null;
     let currentProfile = null;
@@ -348,14 +380,69 @@
 
     function normalizeStage(order){
       if (order.status_group && STAGES[order.status_group]) return order.status_group;
+
       const status = String(order.status || '').toLowerCase();
+
+      if (
+        status.includes('відм') ||
+        status.includes('отказ') ||
+        status.includes('не забрал') ||
+        status.includes('не забрали') ||
+        status.includes('не отримав') ||
+        status.includes('не забрав')
+      ) return 'refused';
+
+      if (
+        status.includes('заверш') ||
+        status.includes('забрав') ||
+        status.includes('забрали') ||
+        status.includes('отримав') ||
+        status.includes('отримали') ||
+        status.includes('вручено')
+      ) return 'completed';
+
       if (status.includes('день 1')) return 'day1';
       if (status.includes('день 2')) return 'day2';
       if (status.includes('день 3')) return 'day3';
       if (status.includes('відправ')) return 'shipped';
-      if (status.includes('заверш')) return 'completed';
-      if (status.includes('скас') || status.includes('відм')) return 'cancelled';
+
       return 'new';
+    }
+
+    function getStageComment(order){
+      const operatorComment = String(order?.operator_comment || '').trim();
+      const managerComment = String(order?.manager_comment || '').trim();
+      return managerComment || operatorComment || '';
+    }
+
+    function getDaysFromDate(dateValue){
+      const source = new Date(dateValue || Date.now());
+      if (isNaN(source.getTime())) return 0;
+
+      const now = new Date();
+      const sourceStart = new Date(source.getFullYear(), source.getMonth(), source.getDate());
+      const nowStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+      return Math.max(0, Math.floor((nowStart - sourceStart) / 86400000));
+    }
+
+    function getAutoStageByAge(order){
+      const currentStage = normalizeStage(order);
+
+      if (['shipped', 'completed', 'refused'].includes(currentStage)) {
+        return currentStage;
+      }
+
+      const daysOpen = getDaysFromDate(order.created_at);
+
+      if (daysOpen >= 3) return 'day3';
+      if (daysOpen >= 2) return 'day2';
+      if (daysOpen >= 1) return 'day1';
+      return 'new';
+    }
+
+    function getStageDay(stage){
+      return Number(STAGES[stage]?.day || 0);
     }
 
     function authError(text){
@@ -459,11 +546,71 @@
       select.innerHTML = STAGE_ORDER.map(key => `<option value="${key}">${STAGES[key].title}</option>`).join('');
     }
 
+    async function autoAdvanceOrders(orders){
+      const updates = [];
+
+      for (const order of (orders || [])) {
+        const normalizedStage = normalizeStage(order);
+
+        if (normalizedStage !== order.status_group) {
+          order.status_group = normalizedStage;
+        }
+
+        if (['shipped', 'completed', 'refused'].includes(normalizedStage)) {
+          continue;
+        }
+
+        const targetStage = getAutoStageByAge(order);
+
+        if (targetStage !== normalizedStage) {
+          updates.push({
+            id: order.id,
+            status_group: targetStage,
+            status: STAGES[targetStage].status,
+            day_bucket: getStageDay(targetStage),
+            updated_at: new Date().toISOString(),
+            moved_at: new Date().toISOString()
+          });
+        }
+      }
+
+      if (!updates.length) return false;
+
+      await Promise.all(
+        updates.map(payload => {
+          const { id, ...patch } = payload;
+          return supabaseClient
+            .from('orders')
+            .update(patch)
+            .eq('id', id);
+        })
+      );
+
+      return true;
+    }
+
     async function refreshOrders(){
-      const { data, error } = await supabaseClient
+      let { data, error } = await supabaseClient
         .from('orders')
         .select('*')
         .order('created_at', { ascending:false });
+
+      if (error) {
+        alert('Не вдалося завантажити замовлення: ' + error.message);
+        return;
+      }
+
+      const needReload = await autoAdvanceOrders(data || []);
+
+      if (needReload) {
+        const second = await supabaseClient
+          .from('orders')
+          .select('*')
+          .order('created_at', { ascending:false });
+
+        data = second.data || [];
+        error = second.error || null;
+      }
 
       if (error) {
         alert('Не вдалося завантажити замовлення: ' + error.message);
@@ -501,7 +648,10 @@
             order.customer_first_name,
             order.customer_last_name,
             order.phone,
-            order.city
+            order.city,
+            order.operator_comment,
+            order.manager_comment,
+            order.status
           ].join(' ').toLowerCase();
 
           return haystack.includes(search);
@@ -562,20 +712,25 @@
         return;
       }
 
-      root.innerHTML = list.map(order => `
-        <div class="order-row" onclick="openOrder('${escapeHtml(order.id)}')">
-          <div class="order-id">#${escapeHtml(shortId(order.id))}</div>
-          <div class="order-main">
-            <div class="order-name">${escapeHtml(getOrderName(order))}</div>
-            <div class="order-sub">${escapeHtml(order.city || '-')}</div>
+      root.innerHTML = list.map(order => {
+        const comment = getStageComment(order);
+
+        return `
+          <div class="order-row" onclick="openOrder('${escapeHtml(order.id)}')">
+            <div class="order-id">#${escapeHtml(shortId(order.id))}</div>
+            <div class="order-main">
+              <div class="order-name">${escapeHtml(getOrderName(order))}</div>
+              <div class="order-sub">${escapeHtml(order.city || '-')}</div>
+            </div>
+            <div>${escapeHtml(order.phone || '-')}</div>
+            <div>${escapeHtml(order.delivery || '-')}</div>
+            <div class="${comment ? 'order-comment-cell' : 'order-comment-cell empty'}">${escapeHtml(comment || 'Без коментаря')}</div>
+            <div class="stage-pill">${escapeHtml(STAGES[order.status_group]?.title || '-')}</div>
+            <div>${escapeHtml(formatDate(order.created_at))}</div>
+            <div class="sum">${escapeHtml(formatMoney(order.total || 0))}</div>
           </div>
-          <div>${escapeHtml(order.phone || '-')}</div>
-          <div>${escapeHtml(order.delivery || '-')}</div>
-          <div class="stage-pill">${escapeHtml(STAGES[order.status_group]?.title || '-')}</div>
-          <div>${escapeHtml(formatDate(order.created_at))}</div>
-          <div class="sum">${escapeHtml(formatMoney(order.total || 0))}</div>
-        </div>
-      `).join('');
+        `;
+      }).join('');
     }
 
     function applyFilters(){
@@ -658,10 +813,42 @@
       document.getElementById('dHistory').innerHTML = lines.map(line => `<div class="history-line">${escapeHtml(line)}</div>`).join('');
     }
 
+    function inferTerminalStageFromStatus(text){
+      const value = String(text || '').toLowerCase();
+
+      if (
+        value.includes('відм') ||
+        value.includes('отказ') ||
+        value.includes('не забрал') ||
+        value.includes('не забрали') ||
+        value.includes('не отримав') ||
+        value.includes('не забрав')
+      ) {
+        return 'refused';
+      }
+
+      if (
+        value.includes('заверш') ||
+        value.includes('забрав') ||
+        value.includes('забрали') ||
+        value.includes('отримав') ||
+        value.includes('отримали') ||
+        value.includes('вручено')
+      ) {
+        return 'completed';
+      }
+
+      return null;
+    }
+
     async function saveDrawerOrder(){
       if (!selectedOrder) return;
 
-      const stage = document.getElementById('dStage').value;
+      const stageFromSelect = document.getElementById('dStage').value;
+      const statusText = document.getElementById('dStatus').value.trim();
+      const inferredTerminalStage = inferTerminalStageFromStatus(statusText);
+      const finalStage = inferredTerminalStage || stageFromSelect;
+
       const payload = {
         customer_first_name: document.getElementById('dFirstName').value.trim(),
         customer_last_name: document.getElementById('dLastName').value.trim(),
@@ -675,13 +862,13 @@
       };
 
       if (currentProfile.role === 'admin') {
-        payload.status_group = stage;
-        payload.status = document.getElementById('dStatus').value.trim() || STAGES[stage].status;
-        payload.day_bucket = STAGES[stage].day;
+        payload.status_group = finalStage;
+        payload.status = statusText || STAGES[finalStage].status;
+        payload.day_bucket = STAGES[finalStage].day;
         payload.manager_comment = document.getElementById('dManagerComment').value.trim();
         payload.total = Number(document.getElementById('dTotal').value || 0);
 
-        if (selectedOrder.status_group !== stage) {
+        if (selectedOrder.status_group !== finalStage) {
           payload.moved_at = new Date().toISOString();
         }
       }
