@@ -487,11 +487,85 @@
 
 @media (max-width:680px){
     .benefits-grid,
-    .home-categories-grid,
-    .product-showcase-grid,
     .how-order-grid{
         grid-template-columns:1fr;
     }
+
+    .home-categories-grid,
+    .product-showcase-grid{
+        grid-template-columns:repeat(3,minmax(0,1fr));
+        gap:10px;
+    }
+
+    .home-category-card,
+    .product-showcase-card{
+        border-radius:16px;
+    }
+
+    .home-category-card{
+        padding:12px;
+    }
+
+    .home-category-card .icon{
+        font-size:22px;
+        margin-bottom:6px;
+    }
+
+    .home-category-card strong{
+        font-size:14px;
+        margin-bottom:4px;
+    }
+
+    .home-category-card span{
+        font-size:12px;
+        line-height:1.35;
+    }
+
+    .product-showcase-image{
+        height:110px;
+    }
+
+    .product-showcase-body{
+        padding:10px;
+        gap:8px;
+    }
+
+    .product-showcase-card h3{
+        font-size:13px;
+        line-height:1.25;
+    }
+
+    .product-showcase-card p{
+        font-size:11px;
+        line-height:1.35;
+    }
+
+    .product-showcase-price .current{
+        font-size:15px;
+    }
+
+    .product-showcase-price .old{
+        font-size:11px;
+    }
+
+    .product-chip{
+        padding:5px 7px;
+        font-size:10px;
+    }
+
+    .product-showcase-actions{
+        flex-direction:column;
+        gap:8px;
+    }
+
+    .product-showcase-actions button{
+        min-width:0;
+        width:100%;
+        padding:9px 8px;
+        font-size:11px;
+        border-radius:10px;
+    }
+
     .hero-selling-inner{
         padding:18px;
     }
@@ -505,6 +579,66 @@
 }
 
 @media (max-width:420px){
+    .home-categories-grid,
+    .product-showcase-grid{
+        grid-template-columns:repeat(3,minmax(0,1fr));
+        gap:8px;
+    }
+
+    .home-category-card{
+        padding:10px 8px;
+    }
+
+    .home-category-card .icon{
+        font-size:18px;
+    }
+
+    .home-category-card strong{
+        font-size:11px;
+        line-height:1.15;
+    }
+
+    .home-category-card span{
+        font-size:10px;
+        line-height:1.25;
+    }
+
+    .product-showcase-image{
+        height:90px;
+    }
+
+    .product-showcase-body{
+        padding:8px;
+        gap:6px;
+    }
+
+    .product-showcase-card h3{
+        font-size:11px;
+        line-height:1.2;
+    }
+
+    .product-showcase-card p{
+        font-size:10px;
+        line-height:1.25;
+    }
+
+    .product-showcase-price{
+        gap:6px;
+    }
+
+    .product-showcase-price .current{
+        font-size:12px;
+    }
+
+    .product-showcase-price .old{
+        font-size:10px;
+    }
+
+    .product-showcase-actions button{
+        font-size:10px;
+        padding:8px 6px;
+    }
+
     .section-wrap,
     .cta-banner,
     .hero-selling{
@@ -627,6 +761,21 @@
     </div>
 
     <div class="home-categories-grid">
+        <a class="home-category-card" href="#products" onclick="filterCategory('hits')">
+            <span class="icon">🔥</span>
+            <strong>Хіти продажу</strong>
+            <span>Товари, які ти позначив як хіти, зібрані в окрему категорію.</span>
+        </a>
+        <a class="home-category-card" href="#products" onclick="filterCategory('sale')">
+            <span class="icon">🏷️</span>
+            <strong>Акції</strong>
+            <span>Швидкий перехід до акційних товарів зі знижками та спецпропозиціями.</span>
+        </a>
+        <a class="home-category-card" href="#products" onclick="filterCategory('new')">
+            <span class="icon">🆕</span>
+            <strong>Новинки</strong>
+            <span>Окремий розділ для нових товарів, які ти додаєш у магазин.</span>
+        </a>
         <a class="home-category-card" href="#products" onclick="filterCategory('toy')">
             <span class="icon">🧸</span>
             <strong>Іграшки</strong>
@@ -657,20 +806,23 @@
     <aside class="sidebar" id="catalog-sidebar">
         <h3>Каталог</h3>
         <ul>
-            <li onclick="filterCategory('all')">✨ Всі товари</li>
-            <li onclick="filterCategory('toy')">🧸 Іграшки</li>
-            <li onclick="filterCategory('stroller')">🛒 Коляски</li>
-            <li onclick="filterCategory('seat')">💺 Автокрісла</li>
-            <li onclick="filterCategory('clothes')">👕 Одяг</li>
-            <li onclick="filterCategory('transport')">🚲 Транспорт</li>
-            <li onclick="filterCategory('sorter')">🧩 Сортери</li>
-            <li onclick="filterCategory('baby')">🍼 Для немовлят</li>
-            <li onclick="filterCategory('school')">🎒 Шкільні товари</li>
-            <li onclick="filterCategory('furniture')">🛏️ Дитячі меблі</li>
-            <li onclick="filterCategory('feeding')">🍼 Годування</li>
-            <li onclick="filterCategory('hygiene')">🧼 Гігієна</li>
-            <li onclick="filterCategory('bedding')">🛌 Постіль</li>
-            <li onclick="filterCategory('creativity')">🎨 Творчість</li>
+            <li data-category="all" onclick="filterCategory('all')">✨ Всі товари</li>
+            <li data-category="hits" onclick="filterCategory('hits')">🔥 Хіти продажу</li>
+            <li data-category="sale" onclick="filterCategory('sale')">🏷️ Акції</li>
+            <li data-category="new" onclick="filterCategory('new')">🆕 Новинки</li>
+            <li data-category="toy" onclick="filterCategory('toy')">🧸 Іграшки</li>
+            <li data-category="stroller" onclick="filterCategory('stroller')">🛒 Коляски</li>
+            <li data-category="seat" onclick="filterCategory('seat')">💺 Автокрісла</li>
+            <li data-category="clothes" onclick="filterCategory('clothes')">👕 Одяг</li>
+            <li data-category="transport" onclick="filterCategory('transport')">🚲 Транспорт</li>
+            <li data-category="sorter" onclick="filterCategory('sorter')">🧩 Сортери</li>
+            <li data-category="baby" onclick="filterCategory('baby')">🍼 Для немовлят</li>
+            <li data-category="school" onclick="filterCategory('school')">🎒 Шкільні товари</li>
+            <li data-category="furniture" onclick="filterCategory('furniture')">🛏️ Дитячі меблі</li>
+            <li data-category="feeding" onclick="filterCategory('feeding')">🥣 Годування</li>
+            <li data-category="hygiene" onclick="filterCategory('hygiene')">🧼 Гігієна</li>
+            <li data-category="bedding" onclick="filterCategory('bedding')">🛌 Постіль</li>
+            <li data-category="creativity" onclick="filterCategory('creativity')">🎨 Творчість</li>
         </ul>
     </aside>
 
@@ -974,7 +1126,7 @@ function renderHomeDynamicSections() {
     const saleProducts = allProducts.filter(product => product.is_sale);
     const newProducts = allProducts.filter(product => product.is_new);
 
-    const hits = (hitProducts.length ? hitProducts : allProducts.slice(0, 4)).slice(0, 4);
+    const hits = (hitProducts.length ? hitProducts : allProducts.slice(0, 9)).slice(0, 9);
 
     const sales = (
         saleProducts.length
@@ -982,9 +1134,9 @@ function renderHomeDynamicSections() {
             : [...allProducts]
                 .filter(product => Number(product.old || 0) > Number(product.price || 0))
                 .sort((a, b) => (getHomeDiscountPercent(b) || 0) - (getHomeDiscountPercent(a) || 0))
-    ).slice(0, 4);
+    ).slice(0, 9);
 
-    const newest = (newProducts.length ? newProducts : [...allProducts].slice(-4).reverse()).slice(0, 4);
+    const newest = (newProducts.length ? newProducts : [...allProducts].slice(-9).reverse()).slice(0, 9);
 
     renderShowcaseGrid("home-hits-grid", hits, "hit", "Хіти продажу з’являться після додавання товарів.");
     renderShowcaseGrid("home-sales-grid", sales, "sale", "Акційні товари з’являться, коли ти позначиш товари як акційні.");
