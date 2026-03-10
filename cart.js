@@ -41,27 +41,37 @@ function closeSuccessModal(event) {
 }
 
 function toggleCart() {
-    document.getElementById("cart").classList.toggle("open");
-    document.getElementById("cart-overlay").classList.toggle("active");
+    const cartEl = document.getElementById("cart");
+    const overlay = document.getElementById("cart-overlay");
+    if (!cartEl || !overlay) return;
+
+    cartEl.classList.toggle("open");
+    overlay.classList.toggle("active");
 }
 
 function closeCart() {
-    document.getElementById("cart").classList.remove("open");
-    document.getElementById("cart-overlay").classList.remove("active");
+    const cartEl = document.getElementById("cart");
+    const overlay = document.getElementById("cart-overlay");
+    if (!cartEl || !overlay) return;
+
+    cartEl.classList.remove("open");
+    overlay.classList.remove("active");
 }
 
 function addToCart(id) {
-    refreshProductsFromStorage();
+    if (typeof refreshProductsFromStorage === "function") {
+        refreshProductsFromStorage();
+    }
 
     const qtyInput = document.getElementById("qty-" + id);
     let qty = parseInt(qtyInput ? qtyInput.value : 1, 10);
 
     if (isNaN(qty) || qty < 1) qty = 1;
 
-    const product = products.find(p => p.id === id);
+    const product = Array.isArray(window.products) ? window.products.find(p => String(p.id) === String(id)) : null;
     if (!product) return;
 
-    const item = cart.find(p => p.id === id);
+    const item = cart.find(p => String(p.id) === String(id));
 
     if (item) {
         item.qty += qty;
@@ -84,7 +94,7 @@ function addToCart(id) {
 }
 
 function cartPlus(id) {
-    const item = cart.find(p => p.id === id);
+    const item = cart.find(p => String(p.id) === String(id));
     if (!item) return;
 
     item.qty++;
@@ -93,13 +103,13 @@ function cartPlus(id) {
 }
 
 function cartMinus(id) {
-    const item = cart.find(p => p.id === id);
+    const item = cart.find(p => String(p.id) === String(id));
     if (!item) return;
 
     if (item.qty > 1) {
         item.qty--;
     } else {
-        cart = cart.filter(p => p.id !== id);
+        cart = cart.filter(p => String(p.id) !== String(id));
     }
 
     renderCart();
@@ -113,6 +123,15 @@ function escapeCartHtml(value) {
         .replaceAll(">", "&gt;")
         .replaceAll('"', "&quot;")
         .replaceAll("'", "&#39;");
+}
+
+function getCartItemImage(product) {
+    if (typeof getSafeProductImage === "function") {
+        return getSafeProductImage(product);
+    }
+
+    const value = String(product?.img || "").trim();
+    return value || "product-placeholder.svg";
 }
 
 function buildCartFlags(product) {
@@ -153,12 +172,14 @@ function ensureCartBadgeStyles() {
     }
 
     .cart-item-image{
-        width:62px;
-        height:62px;
+        width:64px;
+        height:64px;
         border-radius:12px;
         object-fit:cover;
         background:#f1f3f7;
         flex-shrink:0;
+        border:1px solid #ece7df;
+        display:block;
     }
 
     .cart-item-main{
@@ -250,12 +271,10 @@ function renderCart() {
     let qty = 0;
 
     cart.forEach(p => {
-        sum += p.price * p.qty;
-        qty += p.qty;
+        sum += Number(p.price || 0) * Number(p.qty || 0);
+        qty += Number(p.qty || 0);
 
-        const image = typeof getSafeProductImage === "function"
-            ? getSafeProductImage(p)
-            : (p.img || PRODUCT_PLACEHOLDER);
+        const image = getCartItemImage(p);
 
         items.innerHTML += `
         <div class="cart-item">
@@ -268,9 +287,9 @@ function renderCart() {
                 </div>
             </div>
             <div class="cart-item-controls">
-                <button onclick="cartMinus('${escapeCartHtml(p.id)}')">−</button>
-                <span>${p.qty}</span>
-                <button onclick="cartPlus('${escapeCartHtml(p.id)}')">+</button>
+                <button type="button" onclick="cartMinus('${escapeCartHtml(p.id)}')">−</button>
+                <span>${Number(p.qty || 0)}</span>
+                <button type="button" onclick="cartPlus('${escapeCartHtml(p.id)}')">+</button>
             </div>
         </div>
         `;
@@ -287,20 +306,31 @@ function checkout() {
         return;
     }
 
-    document.getElementById("checkout-modal").classList.add("open");
+    const modal = document.getElementById("checkout-modal");
+    if (!modal) return;
+
+    modal.classList.add("open");
     handleDeliveryTypeChange();
 }
 
 function closeCheckoutModal() {
-    document.getElementById("checkout-modal").classList.remove("open");
+    const modal = document.getElementById("checkout-modal");
+    if (!modal) return;
+
+    modal.classList.remove("open");
 }
 
 function handleDeliveryTypeChange() {
-    const delivery = document.getElementById("order-delivery").value;
+    const deliveryEl = document.getElementById("order-delivery");
+    if (!deliveryEl) return;
+
+    const delivery = deliveryEl.value;
 
     const npCityWrap = document.getElementById("np-city-wrap");
     const npWarehouseWrap = document.getElementById("np-warehouse-wrap");
     const ukrWrap = document.getElementById("ukrposhta-wrap");
+
+    if (!npCityWrap || !npWarehouseWrap || !ukrWrap) return;
 
     if (delivery === "Нова пошта") {
         npCityWrap.style.display = "block";
@@ -342,6 +372,8 @@ async function loadWarehouses(cityRef) {
 async function handleCityInput() {
     const input = document.getElementById("order-city");
     const list = document.getElementById("city-suggestions");
+    if (!input || !list) return;
+
     const val = input.value.trim();
 
     selectedCity = null;
@@ -408,10 +440,10 @@ function fillWarehouses(warehouses) {
 }
 
 async function submitCheckout() {
-    const name = document.getElementById("order-name").value.trim();
-    const surname = document.getElementById("order-surname").value.trim();
-    const phone = document.getElementById("order-phone").value.trim();
-    const delivery = document.getElementById("order-delivery").value;
+    const name = document.getElementById("order-name")?.value.trim() || "";
+    const surname = document.getElementById("order-surname")?.value.trim() || "";
+    const phone = document.getElementById("order-phone")?.value.trim() || "";
+    const delivery = document.getElementById("order-delivery")?.value || "Нова пошта";
 
     let city = "";
     let address = "";
@@ -422,8 +454,8 @@ async function submitCheckout() {
     }
 
     if (delivery === "Нова пошта") {
-        city = document.getElementById("order-city").value.trim();
-        address = document.getElementById("order-address").value;
+        city = document.getElementById("order-city")?.value.trim() || "";
+        address = document.getElementById("order-address")?.value || "";
 
         if (!city || !selectedCity) {
             alert("Оберіть місто зі списку");
@@ -437,8 +469,8 @@ async function submitCheckout() {
     }
 
     if (delivery === "Укрпошта") {
-        city = document.getElementById("order-city-manual").value.trim();
-        const index = document.getElementById("order-index").value.trim();
+        city = document.getElementById("order-city-manual")?.value.trim() || "";
+        const index = document.getElementById("order-index")?.value.trim() || "";
 
         if (!city) {
             alert("Вкажіть місто");
@@ -462,7 +494,7 @@ async function submitCheckout() {
         delivery,
         address,
         items: cart,
-        total: cart.reduce((s, p) => s + p.price * p.qty, 0),
+        total: cart.reduce((s, p) => s + Number(p.price || 0) * Number(p.qty || 0), 0),
         status: "Новий",
         status_group: "new",
         operator_comment: "",
@@ -484,12 +516,19 @@ async function submitCheckout() {
         saveCart();
         renderCart();
 
-        document.getElementById("order-name").value = "";
-        document.getElementById("order-surname").value = "";
-        document.getElementById("order-phone").value = "";
-        document.getElementById("order-city").value = "";
-        document.getElementById("order-city-manual").value = "";
-        document.getElementById("order-index").value = "";
+        const fieldsToClear = [
+            "order-name",
+            "order-surname",
+            "order-phone",
+            "order-city",
+            "order-city-manual",
+            "order-index"
+        ];
+
+        fieldsToClear.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.value = "";
+        });
 
         resetWarehouses("Оберіть відділення");
         selectedCity = null;
