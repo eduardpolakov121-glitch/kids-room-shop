@@ -49,13 +49,14 @@
     .tab-count{padding:4px 8px;border-radius:999px;background:rgba(255,255,255,.8);color:#28324a;font-size:12px;font-weight:700}
     .tab-btn.active .tab-count{background:rgba(255,255,255,.22);color:#fff}
     .list-card{background:var(--panel);border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow);overflow:hidden}
-    .list-head,.order-row{display:grid;grid-template-columns:110px 1.1fr .9fr .95fr 1.35fr 145px 160px 120px;gap:12px;align-items:center}
+    .list-head,.order-row{display:grid;grid-template-columns:110px 1.15fr .85fr .95fr 1.25fr 150px 160px 120px;gap:12px;align-items:center}
     .list-head{padding:16px 18px;background:#f8faff;border-bottom:1px solid var(--line);font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
     .order-row{padding:16px 18px;border-bottom:1px solid var(--line);cursor:pointer;transition:.15s;background:#fff}
     .order-row:last-child{border-bottom:none}
     .order-row:hover{background:#fff9f4}
     .order-id{font-weight:700}
-    .order-main{display:flex;flex-direction:column;gap:5px;min-width:0}
+    .order-main{display:flex;flex-direction:column;gap:6px;min-width:0}
+    .order-name-row{display:flex;align-items:center;gap:8px;min-width:0;flex-wrap:wrap}
     .order-name{font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     .order-sub{font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     .stage-pill{display:inline-flex;align-items:center;justify-content:center;min-height:34px;padding:6px 12px;border-radius:999px;background:#fff1e7;color:#d86b14;font-size:12px;font-weight:700;justify-self:start}
@@ -86,6 +87,20 @@
       border-style:dashed;
       min-height:64px;
       padding:10px 12px;
+    }
+    .duplicate-badge{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      padding:5px 9px;
+      border-radius:999px;
+      background:#fff0f0;
+      color:#c64c4c;
+      font-size:11px;
+      font-weight:800;
+      line-height:1;
+      border:1px solid #ffd5d5;
+      white-space:nowrap;
     }
     .drawer-wrap{position:fixed;inset:0;background:rgba(10,18,34,.42);display:none;z-index:60}
     .drawer-wrap.open{display:block}
@@ -147,6 +162,44 @@
     .item-flag.new{background:#edf8ff;color:#23628d}
     .history-line{padding:10px 0;border-bottom:1px dashed var(--line);font-size:14px}
     .history-line:last-child{border-bottom:none}
+    .duplicate-list{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+    .duplicate-item{
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      align-items:center;
+      padding:12px;
+      border-radius:14px;
+      background:#fff;
+      border:1px solid var(--line);
+      cursor:pointer;
+      transition:.15s;
+    }
+    .duplicate-item:hover{
+      background:#fff9f4;
+    }
+    .duplicate-main{
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+      min-width:0;
+    }
+    .duplicate-title{
+      font-weight:700;
+    }
+    .duplicate-sub{
+      font-size:13px;
+      color:var(--muted);
+    }
+    .duplicate-right{
+      text-align:right;
+      font-weight:700;
+      white-space:nowrap;
+    }
     .auth-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
     .auth-card{width:100%;max-width:460px;background:#fff;border-radius:24px;padding:28px;box-shadow:var(--shadow);border:1px solid var(--line)}
     .auth-card h2{margin:0 0 8px;font-size:28px}
@@ -156,7 +209,7 @@
     @media (max-width:1400px){
       .stats{grid-template-columns:repeat(2,1fr)}
       .toolbar{grid-template-columns:1fr 1fr}
-      .list-head,.order-row{grid-template-columns:100px 1.05fr .9fr .9fr 1.2fr 130px 145px 110px}
+      .list-head,.order-row{grid-template-columns:100px 1.05fr .85fr .9fr 1.1fr 130px 145px 110px}
     }
     @media (max-width:980px){
       .layout{padding:16px}
@@ -172,6 +225,13 @@
       .drawer{width:100%}
       .app-header{padding:16px;align-items:flex-start}
       .header-actions{justify-content:flex-start}
+      .duplicate-item{
+        flex-direction:column;
+        align-items:flex-start;
+      }
+      .duplicate-right{
+        text-align:left;
+      }
     }
   </style>
 </head>
@@ -207,7 +267,7 @@
         <div class="stat-card"><div class="label">Замовлень сьогодні</div><div class="value" id="statToday">0</div></div>
         <div class="stat-card"><div class="label">У роботі зараз</div><div class="value" id="statActive">0</div></div>
         <div class="stat-card"><div class="label">Виторг по вибірці</div><div class="value" id="statRevenue">0 грн</div></div>
-        <div class="stat-card"><div class="label">Відправлено / завершено</div><div class="value" id="statShipped">0</div></div>
+        <div class="stat-card"><div class="label">Завершено / повернення</div><div class="value" id="statShipped">0</div></div>
       </section>
 
       <section class="toolbar">
@@ -312,6 +372,11 @@
             </div>
 
             <div class="panel">
+              <h3>Дублі / інші замовлення клієнта</h3>
+              <div id="dDuplicates" class="duplicate-list"></div>
+            </div>
+
+            <div class="panel">
               <h3>Історія</h3>
               <div id="dHistory"></div>
             </div>
@@ -341,21 +406,24 @@
     });
 
     const STAGES = {
-      new: { title: 'Нові', status: 'Новий', day: 0 },
-      day1: { title: 'День 1', status: 'День 1', day: 1 },
+      day1: { title: 'Нові', status: 'Новий', day: 1 },
       day2: { title: 'День 2', status: 'День 2', day: 2 },
       day3: { title: 'День 3', status: 'День 3', day: 3 },
-      shipped: { title: 'Відправлено', status: 'Відправлено', day: 0 },
-      completed: { title: 'Завершено', status: 'Завершено', day: 0 },
-      refused: { title: 'Відмова', status: 'Відмова', day: 0 }
+      day4: { title: 'День 4', status: 'День 4', day: 4 },
+      day5: { title: 'День 5', status: 'День 5', day: 5 },
+      day6: { title: 'День 6', status: 'День 6', day: 6 },
+      day7: { title: 'День 7', status: 'День 7', day: 7 },
+      refused: { title: 'Відмова', status: 'Відмова', day: 0 },
+      returned: { title: 'Повернення', status: 'Повернення', day: 0 },
+      completed: { title: 'Завершено', status: 'Завершено', day: 0 }
     };
-    const STAGE_ORDER = ['new','day1','day2','day3','shipped','completed','refused'];
+    const STAGE_ORDER = ['day1','day2','day3','day4','day5','day6','day7','refused','returned','completed'];
 
     let currentUser = null;
     let currentProfile = null;
     let allOrders = [];
     let selectedOrder = null;
-    let activeStage = 'new';
+    let activeStage = 'day1';
 
     function formatMoney(value){
       const num = Number(value || 0);
@@ -378,6 +446,30 @@
       return String(id).slice(0,8);
     }
 
+    function normalizePhone(value){
+      return String(value || '').replace(/\D/g, '');
+    }
+
+    function buildDuplicateKey(order){
+      const phone = normalizePhone(order?.phone);
+      if (phone) return `phone:${phone}`;
+
+      const name = String(getOrderName(order) || '').trim().toLowerCase();
+      const city = String(order?.city || '').trim().toLowerCase();
+
+      if (name) return `name:${name}|city:${city}`;
+      return `id:${order?.id || ''}`;
+    }
+
+    function getDuplicateOrders(order){
+      const key = buildDuplicateKey(order);
+      return allOrders.filter(item => buildDuplicateKey(item) === key);
+    }
+
+    function hasDuplicates(order){
+      return getDuplicateOrders(order).length > 1;
+    }
+
     function normalizeStage(order){
       if (order.status_group && STAGES[order.status_group]) return order.status_group;
 
@@ -393,6 +485,12 @@
       ) return 'refused';
 
       if (
+        status.includes('повернен') ||
+        status.includes('возврат') ||
+        status.includes('return')
+      ) return 'returned';
+
+      if (
         status.includes('заверш') ||
         status.includes('забрав') ||
         status.includes('забрали') ||
@@ -401,12 +499,23 @@
         status.includes('вручено')
       ) return 'completed';
 
-      if (status.includes('день 1')) return 'day1';
-      if (status.includes('день 2')) return 'day2';
+      if (status.includes('день 7')) return 'day7';
+      if (status.includes('день 6')) return 'day6';
+      if (status.includes('день 5')) return 'day5';
+      if (status.includes('день 4')) return 'day4';
       if (status.includes('день 3')) return 'day3';
-      if (status.includes('відправ')) return 'shipped';
+      if (status.includes('день 2')) return 'day2';
+      if (status.includes('нов') || status.includes('день 1')) return 'day1';
 
-      return 'new';
+      const dayBucket = Number(order?.day_bucket || 0);
+      if (dayBucket >= 7) return 'day7';
+      if (dayBucket === 6) return 'day6';
+      if (dayBucket === 5) return 'day5';
+      if (dayBucket === 4) return 'day4';
+      if (dayBucket === 3) return 'day3';
+      if (dayBucket === 2) return 'day2';
+
+      return 'day1';
     }
 
     function getStageComment(order){
@@ -429,16 +538,19 @@
     function getAutoStageByAge(order){
       const currentStage = normalizeStage(order);
 
-      if (['shipped', 'completed', 'refused'].includes(currentStage)) {
+      if (['completed', 'refused', 'returned'].includes(currentStage)) {
         return currentStage;
       }
 
       const daysOpen = getDaysFromDate(order.created_at);
 
-      if (daysOpen >= 3) return 'day3';
-      if (daysOpen >= 2) return 'day2';
-      if (daysOpen >= 1) return 'day1';
-      return 'new';
+      if (daysOpen >= 6) return 'day7';
+      if (daysOpen === 5) return 'day6';
+      if (daysOpen === 4) return 'day5';
+      if (daysOpen === 3) return 'day4';
+      if (daysOpen === 2) return 'day3';
+      if (daysOpen === 1) return 'day2';
+      return 'day1';
     }
 
     function getStageDay(stage){
@@ -556,7 +668,7 @@
           order.status_group = normalizedStage;
         }
 
-        if (['shipped', 'completed', 'refused'].includes(normalizedStage)) {
+        if (['completed', 'refused', 'returned'].includes(normalizedStage)) {
           continue;
         }
 
@@ -633,9 +745,7 @@
 
       let list = [...allOrders];
 
-      if (activeStage !== 'all') {
-        list = list.filter(order => order.status_group === activeStage);
-      }
+      list = list.filter(order => order.status_group === activeStage);
 
       if (delivery !== 'all') {
         list = list.filter(order => String(order.delivery || '').trim() === delivery);
@@ -683,9 +793,9 @@
       };
 
       document.getElementById('statToday').textContent = list.filter(sameDay).length;
-      document.getElementById('statActive').textContent = list.filter(order => ['new','day1','day2','day3'].includes(order.status_group)).length;
+      document.getElementById('statActive').textContent = list.filter(order => ['day1','day2','day3','day4','day5','day6','day7'].includes(order.status_group)).length;
       document.getElementById('statRevenue').textContent = formatMoney(list.reduce((sum, order) => sum + Number(order.total || 0), 0));
-      document.getElementById('statShipped').textContent = list.filter(order => ['shipped','completed'].includes(order.status_group)).length;
+      document.getElementById('statShipped').textContent = list.filter(order => ['completed','returned'].includes(order.status_group)).length;
     }
 
     function renderTabs(){
@@ -714,12 +824,16 @@
 
       root.innerHTML = list.map(order => {
         const comment = getStageComment(order);
+        const duplicate = hasDuplicates(order);
 
         return `
           <div class="order-row" onclick="openOrder('${escapeHtml(order.id)}')">
             <div class="order-id">#${escapeHtml(shortId(order.id))}</div>
             <div class="order-main">
-              <div class="order-name">${escapeHtml(getOrderName(order))}</div>
+              <div class="order-name-row">
+                <div class="order-name">${escapeHtml(getOrderName(order))}</div>
+                ${duplicate ? '<span class="duplicate-badge">ДУБЛЬ</span>' : ''}
+              </div>
               <div class="order-sub">${escapeHtml(order.city || '-')}</div>
             </div>
             <div>${escapeHtml(order.phone || '-')}</div>
@@ -760,8 +874,8 @@
       document.getElementById('dAddress').value = selectedOrder.address || '';
       document.getElementById('dOperatorComment').value = selectedOrder.operator_comment || '';
       document.getElementById('dManagerComment').value = selectedOrder.manager_comment || '';
-      document.getElementById('dStage').value = selectedOrder.status_group || 'new';
-      document.getElementById('dStatus').value = selectedOrder.status || STAGES[selectedOrder.status_group || 'new'].status;
+      document.getElementById('dStage').value = selectedOrder.status_group || 'day1';
+      document.getElementById('dStatus').value = selectedOrder.status || STAGES[selectedOrder.status_group || 'day1'].status;
       document.getElementById('dCreated').value = formatDate(selectedOrder.created_at);
       document.getElementById('dUpdated').value = formatDate(selectedOrder.updated_at || selectedOrder.created_at);
       document.getElementById('dTotal').value = Number(selectedOrder.total || 0);
@@ -773,6 +887,7 @@
       document.getElementById('dTotal').readOnly = onlyOperator;
 
       renderItems(selectedOrder.items || []);
+      renderDuplicates(selectedOrder);
       renderHistory(selectedOrder);
 
       document.getElementById('drawerWrap').classList.add('open');
@@ -801,13 +916,36 @@
       `).join('');
     }
 
+    function renderDuplicates(order){
+      const root = document.getElementById('dDuplicates');
+      const list = getDuplicateOrders(order)
+        .filter(item => String(item.id) !== String(order.id))
+        .sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
+
+      if (!list.length) {
+        root.innerHTML = '<div class="empty" style="padding:12px 0">Повторних замовлень не знайдено</div>';
+        return;
+      }
+
+      root.innerHTML = list.map(item => `
+        <div class="duplicate-item" onclick="openOrder('${escapeHtml(item.id)}')">
+          <div class="duplicate-main">
+            <div class="duplicate-title">#${escapeHtml(shortId(item.id))} • ${escapeHtml(STAGES[item.status_group]?.title || '-')}</div>
+            <div class="duplicate-sub">${escapeHtml(getOrderName(item))} • ${escapeHtml(item.phone || '-')} • ${escapeHtml(formatDate(item.created_at))}</div>
+          </div>
+          <div class="duplicate-right">${escapeHtml(formatMoney(item.total || 0))}</div>
+        </div>
+      `).join('');
+    }
+
     function renderHistory(order){
       const lines = [
         `Створено: ${formatDate(order.created_at)}`,
         `Оновлено: ${formatDate(order.updated_at || order.created_at)}`,
-        `Поточний етап: ${STAGES[order.status_group || 'new']?.title || '-'}`,
+        `Поточний етап: ${STAGES[order.status_group || 'day1']?.title || '-'}`,
         `Статус: ${order.status || '-'}`,
-        `Джерело: ${order.source || 'website'}`
+        `Джерело: ${order.source || 'website'}`,
+        hasDuplicates(order) ? `Повторні замовлення: ${getDuplicateOrders(order).length}` : 'Повторні замовлення: 0'
       ];
 
       document.getElementById('dHistory').innerHTML = lines.map(line => `<div class="history-line">${escapeHtml(line)}</div>`).join('');
@@ -825,6 +963,14 @@
         value.includes('не забрав')
       ) {
         return 'refused';
+      }
+
+      if (
+        value.includes('повернен') ||
+        value.includes('возврат') ||
+        value.includes('return')
+      ) {
+        return 'returned';
       }
 
       if (
