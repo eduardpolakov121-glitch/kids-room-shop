@@ -271,7 +271,7 @@
       </section>
 
       <section class="toolbar">
-        <input id="searchInput" placeholder="Пошук: ім'я, телефон, місто, коментар" oninput="applyFilters()" autocomplete="off" spellcheck="false">
+        <input id="searchInput" placeholder="Пошук: ім'я, телефон, місто, коментар, ТТН" oninput="applyFilters()" autocomplete="off" spellcheck="false">
         <select id="deliveryFilter" onchange="applyFilters()">
           <option value="all">Вся доставка</option>
           <option value="Нова пошта">Нова пошта</option>
@@ -339,6 +339,7 @@
                 </select>
               </div>
               <div class="field"><label>Адреса / відділення / індекс</label><textarea id="dAddress" autocomplete="off"></textarea></div>
+              <div class="field"><label>ТТН</label><input id="dTtn" autocomplete="off" placeholder="Введіть номер ТТН"></div>
             </div>
 
             <div class="panel">
@@ -406,6 +407,7 @@
     });
 
     const STAGES = {
+      accepted: { title: 'Прийняті', status: 'Прийнято', day: 0 },
       day1: { title: 'Нові', status: 'Новий', day: 1 },
       day2: { title: 'День 2', status: 'День 2', day: 2 },
       day3: { title: 'День 3', status: 'День 3', day: 3 },
@@ -417,13 +419,13 @@
       returned: { title: 'Повернення', status: 'Повернення', day: 0 },
       completed: { title: 'Завершено', status: 'Завершено', day: 0 }
     };
-    const STAGE_ORDER = ['day1','day2','day3','day4','day5','day6','day7','refused','returned','completed'];
+    const STAGE_ORDER = ['accepted','day1','day2','day3','day4','day5','day6','day7','refused','returned','completed'];
 
     let currentUser = null;
     let currentProfile = null;
     let allOrders = [];
     let selectedOrder = null;
-    let activeStage = 'day1';
+    let activeStage = 'accepted';
 
     function formatMoney(value){
       const num = Number(value || 0);
@@ -506,6 +508,7 @@
       if (status.includes('день 3')) return 'day3';
       if (status.includes('день 2')) return 'day2';
       if (status.includes('нов') || status.includes('день 1')) return 'day1';
+      if (status.includes('прийнят') || status.includes('принят')) return 'accepted';
 
       const dayBucket = Number(order?.day_bucket || 0);
       if (dayBucket >= 7) return 'day7';
@@ -514,8 +517,9 @@
       if (dayBucket === 4) return 'day4';
       if (dayBucket === 3) return 'day3';
       if (dayBucket === 2) return 'day2';
+      if (dayBucket === 1) return 'day1';
 
-      return 'day1';
+      return 'accepted';
     }
 
     function getStageComment(order){
@@ -538,7 +542,7 @@
     function getAutoStageByAge(order){
       const currentStage = normalizeStage(order);
 
-      if (['completed', 'refused', 'returned'].includes(currentStage)) {
+      if (['accepted', 'completed', 'refused', 'returned'].includes(currentStage)) {
         return currentStage;
       }
 
@@ -668,7 +672,7 @@
           order.status_group = normalizedStage;
         }
 
-        if (['completed', 'refused', 'returned'].includes(normalizedStage)) {
+        if (['accepted', 'completed', 'refused', 'returned'].includes(normalizedStage)) {
           continue;
         }
 
@@ -712,9 +716,39 @@
         return;
       }
 
-      const needReload = await autoAdvanceOrders(data || []);
+      const normalizedData = (data || []).map(order => {
+        const normalizedStage = normalizeStage(order);
+        const normalizedStatus = order.status || STAGES[normalizedStage].status;
+        return {
+          ...order,
+          status_group: normalizedStage,
+          status: normalizedStatus,
+          items: Array.isArray(order.items) ? order.items : []
+        };
+      });
 
-      if (needReload) {
+      const acceptedUpdates = normalizedData
+        .filter(order => !order.status_group)
+        .map(order => ({
+          id: order.id,
+          status_group: 'accepted',
+          status: 'Прийнято',
+          day_bucket: 0,
+          updated_at: new Date().toISOString()
+        }));
+
+      if (acceptedUpdates.length) {
+        await Promise.all(
+          acceptedUpdates.map(payload => {
+            const { id, ...patch } = payload;
+            return supabaseClient.from('orders').update(patch).eq('id', id);
+          })
+        );
+      }
+
+      const needReload = await autoAdvanceOrders(normalizedData);
+
+      if (acceptedUpdates.length || needReload) {
         const second = await supabaseClient
           .from('orders')
           .select('*')
@@ -732,6 +766,7 @@
       allOrders = (data || []).map(order => ({
         ...order,
         status_group: normalizeStage(order),
+        status: order.status || STAGES[normalizeStage(order)].status,
         items: Array.isArray(order.items) ? order.items : []
       }));
 
@@ -761,7 +796,8 @@
             order.city,
             order.operator_comment,
             order.manager_comment,
-            order.status
+            order.status,
+            order.ttn
           ].join(' ').toLowerCase();
 
           return haystack.includes(search);
@@ -793,7 +829,7 @@
       };
 
       document.getElementById('statToday').textContent = list.filter(sameDay).length;
-      document.getElementById('statActive').textContent = list.filter(order => ['day1','day2','day3','day4','day5','day6','day7'].includes(order.status_group)).length;
+      document.getElementById('statActive').textContent = list.filter(order => ['accepted','day1','day2','day3','day4','day5','day6','day7'].includes(order.status_group)).length;
       document.getElementById('statRevenue').textContent = formatMoney(list.reduce((sum, order) => sum + Number(order.total || 0), 0));
       document.getElementById('statShipped').textContent = list.filter(order => ['completed','returned'].includes(order.status_group)).length;
     }
@@ -872,10 +908,11 @@
       document.getElementById('dCity').value = selectedOrder.city || '';
       document.getElementById('dDelivery').value = selectedOrder.delivery || 'Нова пошта';
       document.getElementById('dAddress').value = selectedOrder.address || '';
+      document.getElementById('dTtn').value = selectedOrder.ttn || '';
       document.getElementById('dOperatorComment').value = selectedOrder.operator_comment || '';
       document.getElementById('dManagerComment').value = selectedOrder.manager_comment || '';
-      document.getElementById('dStage').value = selectedOrder.status_group || 'day1';
-      document.getElementById('dStatus').value = selectedOrder.status || STAGES[selectedOrder.status_group || 'day1'].status;
+      document.getElementById('dStage').value = selectedOrder.status_group || 'accepted';
+      document.getElementById('dStatus').value = selectedOrder.status || STAGES[selectedOrder.status_group || 'accepted'].status;
       document.getElementById('dCreated').value = formatDate(selectedOrder.created_at);
       document.getElementById('dUpdated').value = formatDate(selectedOrder.updated_at || selectedOrder.created_at);
       document.getElementById('dTotal').value = Number(selectedOrder.total || 0);
@@ -942,8 +979,9 @@
       const lines = [
         `Створено: ${formatDate(order.created_at)}`,
         `Оновлено: ${formatDate(order.updated_at || order.created_at)}`,
-        `Поточний етап: ${STAGES[order.status_group || 'day1']?.title || '-'}`,
+        `Поточний етап: ${STAGES[order.status_group || 'accepted']?.title || '-'}`,
         `Статус: ${order.status || '-'}`,
+        `ТТН: ${order.ttn || '-'}`,
         `Джерело: ${order.source || 'website'}`,
         hasDuplicates(order) ? `Повторні замовлення: ${getDuplicateOrders(order).length}` : 'Повторні замовлення: 0'
       ];
@@ -1003,6 +1041,7 @@
         city: document.getElementById('dCity').value.trim(),
         delivery: document.getElementById('dDelivery').value.trim(),
         address: document.getElementById('dAddress').value.trim(),
+        ttn: document.getElementById('dTtn').value.trim(),
         operator_comment: document.getElementById('dOperatorComment').value.trim(),
         updated_at: new Date().toISOString()
       };
