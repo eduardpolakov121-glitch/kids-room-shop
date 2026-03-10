@@ -537,6 +537,182 @@
       line-height:1.7;
     }
 
+    .product-related{
+      margin-top:28px;
+      background:var(--kr-card);
+      border:1px solid rgba(236,231,223,0.95);
+      border-radius:30px;
+      box-shadow:var(--kr-shadow);
+      padding:24px;
+    }
+
+    .product-related-head{
+      display:flex;
+      align-items:flex-end;
+      justify-content:space-between;
+      gap:14px;
+      flex-wrap:wrap;
+      margin-bottom:16px;
+    }
+
+    .product-related-head h2{
+      margin:0;
+      font-size:30px;
+      line-height:1.08;
+      color:var(--kr-text);
+    }
+
+    .product-related-head p{
+      margin:0;
+      color:var(--kr-muted);
+      line-height:1.6;
+      font-size:15px;
+    }
+
+    .product-related-grid{
+      display:grid;
+      grid-template-columns:repeat(4,minmax(0,1fr));
+      gap:16px;
+    }
+
+    .product-related-card{
+      background:#fffdf9;
+      border:1px solid #ece7df;
+      border-radius:22px;
+      box-shadow:0 10px 24px rgba(0,0,0,0.05);
+      overflow:hidden;
+      display:flex;
+      flex-direction:column;
+      cursor:pointer;
+      transition:transform .18s ease, box-shadow .18s ease;
+    }
+
+    .product-related-card:hover{
+      transform:translateY(-3px);
+      box-shadow:0 16px 30px rgba(0,0,0,0.09);
+    }
+
+    .product-related-image{
+      position:relative;
+      background:#f6ece0;
+      height:210px;
+      overflow:hidden;
+    }
+
+    .product-related-image img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+    }
+
+    .product-related-flags{
+      position:absolute;
+      top:10px;
+      left:10px;
+      z-index:2;
+      display:flex;
+      flex-wrap:wrap;
+      gap:6px;
+      max-width:80%;
+    }
+
+    .product-related-flag{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      padding:6px 10px;
+      border-radius:999px;
+      font-size:11px;
+      font-weight:800;
+      line-height:1;
+      background:#fff;
+      box-shadow:0 6px 14px rgba(0,0,0,0.08);
+    }
+
+    .product-related-flag.hit{
+      background:#fff1e6;
+      color:#ca6200;
+    }
+
+    .product-related-flag.sale{
+      background:#fff0f0;
+      color:#c64c4c;
+    }
+
+    .product-related-flag.new{
+      background:#edf8ff;
+      color:#23628d;
+    }
+
+    .product-related-body{
+      padding:16px;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      flex:1;
+    }
+
+    .product-related-name{
+      margin:0;
+      font-size:18px;
+      line-height:1.35;
+      color:var(--kr-text);
+    }
+
+    .product-related-desc{
+      margin:0;
+      color:var(--kr-muted);
+      line-height:1.6;
+      font-size:14px;
+    }
+
+    .product-related-price{
+      margin-top:auto;
+      display:flex;
+      align-items:flex-end;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    .product-related-price .current{
+      color:var(--kr-orange);
+      font-size:22px;
+      font-weight:800;
+    }
+
+    .product-related-price .old{
+      color:#97a0ab;
+      text-decoration:line-through;
+      font-size:14px;
+    }
+
+    .product-related-actions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    .product-related-actions button{
+      flex:1;
+      min-width:120px;
+      border:none;
+      border-radius:12px;
+      padding:12px 14px;
+      cursor:pointer;
+      font-weight:800;
+    }
+
+    .product-related-actions .primary{
+      background:var(--kr-orange);
+      color:#fff;
+    }
+
+    .product-related-actions .secondary{
+      background:#f1f3f6;
+      color:var(--kr-text);
+    }
+
     .fly-clone{
       position:fixed;
       z-index:9999;
@@ -566,6 +742,9 @@
       .product-gallery-frame{
         min-height:460px;
       }
+      .product-related-grid{
+        grid-template-columns:repeat(2,minmax(0,1fr));
+      }
     }
 
     @media (max-width:768px){
@@ -590,7 +769,8 @@
         padding:18px 12px 30px;
       }
       .product-gallery,
-      .product-info-card{
+      .product-info-card,
+      .product-related{
         border-radius:24px;
       }
       .product-gallery{
@@ -634,6 +814,9 @@
         min-width:50px;
         height:50px;
         padding:0 14px;
+      }
+      .product-related{
+        padding:18px;
       }
     }
 
@@ -683,6 +866,12 @@
       }
       .product-image-flags{
         max-width:85%;
+      }
+      .product-related-grid{
+        grid-template-columns:1fr;
+      }
+      .product-related-head h2{
+        font-size:24px;
       }
     }
   </style>
@@ -780,10 +969,8 @@
 
     function sanitizeImage(src){
       if (!src || typeof src !== 'string') return fallbackImage();
-
       const value = src.trim();
       if (!value) return fallbackImage();
-
       return value;
     }
 
@@ -825,21 +1012,32 @@
     function buildProductFlags(product){
       const items = [];
 
-      if (product?.is_hit) {
-        items.push('<span class="product-flag hit">ХІТ</span>');
-      }
-
-      if (product?.is_sale) {
-        items.push('<span class="product-flag sale">АКЦІЯ</span>');
-      }
-
-      if (product?.is_new) {
-        items.push('<span class="product-flag new">НОВИНКА</span>');
-      }
+      if (product?.is_hit) items.push('<span class="product-flag hit">ХІТ</span>');
+      if (product?.is_sale) items.push('<span class="product-flag sale">АКЦІЯ</span>');
+      if (product?.is_new) items.push('<span class="product-flag new">НОВИНКА</span>');
 
       if (!items.length) return '';
-
       return `<div class="product-image-flags">${items.join('')}</div>`;
+    }
+
+    function buildRelatedFlags(product){
+      const items = [];
+
+      if (product?.is_hit) items.push('<span class="product-related-flag hit">ХІТ</span>');
+      if (product?.is_sale) items.push('<span class="product-related-flag sale">АКЦІЯ</span>');
+      if (product?.is_new) items.push('<span class="product-related-flag new">НОВИНКА</span>');
+
+      if (!items.length) return '';
+      return `<div class="product-related-flags">${items.join('')}</div>`;
+    }
+
+    function escapeHtml(value){
+      return String(value || '')
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#39;');
     }
 
     function updateProductCartCount(){
@@ -859,12 +1057,10 @@
 
     function goBack(){
       const ref = document.referrer || "";
-
       if (ref && ref.includes(location.host) && !ref.includes('product.html')) {
         window.location.href = ref;
         return;
       }
-
       window.location.href = 'index.html';
     }
 
@@ -911,6 +1107,68 @@
       }, 760);
     }
 
+    function openRelatedProduct(id){
+      if (!Array.isArray(window.products)) return;
+      const product = products.find(item => String(item.id) === String(id));
+      if (!product) return;
+
+      localStorage.setItem('selectedProduct', JSON.stringify(product));
+      window.location.href = 'product.html';
+    }
+
+    function addRelatedToCart(id, event){
+      if (event) event.stopPropagation();
+      if (typeof addToCart === 'function') {
+        addToCart(id);
+      }
+      setTimeout(updateProductCartCount, 120);
+    }
+
+    function buildRelatedSection(product){
+      if (!product || !Array.isArray(window.products)) return '';
+
+      const related = products
+        .filter(item => String(item.id) !== String(product.id) && String(item.category) === String(product.category))
+        .slice(0, 4);
+
+      if (!related.length) return '';
+
+      return `
+        <section class="product-related">
+          <div class="product-related-head">
+            <h2>Схожі товари</h2>
+            <p>Інші товари з цієї ж категорії, які можуть вам сподобатися.</p>
+          </div>
+
+          <div class="product-related-grid">
+            ${related.map(item => `
+              <article class="product-related-card" onclick="openRelatedProduct('${escapeHtml(item.id)}')">
+                <div class="product-related-image">
+                  ${buildRelatedFlags(item)}
+                  <img src="${escapeHtml(sanitizeImage(item.img))}" alt="${escapeHtml(item.name)}" onerror="this.onerror=null;this.src=fallbackImage();">
+                </div>
+
+                <div class="product-related-body">
+                  <h3 class="product-related-name">${escapeHtml(item.name)}</h3>
+                  <p class="product-related-desc">${escapeHtml(item.description || 'Якісний дитячий товар для щоденного використання.').slice(0, 95)}${(item.description || '').length > 95 ? '…' : ''}</p>
+
+                  <div class="product-related-price">
+                    <span class="current">${Number(item.price || 0)} грн</span>
+                    ${Number(item.old || 0) > Number(item.price || 0) ? `<span class="old">${Number(item.old || 0)} грн</span>` : ''}
+                  </div>
+
+                  <div class="product-related-actions">
+                    <button class="primary" type="button" onclick="event.stopPropagation(); openRelatedProduct('${escapeHtml(item.id)}')">Відкрити</button>
+                    <button class="secondary" type="button" onclick="addRelatedToCart('${escapeHtml(item.id)}', event)">У кошик</button>
+                  </div>
+                </div>
+              </article>
+            `).join('')}
+          </div>
+        </section>
+      `;
+    }
+
     function renderProductPage(){
       const container = document.getElementById('product-page');
       const crumb = document.getElementById('breadcrumb-name');
@@ -935,6 +1193,7 @@
       const discount = getDiscountPercent(product.old, product.price);
       const description = product.description || 'Якісний дитячий товар для щоденного використання.';
       const flagsHtml = buildProductFlags(product);
+      const relatedHtml = buildRelatedSection(product);
 
       if (crumb) crumb.textContent = product.name || 'Товар';
       document.title = `Kids Room — ${product.name || 'Товар'}`;
@@ -944,7 +1203,7 @@
           <div class="product-gallery">
             <div class="product-gallery-frame">
               ${flagsHtml}
-              <img id="product-main-image" class="product-main-image" src="${imageSrc}" alt="${product.name}" onerror="this.onerror=null;this.src=fallbackImage();">
+              <img id="product-main-image" class="product-main-image" src="${imageSrc}" alt="${escapeHtml(product.name)}" onerror="this.onerror=null;this.src=fallbackImage();">
               <div class="product-image-chip">🧸 ${categoryName}</div>
             </div>
           </div>
@@ -958,18 +1217,18 @@
               ${product.is_new ? `<span class="product-badge">✨ Новинка</span>` : ``}
             </div>
 
-            <h1 class="product-title">${product.name}</h1>
+            <h1 class="product-title">${escapeHtml(product.name)}</h1>
 
             <div class="product-price-row">
-              <div class="product-price-current">${product.price} грн</div>
-              ${Number(product.old) > Number(product.price) ? `<div class="product-price-old">${product.old} грн</div>` : ''}
+              <div class="product-price-current">${Number(product.price || 0)} грн</div>
+              ${Number(product.old || 0) > Number(product.price || 0) ? `<div class="product-price-old">${Number(product.old || 0)} грн</div>` : ''}
               ${discount ? `<div class="product-discount">-${discount}%</div>` : ''}
             </div>
 
-            <p class="product-desc">${description}</p>
+            <p class="product-desc">${escapeHtml(description)}</p>
 
             <ul class="product-feature-list">
-              <li><strong>Категорія</strong>${categoryName}</li>
+              <li><strong>Категорія</strong>${escapeHtml(categoryName)}</li>
               <li><strong>Наявність</strong>Актуальна на момент перегляду сторінки</li>
             </ul>
 
@@ -979,15 +1238,15 @@
                 <div class="product-qty">
                   <span class="product-qty-label">Кількість</span>
                   <div class="product-qty-control">
-                    <button type="button" onclick="minus('${product.id}')">−</button>
-                    <input id="qty-${product.id}" type="number" value="1" min="1" inputmode="numeric">
-                    <button type="button" onclick="plus('${product.id}')">+</button>
+                    <button type="button" onclick="minus('${escapeHtml(product.id)}')">−</button>
+                    <input id="qty-${escapeHtml(product.id)}" type="number" value="1" min="1" inputmode="numeric">
+                    <button type="button" onclick="plus('${escapeHtml(product.id)}')">+</button>
                   </div>
                 </div>
               </div>
 
               <div class="product-actions">
-                <button class="product-primary-btn" type="button" onclick="handleProductAddToCart('${product.id}')">🛒 Додати в кошик</button>
+                <button class="product-primary-btn" type="button" onclick="handleProductAddToCart('${escapeHtml(product.id)}')">🛒 Додати в кошик</button>
                 <button class="product-secondary-btn" type="button" onclick="goBack()">← Повернутись до товарів</button>
               </div>
 
@@ -995,6 +1254,8 @@
             </div>
           </article>
         </section>
+
+        ${relatedHtml}
       `;
     }
 
