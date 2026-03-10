@@ -1,4 +1,4 @@
-всю жту информацию смести куда то мне кажеться она много занимает места,клиент впервіе зайлет и много информации а товар на много ниже <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="uk">
 
 <head>
@@ -289,6 +289,22 @@
     background:#ff6600;
     color:#fff;
 }
+.product-showcase-actions .secondary{
+    background:#f1f3f6;
+    color:#243041;
+}
+
+.showcase-empty{
+    grid-column:1/-1;
+    background:#fffdf9;
+    border:1px solid #ece7df;
+    border-radius:20px;
+    box-shadow:0 10px 24px rgba(0,0,0,0.05);
+    padding:22px;
+    text-align:center;
+    color:#6f7b8c;
+    line-height:1.6;
+}
 
 .how-order-grid{
     display:grid;
@@ -555,88 +571,7 @@
         <h2>Хіти продажу</h2>
         <p>Товари, з яких покупці найчастіше починають знайомство з магазином.</p>
     </div>
-
-    <div class="product-showcase-grid">
-        <div class="product-showcase-card">
-            <div class="product-showcase-image">
-                <img src="product-placeholder.svg" alt="Хіт продажу 1">
-            </div>
-            <div class="product-showcase-body">
-                <div class="product-showcase-top">
-                    <span class="product-chip hit">ХІТ</span>
-                </div>
-                <h3>Плюшевий ведмедик Sweet Bear</h3>
-                <p>М'яка іграшка для обіймів, сну та затишних щоденних ігор.</p>
-                <div class="product-showcase-price">
-                    <span class="current">350 грн</span>
-                    <span class="old">450 грн</span>
-                </div>
-                <div class="product-showcase-actions">
-                    <button class="primary" onclick="filterCategory('toy'); window.location.hash='products';">Дивитися товари</button>
-                </div>
-            </div>
-        </div>
-
-        <div class="product-showcase-card">
-            <div class="product-showcase-image">
-                <img src="product-placeholder.svg" alt="Хіт продажу 2">
-            </div>
-            <div class="product-showcase-body">
-                <div class="product-showcase-top">
-                    <span class="product-chip hit">ХІТ</span>
-                </div>
-                <h3>Прогулянкова коляска</h3>
-                <p>Практична модель для комфортних прогулянок і поїздок містом.</p>
-                <div class="product-showcase-price">
-                    <span class="current">3500 грн</span>
-                    <span class="old">4200 грн</span>
-                </div>
-                <div class="product-showcase-actions">
-                    <button class="primary" onclick="filterCategory('stroller'); window.location.hash='products';">Перейти в категорію</button>
-                </div>
-            </div>
-        </div>
-
-        <div class="product-showcase-card">
-            <div class="product-showcase-image">
-                <img src="product-placeholder.svg" alt="Хіт продажу 3">
-            </div>
-            <div class="product-showcase-body">
-                <div class="product-showcase-top">
-                    <span class="product-chip hit">ХІТ</span>
-                </div>
-                <h3>Дерев'яний сортер</h3>
-                <p>Розвиваюча іграшка для моторики, логіки та базових форм.</p>
-                <div class="product-showcase-price">
-                    <span class="current">400 грн</span>
-                    <span class="old">520 грн</span>
-                </div>
-                <div class="product-showcase-actions">
-                    <button class="primary" onclick="filterCategory('sorter'); window.location.hash='products';">Обрати товар</button>
-                </div>
-            </div>
-        </div>
-
-        <div class="product-showcase-card">
-            <div class="product-showcase-image">
-                <img src="product-placeholder.svg" alt="Хіт продажу 4">
-            </div>
-            <div class="product-showcase-body">
-                <div class="product-showcase-top">
-                    <span class="product-chip hit">ХІТ</span>
-                </div>
-                <h3>Автокрісло Basic</h3>
-                <p>Надійне рішення для безпечних поїздок із дитиною.</p>
-                <div class="product-showcase-price">
-                    <span class="current">1800 грн</span>
-                    <span class="old">2200 грн</span>
-                </div>
-                <div class="product-showcase-actions">
-                    <button class="primary" onclick="filterCategory('seat'); window.location.hash='products';">Переглянути</button>
-                </div>
-            </div>
-        </div>
-    </div>
+    <div class="product-showcase-grid" id="home-hits-grid"></div>
 </section>
 
 <section class="section-wrap">
@@ -644,88 +579,7 @@
         <h2>Акції</h2>
         <p>Пропозиції, які допомагають вигідніше зібрати замовлення.</p>
     </div>
-
-    <div class="product-showcase-grid">
-        <div class="product-showcase-card">
-            <div class="product-showcase-image">
-                <img src="product-placeholder.svg" alt="Акція 1">
-            </div>
-            <div class="product-showcase-body">
-                <div class="product-showcase-top">
-                    <span class="product-chip sale">АКЦІЯ</span>
-                </div>
-                <h3>Дитячий костюм</h3>
-                <p>Зручний одяг для прогулянок, дому та активного дня дитини.</p>
-                <div class="product-showcase-price">
-                    <span class="current">520 грн</span>
-                    <span class="old">650 грн</span>
-                </div>
-                <div class="product-showcase-actions">
-                    <button class="primary" onclick="filterCategory('clothes'); window.location.hash='products';">У категорію</button>
-                </div>
-            </div>
-        </div>
-
-        <div class="product-showcase-card">
-            <div class="product-showcase-image">
-                <img src="product-placeholder.svg" alt="Акція 2">
-            </div>
-            <div class="product-showcase-body">
-                <div class="product-showcase-top">
-                    <span class="product-chip sale">АКЦІЯ</span>
-                </div>
-                <h3>Товар для гігієни</h3>
-                <p>Практичний варіант для щоденного догляду та комфорту малюка.</p>
-                <div class="product-showcase-price">
-                    <span class="current">240 грн</span>
-                    <span class="old">300 грн</span>
-                </div>
-                <div class="product-showcase-actions">
-                    <button class="primary" onclick="filterCategory('hygiene'); window.location.hash='products';">Перейти до гігієни</button>
-                </div>
-            </div>
-        </div>
-
-        <div class="product-showcase-card">
-            <div class="product-showcase-image">
-                <img src="product-placeholder.svg" alt="Акція 3">
-            </div>
-            <div class="product-showcase-body">
-                <div class="product-showcase-top">
-                    <span class="product-chip sale">АКЦІЯ</span>
-                </div>
-                <h3>Дитячий транспорт</h3>
-                <p>Модель для активного дозвілля та веселих прогулянок на вулиці.</p>
-                <div class="product-showcase-price">
-                    <span class="current">1500 грн</span>
-                    <span class="old">1780 грн</span>
-                </div>
-                <div class="product-showcase-actions">
-                    <button class="primary" onclick="filterCategory('transport'); window.location.hash='products';">До транспорту</button>
-                </div>
-            </div>
-        </div>
-
-        <div class="product-showcase-card">
-            <div class="product-showcase-image">
-                <img src="product-placeholder.svg" alt="Акція 4">
-            </div>
-            <div class="product-showcase-body">
-                <div class="product-showcase-top">
-                    <span class="product-chip sale">АКЦІЯ</span>
-                </div>
-                <h3>Товари для немовлят</h3>
-                <p>Корисні щоденні позиції для догляду за найменшими дітьми.</p>
-                <div class="product-showcase-price">
-                    <span class="current">390 грн</span>
-                    <span class="old">470 грн</span>
-                </div>
-                <div class="product-showcase-actions">
-                    <button class="primary" onclick="filterCategory('baby'); window.location.hash='products';">Переглянути</button>
-                </div>
-            </div>
-        </div>
-    </div>
+    <div class="product-showcase-grid" id="home-sales-grid"></div>
 </section>
 
 <section class="section-wrap">
@@ -733,88 +587,7 @@
         <h2>Новинки</h2>
         <p>Свіжі позиції для каталогу та оновлення асортименту.</p>
     </div>
-
-    <div class="product-showcase-grid">
-        <div class="product-showcase-card">
-            <div class="product-showcase-image">
-                <img src="product-placeholder.svg" alt="Новинка 1">
-            </div>
-            <div class="product-showcase-body">
-                <div class="product-showcase-top">
-                    <span class="product-chip new">НОВИНКА</span>
-                </div>
-                <h3>Товар для творчості</h3>
-                <p>Набір для занять, фантазії та розвитку творчих навичок у дитини.</p>
-                <div class="product-showcase-price">
-                    <span class="current">390 грн</span>
-                    <span class="old">480 грн</span>
-                </div>
-                <div class="product-showcase-actions">
-                    <button class="primary" onclick="filterCategory('creativity'); window.location.hash='products';">У розділ творчості</button>
-                </div>
-            </div>
-        </div>
-
-        <div class="product-showcase-card">
-            <div class="product-showcase-image">
-                <img src="product-placeholder.svg" alt="Новинка 2">
-            </div>
-            <div class="product-showcase-body">
-                <div class="product-showcase-top">
-                    <span class="product-chip new">НОВИНКА</span>
-                </div>
-                <h3>Шкільний набір</h3>
-                <p>Корисний комплект для навчання, школи та щоденних занять.</p>
-                <div class="product-showcase-price">
-                    <span class="current">450 грн</span>
-                    <span class="old">540 грн</span>
-                </div>
-                <div class="product-showcase-actions">
-                    <button class="primary" onclick="filterCategory('school'); window.location.hash='products';">У шкільні товари</button>
-                </div>
-            </div>
-        </div>
-
-        <div class="product-showcase-card">
-            <div class="product-showcase-image">
-                <img src="product-placeholder.svg" alt="Новинка 3">
-            </div>
-            <div class="product-showcase-body">
-                <div class="product-showcase-top">
-                    <span class="product-chip new">НОВИНКА</span>
-                </div>
-                <h3>Дитяча постіль</h3>
-                <p>Комплект для затишного сну та комфортної атмосфери в кімнаті.</p>
-                <div class="product-showcase-price">
-                    <span class="current">790 грн</span>
-                    <span class="old">950 грн</span>
-                </div>
-                <div class="product-showcase-actions">
-                    <button class="primary" onclick="filterCategory('bedding'); window.location.hash='products';">Переглянути постіль</button>
-                </div>
-            </div>
-        </div>
-
-        <div class="product-showcase-card">
-            <div class="product-showcase-image">
-                <img src="product-placeholder.svg" alt="Новинка 4">
-            </div>
-            <div class="product-showcase-body">
-                <div class="product-showcase-top">
-                    <span class="product-chip new">НОВИНКА</span>
-                </div>
-                <h3>Товар для годування</h3>
-                <p>Зручний аксесуар для комфортного прийому їжі вдома та в дорозі.</p>
-                <div class="product-showcase-price">
-                    <span class="current">320 грн</span>
-                    <span class="old">390 грн</span>
-                </div>
-                <div class="product-showcase-actions">
-                    <button class="primary" onclick="filterCategory('feeding'); window.location.hash='products';">До товарів</button>
-                </div>
-            </div>
-        </div>
-    </div>
+    <div class="product-showcase-grid" id="home-new-grid"></div>
 </section>
 
 <section class="section-wrap">
@@ -1077,6 +850,147 @@
 <script src="crm.js"></script>
 <script src="cart.js"></script>
 <script src="script.js"></script>
+<script>
+function escapeHomeHtml(value) {
+    return String(value || "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#39;");
+}
+
+function getHomeDiscountPercent(product) {
+    const oldPrice = Number(product?.old || 0);
+    const currentPrice = Number(product?.price || 0);
+
+    if (!oldPrice || !currentPrice || oldPrice <= currentPrice) return null;
+
+    return Math.round(((oldPrice - currentPrice) / oldPrice) * 100);
+}
+
+function openHomeProduct(id) {
+    if (typeof openProduct === "function") {
+        openProduct(id);
+    }
+}
+
+function goToCategory(categoryId) {
+    if (typeof filterCategory === "function") {
+        filterCategory(categoryId);
+    }
+    window.location.hash = "products";
+}
+
+function buildShowcaseCard(product, type) {
+    const image = typeof getSafeProductImage === "function"
+        ? getSafeProductImage(product)
+        : (product?.img || "product-placeholder.svg");
+
+    const discount = getHomeDiscountPercent(product);
+    const chipText = type === "hit" ? "ХІТ" : type === "sale" ? "АКЦІЯ" : "НОВИНКА";
+    const categoryName = typeof getCategoryName === "function"
+        ? getCategoryName(product.category)
+        : (product.category || "Товар");
+
+    const actionText = type === "sale"
+        ? "Дивитися товар"
+        : type === "new"
+        ? "Відкрити новинку"
+        : "Переглянути товар";
+
+    return `
+        <div class="product-showcase-card">
+            <div class="product-showcase-image">
+                <img src="${escapeHomeHtml(image)}" alt="${escapeHomeHtml(product.name)}" onerror="this.onerror=null;this.src='product-placeholder.svg'">
+            </div>
+            <div class="product-showcase-body">
+                <div class="product-showcase-top">
+                    <span class="product-chip ${type}">${chipText}</span>
+                    <span class="product-chip secondary">${escapeHomeHtml(categoryName)}</span>
+                </div>
+                <h3>${escapeHomeHtml(product.name)}</h3>
+                <p>${escapeHomeHtml(product.description || "Якісний дитячий товар для щоденного використання.")}</p>
+                <div class="product-showcase-price">
+                    <span class="current">${Number(product.price || 0)} грн</span>
+                    ${Number(product.old || 0) > Number(product.price || 0) ? `<span class="old">${Number(product.old || 0)} грн</span>` : ""}
+                    ${discount ? `<span class="product-chip sale">-${discount}%</span>` : ""}
+                </div>
+                <div class="product-showcase-actions">
+                    <button class="primary" onclick="openHomeProduct('${escapeHomeHtml(product.id)}')">${actionText}</button>
+                    <button class="secondary" onclick="goToCategory('${escapeHomeHtml(product.category)}')">У категорію</button>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+function renderShowcaseGrid(elementId, list, type, emptyText) {
+    const container = document.getElementById(elementId);
+    if (!container) return;
+
+    if (!Array.isArray(list) || !list.length) {
+        container.innerHTML = `<div class="showcase-empty">${escapeHomeHtml(emptyText)}</div>`;
+        return;
+    }
+
+    container.innerHTML = list.map(item => buildShowcaseCard(item, type)).join("");
+}
+
+function renderHomeDynamicSections() {
+    const allProducts = Array.isArray(window.products) ? [...window.products] : [];
+
+    const hits = allProducts.slice(0, 4);
+
+    const sales = [...allProducts]
+        .filter(product => Number(product.old || 0) > Number(product.price || 0))
+        .sort((a, b) => {
+            const discountA = getHomeDiscountPercent(a) || 0;
+            const discountB = getHomeDiscountPercent(b) || 0;
+            return discountB - discountA;
+        })
+        .slice(0, 4);
+
+    const newest = [...allProducts].slice(-4).reverse();
+
+    renderShowcaseGrid(
+        "home-hits-grid",
+        hits,
+        "hit",
+        "Хіти продажу з’являться після додавання товарів."
+    );
+
+    renderShowcaseGrid(
+        "home-sales-grid",
+        sales,
+        "sale",
+        "Акційні товари з’являться, коли у товарів буде стара ціна вища за актуальну."
+    );
+
+    renderShowcaseGrid(
+        "home-new-grid",
+        newest,
+        "new",
+        "Новинки з’являться після наповнення каталогу товарами."
+    );
+}
+
+window.addEventListener("products:ready", renderHomeDynamicSections);
+window.addEventListener("products:updated", renderHomeDynamicSections);
+window.addEventListener("storage", function(event) {
+    if (event.key === "products") {
+        renderHomeDynamicSections();
+    }
+});
+
+document.addEventListener("DOMContentLoaded", function() {
+    setTimeout(renderHomeDynamicSections, 200);
+});
+
+window.addEventListener("load", function() {
+    setTimeout(renderHomeDynamicSections, 400);
+});
+</script>
 
 </body>
 </html>
