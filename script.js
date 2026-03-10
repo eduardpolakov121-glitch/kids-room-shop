@@ -56,13 +56,11 @@ function updateActiveCategoryUI() {
 
 function ensureSidebarCategoryMarkers() {
     const items = document.querySelectorAll(".sidebar li");
-
     items.forEach(item => {
         if (item.dataset.category) return;
 
         const onclickValue = item.getAttribute("onclick") || "";
         const match = onclickValue.match(/filterCategory\('([^']+)'\)/);
-
         if (match) {
             item.dataset.category = match[1];
         }
@@ -75,31 +73,20 @@ function applyFiltersAndRender() {
     let list = getBaseProducts();
 
     if (activeCategory !== "all") {
-        list = list.filter(product => String(product.category) === String(activeCategory));
+        list = list.filter(product => product.category === activeCategory);
     }
 
     if (activeSearch) {
         const search = activeSearch.toLowerCase();
-
-        list = list.filter(product => {
-            const name = String(product?.name || "").toLowerCase();
-            const description = String(product?.description || "").toLowerCase();
-            const category = String(product?.category || "").toLowerCase();
-
-            return (
-                name.includes(search) ||
-                description.includes(search) ||
-                category.includes(search)
-            );
-        });
+        list = list.filter(product => String(product.name || "").toLowerCase().includes(search));
     }
 
     if (activeSort === "cheap") {
-        list.sort((a, b) => Number(a.price || 0) - Number(b.price || 0));
+        list.sort((a, b) => a.price - b.price);
     }
 
     if (activeSort === "expensive") {
-        list.sort((a, b) => Number(b.price || 0) - Number(a.price || 0));
+        list.sort((a, b) => b.price - a.price);
     }
 
     if (activeSort === "name") {
@@ -119,9 +106,7 @@ function escapeHtmlText(value) {
 }
 
 function escapeHtmlAttr(value) {
-    return escapeHtmlText(value)
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#39;");
+    return escapeHtmlText(value).replaceAll('"', "&quot;").replaceAll("'", "&#39;");
 }
 
 function buildProductBadges(product) {
@@ -151,7 +136,7 @@ function buildProductPrice(product) {
     if (oldPrice > currentPrice) {
         return `
             <div class="price">
-                <span class="old-price" id="old-${escapeHtmlAttr(product.id)}">${oldPrice} грн</span>
+                <span class="old-price" id="old-${product.id}">${oldPrice} грн</span>
                 <span>${currentPrice} грн</span>
             </div>
         `;
@@ -179,14 +164,10 @@ function renderProducts(list) {
     }
 
     container.innerHTML = list.map(product => `
-        <div class="product product-card-with-badges" id="prod-${escapeHtmlAttr(product.id)}" onclick="openProduct('${escapeHtmlAttr(product.id)}')">
+        <div class="product product-card-with-badges" id="prod-${product.id}" onclick="openProduct('${escapeHtmlAttr(product.id)}')">
             <div class="product-image-wrap">
                 ${buildProductBadges(product)}
-                <img
-                    src="${getSafeProductImage(product)}"
-                    alt="${escapeHtmlAttr(product.name)}"
-                    onerror="this.onerror=null;this.src='${PRODUCT_PLACEHOLDER}'"
-                >
+                <img src="${getSafeProductImage(product)}" alt="${escapeHtmlAttr(product.name)}" onerror="this.onerror=null;this.src='${PRODUCT_PLACEHOLDER}'">
             </div>
 
             <h3>${escapeHtmlText(product.name)}</h3>
@@ -267,7 +248,7 @@ function injectCatalogBadgeStyles() {
 }
 
 function openProduct(id) {
-    const product = typeof findProductById === "function" ? findProductById(id) : null;
+    const product = findProductById(id);
     if (!product) return;
 
     localStorage.setItem("selectedProduct", JSON.stringify(product));
@@ -281,12 +262,6 @@ if (searchEl) {
         activeSearch = event.target.value.trim();
         applyFiltersAndRender();
     });
-}
-
-function searchProducts() {
-    const search = document.getElementById("search");
-    activeSearch = search ? search.value.trim() : "";
-    applyFiltersAndRender();
 }
 
 function filterCategory(category) {
@@ -337,7 +312,6 @@ function minus(id) {
     if (!el) return;
 
     const value = parseInt(el.value || "1", 10);
-
     if (Number.isNaN(value) || value <= 1) {
         el.value = 1;
         return;
@@ -360,28 +334,15 @@ window.addEventListener("storage", event => {
     }
 });
 
-if (typeof renderCart === "function") {
-    renderCart();
-}
+renderCart();
 
 window.addEventListener("resize", syncCatalogMenuOnResize);
-
 document.addEventListener("keydown", event => {
     if (event.key === "Escape") closeCatalogMenu();
 });
-
 syncCatalogMenuOnResize();
 ensureSidebarCategoryMarkers();
 
 if (typeof window.productsReady === "function" && window.productsReady()) {
     handleProductsReady();
 }
-
-window.toggleCatalogMenu = toggleCatalogMenu;
-window.closeCatalogMenu = closeCatalogMenu;
-window.filterCategory = filterCategory;
-window.sortProducts = sortProducts;
-window.searchProducts = searchProducts;
-window.openProduct = openProduct;
-window.plus = plus;
-window.minus = minus;

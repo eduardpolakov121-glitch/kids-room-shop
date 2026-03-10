@@ -508,14 +508,21 @@
     .section-wrap,
     .cta-banner,
     .hero-selling{
-        margin-left:12px;
-        margin-right:12px;
+        margin-left:10px;
+        margin-right:10px;
     }
     .home-trust-strip{
-        margin:0 12px 8px;
+        margin:0 10px 8px;
+        gap:10px;
+    }
+    .home-trust-card{
+        padding:14px;
+        border-radius:16px;
     }
     .site-footer{
-        margin:16px 12px 24px;
+        margin:12px 10px 20px;
+        padding:16px;
+        border-radius:18px;
     }
 }
 </style>
@@ -523,47 +530,41 @@
 
 <body>
 
+<div id="cart-overlay" class="cart-overlay" onclick="closeCart()"></div>
+
 <header>
-    <div class="logo-area">
-        <button class="catalog-btn" onclick="toggleCatalogMenu()">☰ Каталог</button>
-        <a href="index.html" class="logo-wrap">
-            <img src="logo.jpg" alt="Kids Room" class="logo-img">
-            <div class="logo-text">
-                <span class="logo">Kids Room</span>
-                <small>Все для дитячого затишку 💛</small>
-            </div>
-        </a>
-    </div>
-
-    <div class="search">
-        <input type="text" id="search" placeholder="Пошук товару..." oninput="searchProducts()">
-    </div>
-
-    <div class="cart-icon" onclick="toggleCart()">
+    <div class="logo">Kids Room</div>
+    <input id="search" placeholder="🔍 Пошук товару">
+    <button class="catalog-toggle" id="catalog-toggle" type="button" onclick="toggleCatalogMenu()" aria-label="Відкрити каталог">
+        ⋮
+    </button>
+    <div class="cart-button" onclick="toggleCart()">
         🛒 <span id="cart-count">0</span>
     </div>
 </header>
 
+<div class="banner">
+    <img src="banner.jpg" alt="Kids Room banner">
+</div>
+
 <section class="hero-selling">
     <div class="hero-selling-inner">
         <div class="hero-selling-copy">
-            <div class="hero-selling-badges">
-                <span class="hero-selling-badge">🧸 Дитячі товари для різного віку</span>
-                <span class="hero-selling-badge">🚚 Оформлення замовлення через сайт</span>
-                <span class="hero-selling-badge">💬 Швидкий зв’язок із магазином</span>
-            </div>
-
-            <h1>Дитячі товари для дому, прогулянок, навчання та щоденної турботи</h1>
-
+            <h1>Все для дитячої кімнати, прогулянок і щасливого дитинства</h1>
             <p>
-                Обирайте іграшки, коляски, одяг, товари для немовлят, шкільне приладдя,
-                меблі та інші дитячі товари в одному магазині. Зручний каталог, кошик,
-                сторінка товару та оформлення замовлення допоможуть швидко знайти потрібне.
+                Іграшки, коляски, автокрісла, одяг, меблі та інші дитячі товари —
+                усе в одному магазині з простим оформленням замовлення.
             </p>
 
+            <div class="hero-selling-badges">
+                <span class="hero-selling-badge">🧸 Великий вибір</span>
+                <span class="hero-selling-badge">🚚 Доставка по Україні</span>
+                <span class="hero-selling-badge">💬 Швидкий зв’язок</span>
+            </div>
+
             <div class="hero-selling-actions">
-                <a href="#products" class="hero-selling-btn">Перейти до каталогу</a>
-                <a href="contacts.html" class="hero-selling-btn-secondary">Потрібна консультація</a>
+                <a class="hero-selling-btn" href="#products">Перейти до товарів</a>
+                <a class="hero-selling-btn-secondary" href="delivery-payment.html">Доставка і оплата</a>
             </div>
         </div>
     </div>
@@ -571,26 +572,50 @@
 
 <section class="section-wrap">
     <div class="section-title-row">
-        <h2>Чому покупцям зручно замовляти в Kids Room</h2>
-        <p>Ми зібрали основні категорії дитячих товарів і зробили оформлення замовлення максимально простим.</p>
+        <h2>Хіти продажу</h2>
+        <p>Товари, які ти сам позначиш як хіти, будуть показуватись тут.</p>
+    </div>
+    <div class="product-showcase-grid" id="home-hits-grid"></div>
+</section>
+
+<section class="section-wrap">
+    <div class="section-title-row">
+        <h2>Акції</h2>
+        <p>Товари з позначкою акції потрапляють у цей блок на головній.</p>
+    </div>
+    <div class="product-showcase-grid" id="home-sales-grid"></div>
+</section>
+
+<section class="section-wrap">
+    <div class="section-title-row">
+        <h2>Новинки</h2>
+        <p>Додавай нові товари та став прапорець “Новинка”, щоб показувати їх тут.</p>
+    </div>
+    <div class="product-showcase-grid" id="home-new-grid"></div>
+</section>
+
+<section class="section-wrap">
+    <div class="section-title-row">
+        <h2>Чому обирають Kids Room</h2>
+        <p>Ми поєднали зручний каталог, зрозуміле оформлення замовлення та корисні категорії для дітей.</p>
     </div>
 
     <div class="benefits-grid">
         <div class="benefit-card">
-            <h3>🛍️ Великий вибір категорій</h3>
-            <p>Іграшки, коляски, автокрісла, одяг, товари для немовлят, меблі, творчість та інші напрямки в одному каталозі.</p>
+            <h3>📦 Широкий асортимент</h3>
+            <p>На сайті зібрані популярні дитячі категорії — від іграшок до меблів та товарів для немовлят.</p>
         </div>
         <div class="benefit-card">
-            <h3>🧾 Зручне оформлення</h3>
-            <p>Додайте товари в кошик, вкажіть контактні дані, оберіть доставку та відправте замовлення через форму на сайті.</p>
+            <h3>💳 Зручне оформлення</h3>
+            <p>Швидко додавайте товари в кошик, обирайте доставку та залишайте дані без зайвих кроків.</p>
         </div>
         <div class="benefit-card">
-            <h3>🚚 Поширені служби доставки</h3>
-            <p>Підтримується Нова пошта з вибором міста й відділення, а також Укрпошта з введенням міста та індексу.</p>
+            <h3>🚚 Доставка по Україні</h3>
+            <p>Підтримується оформлення замовлень з доставкою Новою поштою та Укрпоштою.</p>
         </div>
         <div class="benefit-card">
-            <h3>📱 Швидкий зв’язок</h3>
-            <p>На сайті доступні прямі посилання на Viber, Telegram та Instagram для консультацій і уточнень по замовленню.</p>
+            <h3>💬 Швидкий контакт</h3>
+            <p>Покупець може одразу перейти до Viber, Telegram або Instagram для уточнення деталей.</p>
         </div>
     </div>
 </section>
@@ -598,7 +623,7 @@
 <section class="section-wrap">
     <div class="section-title-row">
         <h2>Популярні категорії</h2>
-        <p>Швидкий перехід до напрямків, які найчастіше шукають покупці.</p>
+        <p>Найчастіше покупці починають пошук саме з цих розділів.</p>
     </div>
 
     <div class="home-categories-grid">
@@ -623,30 +648,6 @@
             <span>Корисні товари для перших місяців життя та щоденного догляду.</span>
         </a>
     </div>
-</section>
-
-<section class="section-wrap">
-    <div class="section-title-row">
-        <h2>Хіти продажу</h2>
-        <p>Товари, які можна показувати на головній сторінці як основні пропозиції магазину.</p>
-    </div>
-    <div id="home-hits-grid" class="product-showcase-grid"></div>
-</section>
-
-<section class="section-wrap">
-    <div class="section-title-row">
-        <h2>Акційні пропозиції</h2>
-        <p>Товари зі знижками та старою ціною, які зручно виносити в окремий блок головної сторінки.</p>
-    </div>
-    <div id="home-sales-grid" class="product-showcase-grid"></div>
-</section>
-
-<section class="section-wrap">
-    <div class="section-title-row">
-        <h2>Новинки</h2>
-        <p>Окремий блок для нових товарів, які потрібно підсвітити для покупця.</p>
-    </div>
-    <div id="home-new-grid" class="product-showcase-grid"></div>
 </section>
 
 <div id="sidebar-overlay" class="sidebar-overlay" onclick="closeCatalogMenu()"></div>
