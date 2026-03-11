@@ -6,6 +6,16 @@ const NOVA_POSHTA_API_URL = "https://api.novaposhta.ua/v2.0/json/";
 let selectedCity = null;
 let lastCheckoutOrderNumber = "";
 
+function normalizeCartQty(value) {
+    const qty = parseInt(value || "1", 10);
+    return Number.isNaN(qty) || qty < 1 ? 1 : qty;
+}
+
+function getCartProductFromCatalog(id) {
+    if (!Array.isArray(window.products)) return null;
+    return window.products.find(item => String(item.id) === String(id)) || null;
+}
+
 function getCartItemImage(product) {
     if (typeof getSafeProductImage === "function") {
         return getSafeProductImage(product);
@@ -17,6 +27,33 @@ function getCartItemImage(product) {
 
     const value = String(product?.img || "").trim();
     return value || "product-placeholder.svg";
+}
+
+function syncCartWithProducts() {
+    if (!Array.isArray(cart)) {
+        cart = [];
+        return;
+    }
+
+    cart = cart
+        .map(item => {
+            const fresh = getCartProductFromCatalog(item.id);
+
+            if (!fresh) {
+                return {
+                    ...item,
+                    qty: normalizeCartQty(item.qty),
+                    img: getCartItemImage(item)
+                };
+            }
+
+            return {
+                ...fresh,
+                qty: normalizeCartQty(item.qty),
+                img: getCartItemImage(fresh)
+            };
+        })
+        .filter(item => item && String(item.id || "").trim() !== "");
 }
 
 function getCheckoutSuccessOrderNumber(payload) {
@@ -76,20 +113,26 @@ function getProductQtyInputValue(id) {
     const input = document.getElementById("qty-" + id);
     if (!input) return 1;
 
-    const qty = parseInt(input.value || "1", 10);
-    if (Number.isNaN(qty) || qty < 1) return 1;
-    return qty;
+    return normalizeCartQty(input.value);
 }
 
 function addToCart(id) {
-    const qty = getProductQtyInputValue(id);
-    const product = products.find(p => String(p.id) === String(id));
-    if (!product) return;
+    const product = getCartProductFromCatalog(id);
+    if (!product) {
+        showToast("Товар ще завантажується");
+        return;
+    }
 
+    const qty = getProductQtyInputValue(id);
     const item = cart.find(p => String(p.id) === String(id));
 
     if (item) {
-        item.qty += qty;
+        item.qty = normalizeCartQty(item.qty) + qty;
+        item.name = product.name;
+        item.price = product.price;
+        item.old = product.old;
+        item.description = product.description;
+        item.category = product.category;
         item.img = getCartItemImage(product);
     } else {
         cart.push({
@@ -99,6 +142,7 @@ function addToCart(id) {
         });
     }
 
+    syncCartWithProducts();
     renderCart();
     saveCart();
     showToast("Товар додано в кошик");
@@ -108,7 +152,8 @@ function cartPlus(id) {
     const item = cart.find(p => String(p.id) === String(id));
     if (!item) return;
 
-    item.qty++;
+    item.qty = normalizeCartQty(item.qty) + 1;
+    syncCartWithProducts();
     renderCart();
     saveCart();
 }
@@ -117,12 +162,13 @@ function cartMinus(id) {
     const item = cart.find(p => String(p.id) === String(id));
     if (!item) return;
 
-    if (item.qty > 1) {
-        item.qty--;
+    if (normalizeCartQty(item.qty) > 1) {
+        item.qty = normalizeCartQty(item.qty) - 1;
     } else {
         cart = cart.filter(p => String(p.id) !== String(id));
     }
 
+    syncCartWithProducts();
     renderCart();
     saveCart();
 }
@@ -175,6 +221,7 @@ function renderCart() {
     const count = document.getElementById("cart-count");
     if (!items || !count) return;
 
+    syncCartWithProducts();
     items.innerHTML = "";
 
     const { subtotal, qty, delivery, total } = getCartTotals();
@@ -188,21 +235,21 @@ function renderCart() {
             <div style="display:flex;align-items:flex-start;gap:10px;min-width:0;">
                 <img
                     src="${image}"
-                    alt="${p.name}"
+                    alt="${String(p.name || "")}"
                     style="width:64px;height:64px;object-fit:cover;border-radius:14px;background:#f3f3f3;flex-shrink:0;"
                     onerror="this.onerror=null;this.src='product-placeholder.svg'"
                 >
                 <div style="min-width:0;">
-                    <div class="cart-item-title">${p.name}</div>
-                    <div class="cart-item-sub">${p.price} грн × ${p.qty}</div>
+                    <div class="cart-item-title">${String(p.name || "Товар")}</div>
+                    <div class="cart-item-sub">${Number(p.price || 0)} грн × ${Number(p.qty || 0)}</div>
                 </div>
             </div>
 
             <div class="cart-item-side">
                 <div class="cart-item-qty">
-                    <button onclick="cartMinus('${p.id}')">−</button>
-                    <span>${p.qty}</span>
-                    <button onclick="cartPlus('${p.id}')">+</button>
+                    <button type="button" onclick="cartMinus('${p.id}')">−</button>
+                    <span>${Number(p.qty || 0)}</span>
+                    <button type="button" onclick="cartPlus('${p.id}')">+</button>
                 </div>
                 <div class="cart-item-total">${itemTotal} грн</div>
             </div>
@@ -281,11 +328,16 @@ function renderCheckoutSummary() {
 }
 
 function handleDeliveryTypeChange() {
-    const delivery = document.getElementById("order-delivery").value;
+    const deliveryField = document.getElementById("order-delivery");
+    if (!deliveryField) return;
+
+    const delivery = deliveryField.value;
 
     const npCityWrap = document.getElementById("np-city-wrap");
     const npWarehouseWrap = document.getElementById("np-warehouse-wrap");
     const ukrWrap = document.getElementById("ukrposhta-wrap");
+
+    if (!npCityWrap || !npWarehouseWrap || !ukrWrap) return;
 
     if (delivery === "Нова пошта") {
         npCityWrap.style.display = "block";
@@ -327,6 +379,8 @@ async function loadWarehouses(cityRef) {
 async function handleCityInput() {
     const input = document.getElementById("order-city");
     const list = document.getElementById("city-suggestions");
+    if (!input || !list) return;
+
     const val = input.value.trim();
 
     selectedCity = null;
@@ -392,10 +446,10 @@ function fillWarehouses(warehouses) {
 }
 
 async function submitCheckout() {
-    const name = document.getElementById("order-name").value.trim();
-    const surname = document.getElementById("order-surname").value.trim();
-    const phone = document.getElementById("order-phone").value.trim();
-    const delivery = document.getElementById("order-delivery").value;
+    const name = document.getElementById("order-name")?.value.trim() || "";
+    const surname = document.getElementById("order-surname")?.value.trim() || "";
+    const phone = document.getElementById("order-phone")?.value.trim() || "";
+    const delivery = document.getElementById("order-delivery")?.value || "Нова пошта";
 
     let city = "";
     let address = "";
@@ -406,8 +460,8 @@ async function submitCheckout() {
     }
 
     if (delivery === "Нова пошта") {
-        city = document.getElementById("order-city").value.trim();
-        address = document.getElementById("order-address").value;
+        city = document.getElementById("order-city")?.value.trim() || "";
+        address = document.getElementById("order-address")?.value || "";
 
         if (!city || !selectedCity) {
             alert("Оберіть місто зі списку");
@@ -421,8 +475,8 @@ async function submitCheckout() {
     }
 
     if (delivery === "Укрпошта") {
-        city = document.getElementById("order-city-manual").value.trim();
-        const index = document.getElementById("order-index").value.trim();
+        city = document.getElementById("order-city-manual")?.value.trim() || "";
+        const index = document.getElementById("order-index")?.value.trim() || "";
 
         if (!city) {
             alert("Вкажіть місто");
@@ -472,12 +526,20 @@ async function submitCheckout() {
         saveCart();
         renderCart();
 
-        document.getElementById("order-name").value = "";
-        document.getElementById("order-surname").value = "";
-        document.getElementById("order-phone").value = "";
-        document.getElementById("order-city").value = "";
-        document.getElementById("order-city-manual").value = "";
-        document.getElementById("order-index").value = "";
+        const fieldsToClear = [
+            "order-name",
+            "order-surname",
+            "order-phone",
+            "order-city",
+            "order-city-manual",
+            "order-index"
+        ];
+
+        fieldsToClear.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.value = "";
+        });
+
         resetWarehouses("Оберіть відділення");
         selectedCity = null;
 
@@ -492,19 +554,18 @@ async function submitCheckout() {
 }
 
 function showToast(text) {
+    const old = document.querySelector(".cart-toast");
+    if (old) old.remove();
+
     const t = document.createElement("div");
-    t.style.position = "fixed";
-    t.style.bottom = "20px";
-    t.style.right = "20px";
-    t.style.background = "#2e3550";
-    t.style.color = "white";
-    t.style.padding = "12px 20px";
-    t.style.borderRadius = "12px";
-    t.style.zIndex = "9999";
-    t.style.boxShadow = "0 10px 24px rgba(0,0,0,0.18)";
+    t.className = "cart-toast show";
     t.innerText = text;
     document.body.appendChild(t);
-    setTimeout(() => t.remove(), 2000);
+
+    setTimeout(() => {
+        t.classList.remove("show");
+        setTimeout(() => t.remove(), 300);
+    }, 1800);
 }
 
 function clearCart() {
@@ -540,6 +601,29 @@ document.addEventListener("DOMContentLoaded", () => {
                 list.style.display = "block";
             }
         });
+    }
+});
+
+window.addEventListener("products:ready", () => {
+    syncCartWithProducts();
+    renderCart();
+});
+
+window.addEventListener("products:updated", () => {
+    syncCartWithProducts();
+    renderCart();
+});
+
+window.addEventListener("storage", event => {
+    if (event.key === "cart") {
+        try {
+            cart = JSON.parse(localStorage.getItem("cart")) || [];
+        } catch (error) {
+            cart = [];
+        }
+
+        syncCartWithProducts();
+        renderCart();
     }
 });
 

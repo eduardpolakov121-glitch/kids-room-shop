@@ -7,6 +7,7 @@ let activeSearch = "";
 let selectedProductForModal = null;
 
 const mobileCatalogBreakpoint = 900;
+let headerScrollRaf = null;
 
 function isMobileCatalogMode() {
     return window.innerWidth <= mobileCatalogBreakpoint;
@@ -182,7 +183,7 @@ function renderProducts(list) {
             </div>
 
             <div class="quantity" onclick="event.stopPropagation()">
-                <button onclick="minus('${escapeHtmlAttr(product.id)}')">−</button>
+                <button type="button" onclick="minus('${escapeHtmlAttr(product.id)}')">−</button>
                 <input
                     id="qty-${escapeHtmlAttr(product.id)}"
                     type="number"
@@ -190,10 +191,10 @@ function renderProducts(list) {
                     min="1"
                     class="qty-input"
                 >
-                <button onclick="plus('${escapeHtmlAttr(product.id)}')">+</button>
+                <button type="button" onclick="plus('${escapeHtmlAttr(product.id)}')">+</button>
             </div>
 
-            <button class="add-btn" onclick="event.stopPropagation(); addToCart('${escapeHtmlAttr(product.id)}')">
+            <button class="add-btn" type="button" onclick="event.stopPropagation(); addToCart('${escapeHtmlAttr(product.id)}')">
                 Додати в кошик
             </button>
         </div>
@@ -237,7 +238,7 @@ function applyFiltersAndRender() {
     let list = getBaseProducts();
 
     if (activeCategory !== "all") {
-        list = list.filter(product => product.category === activeCategory);
+        list = list.filter(product => String(product.category) === String(activeCategory));
     }
 
     if (activeSearch) {
@@ -249,11 +250,11 @@ function applyFiltersAndRender() {
     }
 
     if (activeSort === "cheap") {
-        list.sort((a, b) => a.price - b.price);
+        list.sort((a, b) => Number(a.price || 0) - Number(b.price || 0));
     }
 
     if (activeSort === "expensive") {
-        list.sort((a, b) => b.price - a.price);
+        list.sort((a, b) => Number(b.price || 0) - Number(a.price || 0));
     }
 
     if (activeSort === "name") {
@@ -277,25 +278,11 @@ function changeQtyValue(targetId, delta) {
 }
 
 function plus(id) {
-    const rawId = String(id);
-
-    if (rawId.startsWith("modal-")) {
-        changeQtyValue("qty-" + rawId, 1);
-        return;
-    }
-
-    changeQtyValue("qty-" + rawId, 1);
+    changeQtyValue("qty-" + String(id), 1);
 }
 
 function minus(id) {
-    const rawId = String(id);
-
-    if (rawId.startsWith("modal-")) {
-        changeQtyValue("qty-" + rawId, -1);
-        return;
-    }
-
-    changeQtyValue("qty-" + rawId, -1);
+    changeQtyValue("qty-" + String(id), -1);
 }
 
 function sortProducts(type) {
@@ -572,18 +559,23 @@ let lastScroll = 0;
 const header = document.querySelector("header");
 
 window.addEventListener("scroll", () => {
-    const current = window.pageYOffset;
+    if (headerScrollRaf) return;
 
-    if (header) {
-        if (current > lastScroll && current > 100) {
-            header.classList.add("hide");
-        } else {
-            header.classList.remove("hide");
+    headerScrollRaf = requestAnimationFrame(() => {
+        const current = window.pageYOffset;
+
+        if (header) {
+            if (current > lastScroll && current > 100) {
+                header.classList.add("hide");
+            } else {
+                header.classList.remove("hide");
+            }
         }
-    }
 
-    lastScroll = current;
-});
+        lastScroll = current;
+        headerScrollRaf = null;
+    });
+}, { passive: true });
 
 function handleProductsReady() {
     ensureSidebarCategoryMarkers();
@@ -628,3 +620,5 @@ window.addModalProductToCart = addModalProductToCart;
 window.addBundleToCart = addBundleToCart;
 window.plus = plus;
 window.minus = minus;
+window.toggleCatalogMenu = toggleCatalogMenu;
+window.closeCatalogMenu = closeCatalogMenu;

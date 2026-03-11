@@ -196,14 +196,23 @@
 }
 
 .product-showcase-grid{
-    display:grid;
-    grid-template-columns:repeat(4,minmax(0,1fr));
-    gap:16px;
+    display:flex;
+    gap:14px;
+    overflow-x:auto;
+    scroll-behavior:smooth;
+    padding:2px 2px 8px;
+    scrollbar-width:none;
+}
+.product-showcase-grid::-webkit-scrollbar{
+    display:none;
 }
 .product-showcase-card{
+    flex:0 0 calc(25% - 11px);
+    min-width:240px;
+    max-width:280px;
     background:#fffefe;
     border:1px solid #f0e4db;
-    border-radius:24px;
+    border-radius:22px;
     box-shadow:0 12px 26px rgba(0,0,0,0.05);
     overflow:hidden;
     display:flex;
@@ -213,7 +222,7 @@
 }
 .product-showcase-image{
     background:linear-gradient(180deg,#fff3ea 0%,#fff8ef 100%);
-    height:210px;
+    height:170px;
     overflow:hidden;
 }
 .product-showcase-image img{
@@ -223,7 +232,7 @@
     display:block;
 }
 .product-showcase-body{
-    padding:16px;
+    padding:14px;
     display:flex;
     flex-direction:column;
     gap:10px;
@@ -261,46 +270,53 @@
 }
 .product-showcase-card h3{
     margin:0;
-    font-size:18px;
+    font-size:16px;
     line-height:1.32;
     color:#2f3746;
+    min-height:42px;
 }
 .product-showcase-card p{
     margin:0;
     color:#748097;
-    line-height:1.6;
-    font-size:14px;
+    line-height:1.55;
+    font-size:13px;
+    display:-webkit-box;
+    -webkit-line-clamp:2;
+    -webkit-box-orient:vertical;
+    overflow:hidden;
+    min-height:40px;
 }
 .product-showcase-price{
     margin-top:auto;
     display:flex;
     align-items:flex-end;
-    gap:10px;
+    gap:8px;
     flex-wrap:wrap;
 }
 .product-showcase-price .current{
     color:#ff7a45;
-    font-size:22px;
+    font-size:20px;
     font-weight:800;
 }
 .product-showcase-price .old{
     color:#8b95a3;
     text-decoration:line-through;
-    font-size:15px;
+    font-size:14px;
 }
 .product-showcase-actions{
     display:flex;
-    gap:10px;
+    gap:8px;
     flex-wrap:wrap;
 }
 .product-showcase-actions button{
     flex:1;
-    min-width:120px;
+    min-width:110px;
     border:none;
     border-radius:14px;
-    padding:11px 14px;
+    padding:10px 12px;
     cursor:pointer;
     font-weight:800;
+    font-size:14px;
 }
 .product-showcase-actions .primary{
     background:#ff7b54;
@@ -311,8 +327,89 @@
     color:#2f3746;
 }
 
+.showcase-section{
+    position:relative;
+}
+.product-showcase-shell{
+    position:relative;
+}
+.showcase-arrow{
+    position:absolute;
+    top:50%;
+    transform:translateY(-50%);
+    width:42px;
+    height:42px;
+    border:none;
+    border-radius:50%;
+    background:#fff;
+    color:#2f3746;
+    font-size:24px;
+    font-weight:900;
+    cursor:pointer;
+    box-shadow:0 10px 24px rgba(0,0,0,0.12);
+    z-index:3;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+.showcase-arrow.left{
+    left:-8px;
+}
+.showcase-arrow.right{
+    right:-8px;
+}
+.showcase-arrow:hover{
+    transform:translateY(-50%) scale(1.04);
+}
+.showcase-arrow.hidden{
+    display:none;
+}
+.showcase-qty{
+    display:flex;
+    align-items:center;
+    justify-content:flex-start;
+    gap:8px;
+    flex-wrap:wrap;
+}
+.showcase-qty-label{
+    font-size:13px;
+    color:#6f7b8c;
+    font-weight:700;
+}
+.showcase-qty-control{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    padding:6px;
+    border-radius:14px;
+    border:1px solid #e6ddd7;
+    background:#fff;
+}
+.showcase-qty-control button{
+    width:30px;
+    height:30px;
+    border:none;
+    border-radius:10px;
+    background:#f3f1ee;
+    font-size:18px;
+    font-weight:900;
+    cursor:pointer;
+    color:#2f3746;
+}
+.showcase-qty-control input{
+    width:42px;
+    height:30px;
+    border:none;
+    background:transparent;
+    text-align:center;
+    font-size:15px;
+    font-weight:900;
+    color:#2f3746;
+    outline:none;
+}
+
 .showcase-empty{
-    grid-column:1/-1;
+    min-width:100%;
     background:#fffefe;
     border:1px solid #f0e4db;
     border-radius:24px;
@@ -521,6 +618,8 @@
     position:sticky;
     top:96px;
     align-self:start;
+    max-height:none;
+    overflow:visible;
 }
 
 .shop-sidebar-head{
@@ -973,7 +1072,6 @@
 @media (max-width:1180px){
     .benefits-grid,
     .home-categories-grid,
-    .product-showcase-grid,
     .how-order-grid{
         grid-template-columns:repeat(2,minmax(0,1fr));
     }
@@ -994,6 +1092,9 @@
     }
     .bundle-plus{
         display:none;
+    }
+    .product-showcase-card{
+        flex:0 0 calc(33.333% - 10px);
     }
 }
 
@@ -1021,20 +1122,26 @@
 
     .shop-sidebar-card{
         padding:0;
-        height:0;
+        height:auto;
         min-height:0;
         background:transparent;
         border:none;
         box-shadow:none;
         overflow:visible;
+        position:static;
     }
 
     .shop-sidebar-head{
         display:none;
     }
 
-    .product-showcase-grid{
-        grid-template-columns:repeat(2,minmax(0,1fr));
+    .showcase-arrow{
+        display:none;
+    }
+
+    .product-showcase-card{
+        flex:0 0 calc(50% - 8px);
+        min-width:220px;
     }
 }
 
@@ -1053,6 +1160,10 @@
     }
     .hero-selling-copy p{
         font-size:15px;
+    }
+    .product-showcase-card{
+        flex:0 0 82%;
+        min-width:240px;
     }
 }
 
@@ -1080,8 +1191,9 @@
         border-radius:18px;
     }
 
-    .product-showcase-grid{
-        grid-template-columns:1fr;
+    .product-showcase-card{
+        flex:0 0 88%;
+        min-width:220px;
     }
 }
 </style>
@@ -1140,28 +1252,40 @@
     <div>🚚 Нова пошта та Укрпошта</div>
 </div>
 
-<section class="section-wrap">
+<section class="section-wrap showcase-section">
     <div class="section-title-row">
         <h2>Хіти продажу</h2>
         <p>Товари, які ти сам позначиш як хіти, будуть показуватись тут.</p>
     </div>
-    <div class="product-showcase-grid" id="home-hits-grid"></div>
+    <div class="product-showcase-shell">
+        <button class="showcase-arrow left hidden" type="button" data-showcase-arrow-left="home-hits-grid">‹</button>
+        <div class="product-showcase-grid" id="home-hits-grid"></div>
+        <button class="showcase-arrow right hidden" type="button" data-showcase-arrow-right="home-hits-grid">›</button>
+    </div>
 </section>
 
-<section class="section-wrap">
+<section class="section-wrap showcase-section">
     <div class="section-title-row">
         <h2>Акції</h2>
         <p>Товари з позначкою акції потрапляють у цей блок на головній.</p>
     </div>
-    <div class="product-showcase-grid" id="home-sales-grid"></div>
+    <div class="product-showcase-shell">
+        <button class="showcase-arrow left hidden" type="button" data-showcase-arrow-left="home-sales-grid">‹</button>
+        <div class="product-showcase-grid" id="home-sales-grid"></div>
+        <button class="showcase-arrow right hidden" type="button" data-showcase-arrow-right="home-sales-grid">›</button>
+    </div>
 </section>
 
-<section class="section-wrap">
+<section class="section-wrap showcase-section">
     <div class="section-title-row">
         <h2>Новинки</h2>
         <p>Додавай нові товари та став прапорець “Новинка”, щоб показувати їх тут.</p>
     </div>
-    <div class="product-showcase-grid" id="home-new-grid"></div>
+    <div class="product-showcase-shell">
+        <button class="showcase-arrow left hidden" type="button" data-showcase-arrow-left="home-new-grid">‹</button>
+        <div class="product-showcase-grid" id="home-new-grid"></div>
+        <button class="showcase-arrow right hidden" type="button" data-showcase-arrow-right="home-new-grid">›</button>
+    </div>
 </section>
 
 <section class="section-wrap">
@@ -1502,6 +1626,19 @@ function openHomeProduct(id) {
     }
 }
 
+function changeHomeQty(id, delta, event) {
+    if (event) event.stopPropagation();
+
+    const input = document.getElementById("home-qty-" + id);
+    if (!input) return;
+
+    const current = parseInt(input.value || "1", 10);
+    const safe = Number.isNaN(current) ? 1 : current;
+    const next = safe + delta;
+
+    input.value = next < 1 ? 1 : next;
+}
+
 function addHomeProductToCart(id, event) {
     if (event) event.stopPropagation();
 
@@ -1557,13 +1694,19 @@ function buildShowcaseCard(product, type) {
                     ${Number(product.old || 0) > Number(product.price || 0) ? `<span class="old">${Number(product.old || 0)} грн</span>` : ""}
                     ${discount ? `<span class="product-chip sale">-${discount}%</span>` : ""}
                 </div>
-                <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-                    <span style="font-size:13px;color:#6f7b8c;font-weight:700;">Кількість</span>
-                    <input id="home-qty-${escapeHomeHtml(product.id)}" type="number" min="1" value="1" style="width:74px;padding:10px 12px;border:1px solid #e1e5eb;border-radius:12px;font-weight:800;" onclick="event.stopPropagation()">
+
+                <div class="showcase-qty" onclick="event.stopPropagation()">
+                    <span class="showcase-qty-label">Кількість</span>
+                    <div class="showcase-qty-control">
+                        <button type="button" onclick="changeHomeQty('${escapeHomeHtml(product.id)}', -1, event)">−</button>
+                        <input id="home-qty-${escapeHomeHtml(product.id)}" type="number" min="1" value="1">
+                        <button type="button" onclick="changeHomeQty('${escapeHomeHtml(product.id)}', 1, event)">+</button>
+                    </div>
                 </div>
+
                 <div class="product-showcase-actions">
-                    <button class="primary" onclick="event.stopPropagation(); addHomeProductToCart('${escapeHomeHtml(product.id)}', event)">У кошик</button>
-                    <button class="secondary" onclick="event.stopPropagation(); openHomeProduct('${escapeHomeHtml(product.id)}')">Відкрити товар</button>
+                    <button class="primary" type="button" onclick="event.stopPropagation(); addHomeProductToCart('${escapeHomeHtml(product.id)}', event)">У кошик</button>
+                    <button class="secondary" type="button" onclick="event.stopPropagation(); openHomeProduct('${escapeHomeHtml(product.id)}')">Відкрити товар</button>
                 </div>
             </div>
         </div>
@@ -1576,10 +1719,73 @@ function renderShowcaseGrid(elementId, list, type, emptyText) {
 
     if (!Array.isArray(list) || !list.length) {
         container.innerHTML = `<div class="showcase-empty">${escapeHomeHtml(emptyText)}</div>`;
+        updateShowcaseArrows(elementId);
         return;
     }
 
     container.innerHTML = list.map(item => buildShowcaseCard(item, type)).join("");
+    bindShowcaseScroll(elementId);
+    updateShowcaseArrows(elementId);
+}
+
+function updateShowcaseArrows(elementId) {
+    const grid = document.getElementById(elementId);
+    if (!grid) return;
+
+    const left = document.querySelector('[data-showcase-arrow-left="' + elementId + '"]');
+    const right = document.querySelector('[data-showcase-arrow-right="' + elementId + '"]');
+
+    if (!left || !right) return;
+
+    const canScroll = grid.scrollWidth > grid.clientWidth + 10;
+
+    if (!canScroll) {
+        left.classList.add("hidden");
+        right.classList.add("hidden");
+        return;
+    }
+
+    left.classList.toggle("hidden", grid.scrollLeft <= 4);
+    right.classList.toggle("hidden", grid.scrollLeft + grid.clientWidth >= grid.scrollWidth - 4);
+}
+
+function scrollShowcase(elementId, direction) {
+    const grid = document.getElementById(elementId);
+    if (!grid) return;
+
+    const amount = Math.max(260, Math.round(grid.clientWidth * 0.82));
+    grid.scrollBy({
+        left: direction * amount,
+        behavior: "smooth"
+    });
+
+    setTimeout(() => updateShowcaseArrows(elementId), 260);
+}
+
+function bindShowcaseScroll(elementId) {
+    const grid = document.getElementById(elementId);
+    if (!grid || grid.dataset.boundShowcase === "true") return;
+
+    grid.dataset.boundShowcase = "true";
+    grid.addEventListener("scroll", () => updateShowcaseArrows(elementId), { passive: true });
+}
+
+function bindAllShowcaseArrows() {
+    document.querySelectorAll("[data-showcase-arrow-left]").forEach(button => {
+        if (button.dataset.boundArrow === "true") return;
+        button.dataset.boundArrow = "true";
+        button.addEventListener("click", () => {
+            scrollShowcase(button.getAttribute("data-showcase-arrow-left"), -1);
+        });
+    });
+
+    document.querySelectorAll("[data-showcase-arrow-right]").forEach(button => {
+        if (button.dataset.boundArrow === "true") return;
+        button.dataset.boundArrow = "true";
+        button.addEventListener("click", () => {
+            scrollShowcase(button.getAttribute("data-showcase-arrow-right"), 1);
+        });
+    });
 }
 
 function renderHomeDynamicSections() {
@@ -1589,7 +1795,7 @@ function renderHomeDynamicSections() {
     const saleProducts = allProducts.filter(product => product.is_sale);
     const newProducts = allProducts.filter(product => product.is_new);
 
-    const hits = (hitProducts.length ? hitProducts : allProducts.slice(0, 4)).slice(0, 4);
+    const hits = (hitProducts.length ? hitProducts : allProducts.slice(0, 8)).slice(0, 8);
 
     const sales = (
         saleProducts.length
@@ -1597,13 +1803,17 @@ function renderHomeDynamicSections() {
             : [...allProducts]
                 .filter(product => Number(product.old || 0) > Number(product.price || 0))
                 .sort((a, b) => (getHomeDiscountPercent(b) || 0) - (getHomeDiscountPercent(a) || 0))
-    ).slice(0, 4);
+    ).slice(0, 8);
 
-    const newest = (newProducts.length ? newProducts : [...allProducts].slice(-4).reverse()).slice(0, 4);
+    const newest = (newProducts.length ? newProducts : [...allProducts].slice(-8).reverse()).slice(0, 8);
 
     renderShowcaseGrid("home-hits-grid", hits, "hit", "Хіти продажу з’являться після додавання товарів.");
     renderShowcaseGrid("home-sales-grid", sales, "sale", "Акційні товари з’являться, коли ти позначиш товари як акційні.");
     renderShowcaseGrid("home-new-grid", newest, "new", "Новинки з’являться, коли ти позначиш товари як нові.");
+
+    bindAllShowcaseArrows();
+
+    ["home-hits-grid", "home-sales-grid", "home-new-grid"].forEach(updateShowcaseArrows);
 }
 
 window.addEventListener("products:ready", renderHomeDynamicSections);
@@ -1612,6 +1822,10 @@ window.addEventListener("storage", function(event) {
     if (event.key === "products") {
         renderHomeDynamicSections();
     }
+});
+
+window.addEventListener("resize", function() {
+    ["home-hits-grid", "home-sales-grid", "home-new-grid"].forEach(updateShowcaseArrows);
 });
 
 document.addEventListener("DOMContentLoaded", function() {
