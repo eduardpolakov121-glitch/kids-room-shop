@@ -49,25 +49,108 @@
     .tab-count{padding:4px 8px;border-radius:999px;background:rgba(255,255,255,.8);color:#28324a;font-size:12px;font-weight:700}
     .tab-btn.active .tab-count{background:rgba(255,255,255,.22);color:#fff}
     .list-card{background:var(--panel);border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow);overflow:hidden}
-    .list-head,.order-row{display:grid;grid-template-columns:130px 1.2fr 1fr 1.2fr 140px 160px 130px;gap:12px;align-items:center}
+    .list-head,.order-row{display:grid;grid-template-columns:110px 1.15fr .85fr .95fr 1.25fr 150px 160px 120px;gap:12px;align-items:center}
     .list-head{padding:16px 18px;background:#f8faff;border-bottom:1px solid var(--line);font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
     .order-row{padding:16px 18px;border-bottom:1px solid var(--line);cursor:pointer;transition:.15s;background:#fff}
     .order-row:last-child{border-bottom:none}
     .order-row:hover{background:#fff9f4}
     .order-id{font-weight:700}
-    .order-main{display:flex;flex-direction:column;gap:5px;min-width:0}
+    .order-main{display:flex;flex-direction:column;gap:6px;min-width:0}
+    .order-name-row{display:flex;align-items:center;gap:8px;min-width:0;flex-wrap:wrap}
     .order-name{font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     .order-sub{font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     .stage-pill{display:inline-flex;align-items:center;justify-content:center;min-height:34px;padding:6px 12px;border-radius:999px;background:#fff1e7;color:#d86b14;font-size:12px;font-weight:700;justify-self:start}
     .sum{font-weight:700;font-size:16px}
     .empty{padding:28px;text-align:center;color:var(--muted)}
-    .drawer-wrap{position:fixed;inset:0;background:rgba(10,18,34,.42);display:none;z-index:60}
-    .drawer-wrap.open{display:block}
-    .drawer{position:absolute;top:0;right:0;height:100%;width:min(920px,100%);background:#fff;box-shadow:-12px 0 40px rgba(0,0,0,.18);display:flex;flex-direction:column}
+    .order-comment-cell{
+      align-self:stretch;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      text-align:center;
+      min-height:64px;
+      padding:10px 12px;
+      border-radius:14px;
+      background:#f8faff;
+      border:1px solid var(--line);
+      color:#44516c;
+      font-size:13px;
+      line-height:1.45;
+      font-weight:700;
+      overflow:hidden;
+      word-break:break-word;
+    }
+    .order-comment-cell.empty{
+      background:#fcfcfd;
+      color:#a0a8b7;
+      font-weight:600;
+      border-style:dashed;
+      min-height:64px;
+      padding:10px 12px;
+    }
+    .duplicate-badge{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      padding:5px 9px;
+      border-radius:999px;
+      background:#fff0f0;
+      color:#c64c4c;
+      font-size:11px;
+      font-weight:800;
+      line-height:1;
+      border:1px solid #ffd5d5;
+      white-space:nowrap;
+    }
+    .drawer-wrap{
+      position:fixed;
+      inset:0;
+      background:rgba(10,18,34,.42);
+      display:none;
+      z-index:60;
+      align-items:center;
+      justify-content:center;
+      padding:24px;
+    }
+    .drawer-wrap.open{display:flex}
+    .drawer{
+      position:relative;
+      width:min(1120px,100%);
+      max-height:calc(100vh - 48px);
+      background:#fff;
+      box-shadow:-12px 0 40px rgba(0,0,0,.18);
+      display:flex;
+      flex-direction:column;
+      border-radius:24px;
+      overflow:hidden;
+    }
     .drawer-head{padding:18px 20px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:12px}
     .drawer-head h2{margin:0;font-size:22px}
-    .drawer-body{padding:18px 20px 108px;overflow:auto}
-    .drawer-footer{position:absolute;left:0;right:0;bottom:0;padding:16px 20px;border-top:1px solid var(--line);background:#fff;display:flex;gap:10px;flex-wrap:wrap}
+    .drawer-body{padding:18px 20px 132px;overflow:auto}
+    .drawer-footer{
+      position:absolute;
+      left:0;
+      right:0;
+      bottom:0;
+      padding:16px 20px;
+      border-top:1px solid var(--line);
+      background:#fff;
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+      justify-content:space-between;
+    }
+    .footer-total{
+      font-size:20px;
+      font-weight:800;
+      color:#243041;
+    }
+    .footer-actions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
     .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
     .panel{background:#f8faff;border:1px solid var(--line);border-radius:18px;padding:16px;margin-bottom:14px}
     .panel h3{margin:0 0 12px;font-size:17px}
@@ -75,7 +158,6 @@
     .field label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
     .field input,.field select,.field textarea{width:100%;padding:12px 13px;border:1px solid var(--line);border-radius:12px;background:#fff;font-size:14px}
     .field textarea{min-height:92px;resize:vertical}
-    .field.inline-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
     .items{display:flex;flex-direction:column;gap:10px}
     .item{
       display:flex;
@@ -119,28 +201,119 @@
     .item-flag.hit{background:#fff1e6;color:#ca6200}
     .item-flag.sale{background:#fff0f0;color:#c64c4c}
     .item-flag.new{background:#edf8ff;color:#23628d}
+    .item-remove-btn{
+      border:none;
+      background:#fff0f0;
+      color:#c64c4c;
+      border-radius:10px;
+      padding:8px 10px;
+      cursor:pointer;
+      font-weight:800;
+      flex-shrink:0;
+    }
+    .order-products-editor{
+      margin-top:12px;
+      padding-top:12px;
+      border-top:1px solid var(--line);
+    }
+    .editor-row{
+      display:grid;
+      grid-template-columns:1fr 110px auto;
+      gap:10px;
+      align-items:end;
+    }
     .history-line{padding:10px 0;border-bottom:1px dashed var(--line);font-size:14px}
     .history-line:last-child{border-bottom:none}
+    .duplicate-list{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+    .duplicate-item{
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      align-items:center;
+      padding:12px;
+      border-radius:14px;
+      background:#fff;
+      border:1px solid var(--line);
+      cursor:pointer;
+      transition:.15s;
+    }
+    .duplicate-item:hover{
+      background:#fff9f4;
+    }
+    .duplicate-main{
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+      min-width:0;
+    }
+    .duplicate-title{
+      font-weight:700;
+    }
+    .duplicate-sub{
+      font-size:13px;
+      color:var(--muted);
+    }
+    .duplicate-right{
+      text-align:right;
+      font-weight:700;
+      white-space:nowrap;
+    }
     .auth-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
     .auth-card{width:100%;max-width:460px;background:#fff;border-radius:24px;padding:28px;box-shadow:var(--shadow);border:1px solid var(--line)}
     .auth-card h2{margin:0 0 8px;font-size:28px}
     .auth-card input{width:100%;padding:14px;border:1px solid var(--line);border-radius:14px;margin-bottom:12px;font-size:15px}
     .auth-card button{width:100%;padding:14px;border:none;border-radius:14px;background:var(--accent);color:#fff;font-size:16px;font-weight:700;cursor:pointer}
     .auth-note{margin-top:14px;font-size:13px;color:var(--muted)}
-    @media (max-width:1280px){
+    @media (max-width:1400px){
       .stats{grid-template-columns:repeat(2,1fr)}
       .toolbar{grid-template-columns:1fr 1fr}
-      .list-head,.order-row{grid-template-columns:110px 1.2fr 1fr 1fr 120px 140px 120px}
+      .list-head,.order-row{grid-template-columns:100px 1.05fr .85fr .9fr 1.1fr 130px 145px 110px}
     }
     @media (max-width:980px){
       .layout{padding:16px}
-      .stats,.toolbar,.grid-2,.field.inline-2{grid-template-columns:1fr}
+      .stats,.toolbar,.grid-2{grid-template-columns:1fr}
       .list-head{display:none}
       .order-row{grid-template-columns:1fr;gap:8px}
-      .order-row > div{justify-self:start}
-      .drawer{width:100%}
+      .order-row > div{justify-self:start;width:100%}
+      .order-comment-cell,.order-comment-cell.empty{
+        justify-content:flex-start;
+        text-align:left;
+        min-height:auto;
+      }
+      .drawer-wrap{
+        padding:10px;
+      }
+      .drawer{
+        width:100%;
+        max-height:calc(100vh - 20px);
+        border-radius:18px;
+      }
       .app-header{padding:16px;align-items:flex-start}
       .header-actions{justify-content:flex-start}
+      .duplicate-item{
+        flex-direction:column;
+        align-items:flex-start;
+      }
+      .duplicate-right{
+        text-align:left;
+      }
+      .editor-row{
+        grid-template-columns:1fr;
+      }
+      .drawer-footer{
+        flex-direction:column;
+        align-items:flex-start;
+      }
+      .footer-actions{
+        width:100%;
+      }
+      .footer-actions .btn{
+        width:100%;
+      }
     }
   </style>
 </head>
@@ -176,11 +349,11 @@
         <div class="stat-card"><div class="label">Замовлень сьогодні</div><div class="value" id="statToday">0</div></div>
         <div class="stat-card"><div class="label">У роботі зараз</div><div class="value" id="statActive">0</div></div>
         <div class="stat-card"><div class="label">Виторг по вибірці</div><div class="value" id="statRevenue">0 грн</div></div>
-        <div class="stat-card"><div class="label">Відправлено / завершено</div><div class="value" id="statShipped">0</div></div>
+        <div class="stat-card"><div class="label">Завершено / повернення</div><div class="value" id="statShipped">0</div></div>
       </section>
 
       <section class="toolbar">
-        <input id="searchInput" placeholder="Пошук: ім'я, телефон, місто" oninput="applyFilters()" autocomplete="off" spellcheck="false">
+        <input id="searchInput" placeholder="Пошук: ім'я, телефон, місто, коментар, ТТН" oninput="applyFilters()" autocomplete="off" spellcheck="false">
         <select id="deliveryFilter" onchange="applyFilters()">
           <option value="all">Вся доставка</option>
           <option value="Нова пошта">Нова пошта</option>
@@ -203,6 +376,7 @@
           <div>Клієнт</div>
           <div>Телефон</div>
           <div>Доставка</div>
+          <div>Коментар</div>
           <div>Етап</div>
           <div>Створено</div>
           <div>Сума</div>
@@ -226,57 +400,88 @@
           <div>
             <div class="panel">
               <h3>Клієнт</h3>
-              <div class="field inline-2">
-                <div>
-                  <label>Ім'я</label>
-                  <input id="dFirstName" autocomplete="off">
-                </div>
-                <div>
-                  <label>Прізвище</label>
-                  <input id="dLastName" autocomplete="off">
-                </div>
+              <div class="field">
+                <label>ФІО</label>
+                <input id="dName" autocomplete="off">
               </div>
-              <div class="field"><label>Повне ім'я</label><input id="dName" autocomplete="off"></div>
-              <div class="field"><label>Телефон</label><input id="dPhone" autocomplete="off"></div>
-              <div class="field"><label>Місто</label><input id="dCity" autocomplete="off"></div>
-              <div class="field"><label>Тип доставки</label>
+              <div class="field">
+                <label>Моб. тел</label>
+                <input id="dPhone" autocomplete="off">
+              </div>
+              <div class="field">
+                <label>Місто</label>
+                <input id="dCity" autocomplete="off">
+              </div>
+              <div class="field">
+                <label>Тип доставки</label>
                 <select id="dDelivery">
                   <option value="Нова пошта">Нова пошта</option>
                   <option value="Укрпошта">Укрпошта</option>
                   <option value="Інше">Інше</option>
                 </select>
               </div>
-              <div class="field"><label>Адреса / відділення / індекс</label><textarea id="dAddress" autocomplete="off"></textarea></div>
+              <div class="field">
+                <label>Адреса / відділення / індекс</label>
+                <textarea id="dAddress" autocomplete="off"></textarea>
+              </div>
+              <div class="field">
+                <label>ТТН</label>
+                <input id="dTtn" autocomplete="off" placeholder="Введіть номер ТТН">
+              </div>
             </div>
 
             <div class="panel">
               <h3>Коментарі</h3>
-              <div class="field"><label>Коментар оператора</label><textarea id="dOperatorComment" placeholder="Результат дзвінка, уточнення, домовленості"></textarea></div>
-              <div class="field"><label>Коментар адміністратора</label><textarea id="dManagerComment" placeholder="Службова нотатка, внутрішня позначка"></textarea></div>
+              <div class="field">
+                <label>Коментар оператора</label>
+                <textarea id="dOperatorComment" placeholder="Результат дзвінка, уточнення, домовленості"></textarea>
+              </div>
+              <div class="field">
+                <label>Коментар адміністратора</label>
+                <textarea id="dManagerComment" placeholder="Службова нотатка, внутрішня позначка"></textarea>
+              </div>
             </div>
           </div>
 
           <div>
             <div class="panel">
-              <h3>Етап і статус</h3>
-              <div class="field"><label>Вкладка / етап</label><select id="dStage"></select></div>
-              <div class="field"><label>Підпис статусу</label><input id="dStatus" autocomplete="off"></div>
-              <div class="field inline-2">
-                <div>
-                  <label>Дата створення</label>
-                  <input id="dCreated" readonly>
-                </div>
-                <div>
-                  <label>Оновлено</label>
-                  <input id="dUpdated" readonly>
-                </div>
+              <h3>Етап замовлення</h3>
+              <div class="field">
+                <label>Вкладка / етап</label>
+                <select id="dStage"></select>
               </div>
-              <div class="field"><label>Сума</label><input id="dTotal" type="number" min="0" step="0.01"></div>
+              <div class="field">
+                <label>Дата створення</label>
+                <input id="dCreated" readonly>
+              </div>
+              <div class="field">
+                <label>Оновлено</label>
+                <input id="dUpdated" readonly>
+              </div>
             </div>
 
             <div class="panel">
               <h3>Товари</h3>
               <div id="dItems" class="items"></div>
+
+              <div id="orderProductsEditor" class="order-products-editor hidden">
+                <div class="editor-row">
+                  <div class="field" style="margin-bottom:0;">
+                    <label>Додати товар</label>
+                    <select id="addProductSelect"></select>
+                  </div>
+                  <div class="field" style="margin-bottom:0;">
+                    <label>К-сть</label>
+                    <input id="addProductQty" type="number" min="1" value="1">
+                  </div>
+                  <button class="btn primary" type="button" onclick="addSelectedProductToOrder()">Додати</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="panel">
+              <h3>Дублі / інші замовлення клієнта</h3>
+              <div id="dDuplicates" class="duplicate-list"></div>
             </div>
 
             <div class="panel">
@@ -287,8 +492,11 @@
         </div>
       </div>
       <div class="drawer-footer">
-        <button id="saveOrderBtn" class="btn success" onclick="saveDrawerOrder()">Зберегти</button>
-        <button id="deleteOrderBtn" class="btn danger" onclick="deleteCurrentOrder()">Видалити</button>
+        <div class="footer-total" id="drawerTotalBottom">Разом: 0 грн</div>
+        <div class="footer-actions">
+          <button id="saveOrderBtn" class="btn success" onclick="saveDrawerOrder()">Зберегти</button>
+          <button id="deleteOrderBtn" class="btn danger" onclick="deleteCurrentOrder()">Видалити</button>
+        </div>
       </div>
     </div>
   </div>
@@ -309,21 +517,26 @@
     });
 
     const STAGES = {
-      new: { title: 'Нові', status: 'Новий', day: 0 },
-      day1: { title: 'День 1', status: 'День 1', day: 1 },
+      accepted: { title: 'Прийняті', status: 'Прийнято', day: 0 },
+      day1: { title: 'Нові', status: 'Новий', day: 1 },
       day2: { title: 'День 2', status: 'День 2', day: 2 },
       day3: { title: 'День 3', status: 'День 3', day: 3 },
-      shipped: { title: 'Відправлено', status: 'Відправлено', day: 0 },
-      completed: { title: 'Завершено', status: 'Завершено', day: 0 },
-      cancelled: { title: 'Скасовано', status: 'Скасовано', day: 0 }
+      day4: { title: 'День 4', status: 'День 4', day: 4 },
+      day5: { title: 'День 5', status: 'День 5', day: 5 },
+      day6: { title: 'День 6', status: 'День 6', day: 6 },
+      day7: { title: 'День 7', status: 'День 7', day: 7 },
+      refused: { title: 'Відмова', status: 'Відмова', day: 0 },
+      returned: { title: 'Повернення', status: 'Повернення', day: 0 },
+      completed: { title: 'Завершено', status: 'Завершено', day: 0 }
     };
-    const STAGE_ORDER = ['new','day1','day2','day3','shipped','completed','cancelled'];
+    const STAGE_ORDER = ['accepted','day1','day2','day3','day4','day5','day6','day7','refused','returned','completed'];
 
     let currentUser = null;
     let currentProfile = null;
     let allOrders = [];
     let selectedOrder = null;
-    let activeStage = 'new';
+    let activeStage = 'accepted';
+    let editingItems = [];
 
     function formatMoney(value){
       const num = Number(value || 0);
@@ -346,16 +559,117 @@
       return String(id).slice(0,8);
     }
 
+    function normalizePhone(value){
+      return String(value || '').replace(/\D/g, '');
+    }
+
+    function buildDuplicateKey(order){
+      const phone = normalizePhone(order?.phone);
+      if (phone) return `phone:${phone}`;
+
+      const name = String(getOrderName(order) || '').trim().toLowerCase();
+      const city = String(order?.city || '').trim().toLowerCase();
+
+      if (name) return `name:${name}|city:${city}`;
+      return `id:${order?.id || ''}`;
+    }
+
+    function getDuplicateOrders(order){
+      const key = buildDuplicateKey(order);
+      return allOrders.filter(item => buildDuplicateKey(item) === key);
+    }
+
+    function hasDuplicates(order){
+      return getDuplicateOrders(order).length > 1;
+    }
+
     function normalizeStage(order){
       if (order.status_group && STAGES[order.status_group]) return order.status_group;
+
       const status = String(order.status || '').toLowerCase();
-      if (status.includes('день 1')) return 'day1';
-      if (status.includes('день 2')) return 'day2';
+
+      if (
+        status.includes('відм') ||
+        status.includes('отказ') ||
+        status.includes('не забрал') ||
+        status.includes('не забрали') ||
+        status.includes('не отримав') ||
+        status.includes('не забрав')
+      ) return 'refused';
+
+      if (
+        status.includes('повернен') ||
+        status.includes('возврат') ||
+        status.includes('return')
+      ) return 'returned';
+
+      if (
+        status.includes('заверш') ||
+        status.includes('забрав') ||
+        status.includes('забрали') ||
+        status.includes('отримав') ||
+        status.includes('отримали') ||
+        status.includes('вручено')
+      ) return 'completed';
+
+      if (status.includes('день 7')) return 'day7';
+      if (status.includes('день 6')) return 'day6';
+      if (status.includes('день 5')) return 'day5';
+      if (status.includes('день 4')) return 'day4';
       if (status.includes('день 3')) return 'day3';
-      if (status.includes('відправ')) return 'shipped';
-      if (status.includes('заверш')) return 'completed';
-      if (status.includes('скас') || status.includes('відм')) return 'cancelled';
-      return 'new';
+      if (status.includes('день 2')) return 'day2';
+      if (status.includes('нов') || status.includes('день 1')) return 'day1';
+      if (status.includes('прийнят') || status.includes('принят')) return 'accepted';
+
+      const dayBucket = Number(order?.day_bucket || 0);
+      if (dayBucket >= 7) return 'day7';
+      if (dayBucket === 6) return 'day6';
+      if (dayBucket === 5) return 'day5';
+      if (dayBucket === 4) return 'day4';
+      if (dayBucket === 3) return 'day3';
+      if (dayBucket === 2) return 'day2';
+      if (dayBucket === 1) return 'day1';
+
+      return 'accepted';
+    }
+
+    function getStageComment(order){
+      const operatorComment = String(order?.operator_comment || '').trim();
+      const managerComment = String(order?.manager_comment || '').trim();
+      return managerComment || operatorComment || '';
+    }
+
+    function getDaysFromDate(dateValue){
+      const source = new Date(dateValue || Date.now());
+      if (isNaN(source.getTime())) return 0;
+
+      const now = new Date();
+      const sourceStart = new Date(source.getFullYear(), source.getMonth(), source.getDate());
+      const nowStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+      return Math.max(0, Math.floor((nowStart - sourceStart) / 86400000));
+    }
+
+    function getAutoStageByAge(order){
+      const currentStage = normalizeStage(order);
+
+      if (['accepted', 'completed', 'refused', 'returned'].includes(currentStage)) {
+        return currentStage;
+      }
+
+      const daysOpen = getDaysFromDate(order.created_at);
+
+      if (daysOpen >= 6) return 'day7';
+      if (daysOpen === 5) return 'day6';
+      if (daysOpen === 4) return 'day5';
+      if (daysOpen === 3) return 'day4';
+      if (daysOpen === 2) return 'day3';
+      if (daysOpen === 1) return 'day2';
+      return 'day1';
+    }
+
+    function getStageDay(stage){
+      return Number(STAGES[stage]?.day || 0);
     }
 
     function authError(text){
@@ -391,6 +705,76 @@
       if (item?.is_new) parts.push('<span class="item-flag new">НОВИНКА</span>');
       if (!parts.length) return '';
       return `<div class="item-flags">${parts.join('')}</div>`;
+    }
+
+    function recalcDrawerTotal(){
+      const total = editingItems.reduce((sum, item) => sum + (Number(item.price || 0) * Number(item.qty || 1)), 0);
+      const totalEl = document.getElementById('drawerTotalBottom');
+      if (totalEl) {
+        totalEl.textContent = 'Разом: ' + formatMoney(total);
+      }
+      return total;
+    }
+
+    function fillAddProductSelect(){
+      const select = document.getElementById('addProductSelect');
+      if (!select) return;
+
+      const list = Array.isArray(window.products) ? window.products : [];
+      select.innerHTML = `
+        <option value="">Оберіть товар</option>
+        ${list.map(product => `<option value="${escapeHtml(product.id)}">${escapeHtml(product.name)} — ${escapeHtml(formatMoney(product.price || 0))}</option>`).join('')}
+      `;
+    }
+
+    function removeItemFromOrder(index){
+      if (currentProfile?.role !== 'admin') return;
+      editingItems.splice(index, 1);
+      renderItems(editingItems);
+    }
+
+    function addSelectedProductToOrder(){
+      if (currentProfile?.role !== 'admin') return;
+
+      const select = document.getElementById('addProductSelect');
+      const qtyInput = document.getElementById('addProductQty');
+      if (!select || !qtyInput) return;
+
+      const productId = String(select.value || '').trim();
+      let qty = parseInt(qtyInput.value || '1', 10);
+
+      if (!productId) return;
+      if (!Number.isFinite(qty) || qty < 1) qty = 1;
+
+      const product = Array.isArray(window.products)
+        ? window.products.find(item => String(item.id) === productId)
+        : null;
+
+      if (!product) return;
+
+      const existing = editingItems.find(item => String(item.id) === productId);
+
+      if (existing) {
+        existing.qty = Number(existing.qty || 1) + qty;
+      } else {
+        editingItems.push({
+          id: product.id,
+          name: product.name,
+          category: product.category || '',
+          price: Number(product.price || 0),
+          old: Number(product.old || 0),
+          description: product.description || '',
+          img: product.img || '',
+          is_hit: !!product.is_hit,
+          is_sale: !!product.is_sale,
+          is_new: !!product.is_new,
+          qty
+        });
+      }
+
+      qtyInput.value = '1';
+      select.value = '';
+      renderItems(editingItems);
     }
 
     async function loginCRM(){
@@ -451,6 +835,8 @@
       document.getElementById('deleteOrderBtn').style.display = currentProfile.role === 'admin' ? 'inline-flex' : 'none';
 
       renderStageSelect();
+      await initializeProducts();
+      fillAddProductSelect();
       await refreshOrders();
     }
 
@@ -459,8 +845,51 @@
       select.innerHTML = STAGE_ORDER.map(key => `<option value="${key}">${STAGES[key].title}</option>`).join('');
     }
 
+    async function autoAdvanceOrders(orders){
+      const updates = [];
+
+      for (const order of (orders || [])) {
+        const normalizedStage = normalizeStage(order);
+
+        if (normalizedStage !== order.status_group) {
+          order.status_group = normalizedStage;
+        }
+
+        if (['accepted', 'completed', 'refused', 'returned'].includes(normalizedStage)) {
+          continue;
+        }
+
+        const targetStage = getAutoStageByAge(order);
+
+        if (targetStage !== normalizedStage) {
+          updates.push({
+            id: order.id,
+            status_group: targetStage,
+            status: STAGES[targetStage].status,
+            day_bucket: getStageDay(targetStage),
+            updated_at: new Date().toISOString(),
+            moved_at: new Date().toISOString()
+          });
+        }
+      }
+
+      if (!updates.length) return false;
+
+      await Promise.all(
+        updates.map(payload => {
+          const { id, ...patch } = payload;
+          return supabaseClient
+            .from('orders')
+            .update(patch)
+            .eq('id', id);
+        })
+      );
+
+      return true;
+    }
+
     async function refreshOrders(){
-      const { data, error } = await supabaseClient
+      let { data, error } = await supabaseClient
         .from('orders')
         .select('*')
         .order('created_at', { ascending:false });
@@ -470,9 +899,57 @@
         return;
       }
 
+      const normalizedData = (data || []).map(order => {
+        const normalizedStage = normalizeStage(order);
+        const normalizedStatus = order.status || STAGES[normalizedStage].status;
+        return {
+          ...order,
+          status_group: normalizedStage,
+          status: normalizedStatus,
+          items: Array.isArray(order.items) ? order.items : []
+        };
+      });
+
+      const acceptedUpdates = normalizedData
+        .filter(order => !order.status_group)
+        .map(order => ({
+          id: order.id,
+          status_group: 'accepted',
+          status: 'Прийнято',
+          day_bucket: 0,
+          updated_at: new Date().toISOString()
+        }));
+
+      if (acceptedUpdates.length) {
+        await Promise.all(
+          acceptedUpdates.map(payload => {
+            const { id, ...patch } = payload;
+            return supabaseClient.from('orders').update(patch).eq('id', id);
+          })
+        );
+      }
+
+      const needReload = await autoAdvanceOrders(normalizedData);
+
+      if (acceptedUpdates.length || needReload) {
+        const second = await supabaseClient
+          .from('orders')
+          .select('*')
+          .order('created_at', { ascending:false });
+
+        data = second.data || [];
+        error = second.error || null;
+      }
+
+      if (error) {
+        alert('Не вдалося завантажити замовлення: ' + error.message);
+        return;
+      }
+
       allOrders = (data || []).map(order => ({
         ...order,
         status_group: normalizeStage(order),
+        status: order.status || STAGES[normalizeStage(order)].status,
         items: Array.isArray(order.items) ? order.items : []
       }));
 
@@ -486,9 +963,7 @@
 
       let list = [...allOrders];
 
-      if (activeStage !== 'all') {
-        list = list.filter(order => order.status_group === activeStage);
-      }
+      list = list.filter(order => order.status_group === activeStage);
 
       if (delivery !== 'all') {
         list = list.filter(order => String(order.delivery || '').trim() === delivery);
@@ -501,7 +976,11 @@
             order.customer_first_name,
             order.customer_last_name,
             order.phone,
-            order.city
+            order.city,
+            order.operator_comment,
+            order.manager_comment,
+            order.status,
+            order.ttn
           ].join(' ').toLowerCase();
 
           return haystack.includes(search);
@@ -533,9 +1012,9 @@
       };
 
       document.getElementById('statToday').textContent = list.filter(sameDay).length;
-      document.getElementById('statActive').textContent = list.filter(order => ['new','day1','day2','day3'].includes(order.status_group)).length;
+      document.getElementById('statActive').textContent = list.filter(order => ['accepted','day1','day2','day3','day4','day5','day6','day7'].includes(order.status_group)).length;
       document.getElementById('statRevenue').textContent = formatMoney(list.reduce((sum, order) => sum + Number(order.total || 0), 0));
-      document.getElementById('statShipped').textContent = list.filter(order => ['shipped','completed'].includes(order.status_group)).length;
+      document.getElementById('statShipped').textContent = list.filter(order => ['completed','returned'].includes(order.status_group)).length;
     }
 
     function renderTabs(){
@@ -562,20 +1041,29 @@
         return;
       }
 
-      root.innerHTML = list.map(order => `
-        <div class="order-row" onclick="openOrder('${escapeHtml(order.id)}')">
-          <div class="order-id">#${escapeHtml(shortId(order.id))}</div>
-          <div class="order-main">
-            <div class="order-name">${escapeHtml(getOrderName(order))}</div>
-            <div class="order-sub">${escapeHtml(order.city || '-')}</div>
+      root.innerHTML = list.map(order => {
+        const comment = getStageComment(order);
+        const duplicate = hasDuplicates(order);
+
+        return `
+          <div class="order-row" onclick="openOrder('${escapeHtml(order.id)}')">
+            <div class="order-id">#${escapeHtml(shortId(order.id))}</div>
+            <div class="order-main">
+              <div class="order-name-row">
+                <div class="order-name">${escapeHtml(getOrderName(order))}</div>
+                ${duplicate ? '<span class="duplicate-badge">ДУБЛЬ</span>' : ''}
+              </div>
+              <div class="order-sub">${escapeHtml(order.city || '-')}</div>
+            </div>
+            <div>${escapeHtml(order.phone || '-')}</div>
+            <div>${escapeHtml(order.delivery || '-')}</div>
+            <div class="${comment ? 'order-comment-cell' : 'order-comment-cell empty'}">${escapeHtml(comment || 'Без коментаря')}</div>
+            <div class="stage-pill">${escapeHtml(STAGES[order.status_group]?.title || '-')}</div>
+            <div>${escapeHtml(formatDate(order.created_at))}</div>
+            <div class="sum">${escapeHtml(formatMoney(order.total || 0))}</div>
           </div>
-          <div>${escapeHtml(order.phone || '-')}</div>
-          <div>${escapeHtml(order.delivery || '-')}</div>
-          <div class="stage-pill">${escapeHtml(STAGES[order.status_group]?.title || '-')}</div>
-          <div>${escapeHtml(formatDate(order.created_at))}</div>
-          <div class="sum">${escapeHtml(formatMoney(order.total || 0))}</div>
-        </div>
-      `).join('');
+        `;
+      }).join('');
     }
 
     function applyFilters(){
@@ -594,30 +1082,36 @@
       selectedOrder = allOrders.find(item => item.id === orderId);
       if (!selectedOrder) return;
 
+      editingItems = Array.isArray(selectedOrder.items)
+        ? selectedOrder.items.map(item => ({ ...item }))
+        : [];
+
       document.getElementById('drawerTitle').textContent = getOrderName(selectedOrder);
       document.getElementById('drawerSub').textContent = `Замовлення #${shortId(selectedOrder.id)} • ${formatDate(selectedOrder.created_at)}`;
-      document.getElementById('dFirstName').value = selectedOrder.customer_first_name || '';
-      document.getElementById('dLastName').value = selectedOrder.customer_last_name || '';
-      document.getElementById('dName').value = selectedOrder.name || '';
+      document.getElementById('dName').value = selectedOrder.name || getOrderName(selectedOrder);
       document.getElementById('dPhone').value = selectedOrder.phone || '';
       document.getElementById('dCity').value = selectedOrder.city || '';
       document.getElementById('dDelivery').value = selectedOrder.delivery || 'Нова пошта';
       document.getElementById('dAddress').value = selectedOrder.address || '';
+      document.getElementById('dTtn').value = selectedOrder.ttn || '';
       document.getElementById('dOperatorComment').value = selectedOrder.operator_comment || '';
       document.getElementById('dManagerComment').value = selectedOrder.manager_comment || '';
-      document.getElementById('dStage').value = selectedOrder.status_group || 'new';
-      document.getElementById('dStatus').value = selectedOrder.status || STAGES[selectedOrder.status_group || 'new'].status;
+      document.getElementById('dStage').value = selectedOrder.status_group || 'accepted';
       document.getElementById('dCreated').value = formatDate(selectedOrder.created_at);
       document.getElementById('dUpdated').value = formatDate(selectedOrder.updated_at || selectedOrder.created_at);
-      document.getElementById('dTotal').value = Number(selectedOrder.total || 0);
 
       const onlyOperator = currentProfile.role === 'operator';
       document.getElementById('dManagerComment').readOnly = onlyOperator;
       document.getElementById('dStage').disabled = onlyOperator;
-      document.getElementById('dStatus').readOnly = onlyOperator;
-      document.getElementById('dTotal').readOnly = onlyOperator;
 
-      renderItems(selectedOrder.items || []);
+      const editor = document.getElementById('orderProductsEditor');
+      if (editor) {
+        editor.classList.toggle('hidden', onlyOperator);
+      }
+
+      fillAddProductSelect();
+      renderItems(editingItems);
+      renderDuplicates(selectedOrder);
       renderHistory(selectedOrder);
 
       document.getElementById('drawerWrap').classList.add('open');
@@ -628,20 +1122,46 @@
 
       if (!Array.isArray(items) || !items.length) {
         root.innerHTML = '<div class="empty" style="padding:12px 0">Немає товарів</div>';
+        recalcDrawerTotal();
         return;
       }
 
-      root.innerHTML = items.map(item => `
+      root.innerHTML = items.map((item, index) => `
         <div class="item">
           <div class="item-left">
             <img class="item-image" src="${escapeHtml(getSafeItemImage(item))}" alt="${escapeHtml(item.name || 'Товар')}" onerror="this.onerror=null;this.src='product-placeholder.svg'">
             <div class="item-main">
               ${renderItemFlags(item)}
               <div class="item-name">${escapeHtml(item.name || 'Товар')}</div>
-              <div class="item-sub">Кількість: ${Number(item.qty || 1)} • Ціна: ${formatMoney(item.price || 0)}</div>
+              <div class="item-sub">К-сть: ${Number(item.qty || 1)} • Ціна: ${formatMoney(item.price || 0)}</div>
             </div>
           </div>
           <div class="item-total">${formatMoney((Number(item.price || 0) * Number(item.qty || 1)))}</div>
+          ${currentProfile?.role === 'admin' ? `<button class="item-remove-btn" type="button" onclick="event.stopPropagation(); removeItemFromOrder(${index})">✕</button>` : ''}
+        </div>
+      `).join('');
+
+      recalcDrawerTotal();
+    }
+
+    function renderDuplicates(order){
+      const root = document.getElementById('dDuplicates');
+      const list = getDuplicateOrders(order)
+        .filter(item => String(item.id) !== String(order.id))
+        .sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
+
+      if (!list.length) {
+        root.innerHTML = '<div class="empty" style="padding:12px 0">Повторних замовлень не знайдено</div>';
+        return;
+      }
+
+      root.innerHTML = list.map(item => `
+        <div class="duplicate-item" onclick="openOrder('${escapeHtml(item.id)}')">
+          <div class="duplicate-main">
+            <div class="duplicate-title">#${escapeHtml(shortId(item.id))} • ${escapeHtml(STAGES[item.status_group]?.title || '-')}</div>
+            <div class="duplicate-sub">${escapeHtml(getOrderName(item))} • ${escapeHtml(item.phone || '-')} • ${escapeHtml(formatDate(item.created_at))}</div>
+          </div>
+          <div class="duplicate-right">${escapeHtml(formatMoney(item.total || 0))}</div>
         </div>
       `).join('');
     }
@@ -650,9 +1170,10 @@
       const lines = [
         `Створено: ${formatDate(order.created_at)}`,
         `Оновлено: ${formatDate(order.updated_at || order.created_at)}`,
-        `Поточний етап: ${STAGES[order.status_group || 'new']?.title || '-'}`,
-        `Статус: ${order.status || '-'}`,
-        `Джерело: ${order.source || 'website'}`
+        `Поточний етап: ${STAGES[order.status_group || 'accepted']?.title || '-'}`,
+        `ТТН: ${order.ttn || '-'}`,
+        `Джерело: ${order.source || 'website'}`,
+        hasDuplicates(order) ? `Повторні замовлення: ${getDuplicateOrders(order).length}` : 'Повторні замовлення: 0'
       ];
 
       document.getElementById('dHistory').innerHTML = lines.map(line => `<div class="history-line">${escapeHtml(line)}</div>`).join('');
@@ -661,33 +1182,35 @@
     async function saveDrawerOrder(){
       if (!selectedOrder) return;
 
-      const stage = document.getElementById('dStage').value;
+      const finalStage = document.getElementById('dStage').value;
+
+      const fullName = document.getElementById('dName').value.trim();
+      const nameParts = fullName.split(/\s+/).filter(Boolean);
+
       const payload = {
-        customer_first_name: document.getElementById('dFirstName').value.trim(),
-        customer_last_name: document.getElementById('dLastName').value.trim(),
-        name: document.getElementById('dName').value.trim(),
+        customer_first_name: nameParts[0] || '',
+        customer_last_name: nameParts.slice(1).join(' '),
+        name: fullName,
         phone: document.getElementById('dPhone').value.trim(),
         city: document.getElementById('dCity').value.trim(),
         delivery: document.getElementById('dDelivery').value.trim(),
         address: document.getElementById('dAddress').value.trim(),
+        ttn: document.getElementById('dTtn').value.trim(),
         operator_comment: document.getElementById('dOperatorComment').value.trim(),
+        items: editingItems,
+        total: recalcDrawerTotal() / 1,
         updated_at: new Date().toISOString()
       };
 
       if (currentProfile.role === 'admin') {
-        payload.status_group = stage;
-        payload.status = document.getElementById('dStatus').value.trim() || STAGES[stage].status;
-        payload.day_bucket = STAGES[stage].day;
+        payload.status_group = finalStage;
+        payload.status = STAGES[finalStage].status;
+        payload.day_bucket = STAGES[finalStage].day;
         payload.manager_comment = document.getElementById('dManagerComment').value.trim();
-        payload.total = Number(document.getElementById('dTotal').value || 0);
 
-        if (selectedOrder.status_group !== stage) {
+        if (selectedOrder.status_group !== finalStage) {
           payload.moved_at = new Date().toISOString();
         }
-      }
-
-      if (!payload.name) {
-        payload.name = [payload.customer_first_name, payload.customer_last_name].filter(Boolean).join(' ').trim();
       }
 
       const { error } = await supabaseClient
@@ -732,6 +1255,7 @@
     function forceCloseDrawer(){
       document.getElementById('drawerWrap').classList.remove('open');
       selectedOrder = null;
+      editingItems = [];
     }
 
     bootCRM().catch(error => {
