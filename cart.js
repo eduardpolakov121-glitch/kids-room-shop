@@ -2,7 +2,6 @@ let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
 const NOVA_POSHTA_API_KEY = "0cddc3bd30e2e4de2f2ce8f46313a168";
 const NOVA_POSHTA_API_URL = "https://api.novaposhta.ua/v2.0/json/";
-const FREE_DELIVERY_THRESHOLD = 1000;
 
 let selectedCity = null;
 let lastCheckoutOrderNumber = "";
@@ -62,27 +61,9 @@ function closeCart() {
     document.getElementById("cart").classList.remove("open");
 }
 
-function getCartSum() {
-    return cart.reduce((sum, item) => sum + Number(item.price || 0) * Number(item.qty || 0), 0);
-}
-
-function hasFreeDelivery(sum = null) {
-    const total = sum === null ? getCartSum() : Number(sum || 0);
-    return total >= FREE_DELIVERY_THRESHOLD;
-}
-
-function getRemainingForFreeDelivery(sum = null) {
-    const total = sum === null ? getCartSum() : Number(sum || 0);
-    return Math.max(0, FREE_DELIVERY_THRESHOLD - total);
-}
-
 function addToCart(id) {
-    const qtyInput = document.getElementById("qty-" + id);
-    const qty = Math.max(1, parseInt(qtyInput?.value || "1", 10) || 1);
-
+    const qty = parseInt(document.getElementById("qty-" + id).value);
     const product = products.find(p => p.id == id);
-    if (!product) return;
-
     const item = cart.find(p => p.id == id);
 
     if (item) {
@@ -103,8 +84,6 @@ function addToCart(id) {
 
 function cartPlus(id) {
     const item = cart.find(p => p.id == id);
-    if (!item) return;
-
     item.qty++;
     renderCart();
     saveCart();
@@ -112,14 +91,11 @@ function cartPlus(id) {
 
 function cartMinus(id) {
     const item = cart.find(p => p.id == id);
-    if (!item) return;
-
     if (item.qty > 1) {
         item.qty--;
     } else {
         cart = cart.filter(p => p.id != id);
     }
-
     renderCart();
     saveCart();
 }
@@ -129,15 +105,13 @@ function renderCart() {
     const count = document.getElementById("cart-count");
     const total = document.getElementById("total");
 
-    if (!items || !count || !total) return;
-
     items.innerHTML = "";
     let sum = 0;
     let qty = 0;
 
     cart.forEach(p => {
-        sum += Number(p.price || 0) * Number(p.qty || 0);
-        qty += Number(p.qty || 0);
+        sum += p.price * p.qty;
+        qty += p.qty;
 
         const image = getCartItemImage(p);
 
@@ -165,13 +139,7 @@ function renderCart() {
     });
 
     count.innerText = qty;
-
-    const freeDelivery = hasFreeDelivery(sum);
-    const remaining = getRemainingForFreeDelivery(sum);
-
-    total.innerHTML = freeDelivery
-        ? `Разом: ${sum} грн<br><span style="font-size:14px;color:#15803d;font-weight:700;">🚚 Доставка безкоштовна</span>`
-        : `Разом: ${sum} грн<br><span style="font-size:14px;color:#6f7b8c;font-weight:700;">До безкоштовної доставки залишилось ${remaining} грн</span>`;
+    total.innerText = "Разом: " + sum + " грн";
 }
 
 function checkout() {
@@ -280,14 +248,11 @@ async function handleCityInput() {
 
 function resetWarehouses(placeholder = "Спочатку оберіть місто") {
     const select = document.getElementById("order-address");
-    if (!select) return;
     select.innerHTML = `<option value="">${placeholder}</option>`;
 }
 
 function fillWarehouses(warehouses) {
     const select = document.getElementById("order-address");
-    if (!select) return;
-
     resetWarehouses("Оберіть відділення");
 
     warehouses.forEach(w => {
@@ -345,8 +310,6 @@ async function submitCheckout() {
         address = "Індекс: " + index;
     }
 
-    const totalSum = getCartSum();
-
     const order = {
         customer_first_name: name,
         customer_last_name: surname,
@@ -356,12 +319,10 @@ async function submitCheckout() {
         delivery,
         address,
         items: cart,
-        total: totalSum,
-        status: "Прийнято",
-        status_group: "accepted",
-        operator_comment: hasFreeDelivery(totalSum)
-            ? "Доставка безкоштовна: замовлення від 1000 грн"
-            : "",
+        total: cart.reduce((s, p) => s + p.price * p.qty, 0),
+        status: "Новий",
+        status_group: "new",
+        operator_comment: "",
         day_bucket: 0,
         source: "website",
         manager_comment: ""
@@ -436,12 +397,12 @@ document.addEventListener("DOMContentLoaded", () => {
         cityInput.addEventListener("input", handleCityInput);
         cityInput.addEventListener("blur", () => {
             setTimeout(() => {
-                if (list) list.style.display = "none";
+                list.style.display = "none";
             }, 200);
         });
 
         cityInput.addEventListener("focus", () => {
-            if (list && list.innerHTML.trim() !== "") {
+            if (list.innerHTML.trim() !== "") {
                 list.style.display = "block";
             }
         });
