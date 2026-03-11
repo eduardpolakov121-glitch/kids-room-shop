@@ -11,7 +11,7 @@ function normalizeCartQty(value) {
     return Number.isNaN(qty) || qty < 1 ? 1 : qty;
 }
 
-function getCartProductFromCatalog(id) {
+function getCatalogProductById(id) {
     if (!Array.isArray(window.products)) return null;
     return window.products.find(item => String(item.id) === String(id)) || null;
 }
@@ -27,33 +27,6 @@ function getCartItemImage(product) {
 
     const value = String(product?.img || "").trim();
     return value || "product-placeholder.svg";
-}
-
-function syncCartWithProducts() {
-    if (!Array.isArray(cart)) {
-        cart = [];
-        return;
-    }
-
-    cart = cart
-        .map(item => {
-            const fresh = getCartProductFromCatalog(item.id);
-
-            if (!fresh) {
-                return {
-                    ...item,
-                    qty: normalizeCartQty(item.qty),
-                    img: getCartItemImage(item)
-                };
-            }
-
-            return {
-                ...fresh,
-                qty: normalizeCartQty(item.qty),
-                img: getCartItemImage(fresh)
-            };
-        })
-        .filter(item => item && String(item.id || "").trim() !== "");
 }
 
 function getCheckoutSuccessOrderNumber(payload) {
@@ -116,35 +89,79 @@ function getProductQtyInputValue(id) {
     return normalizeCartQty(input.value);
 }
 
+function syncCartWithCatalogData() {
+    if (!Array.isArray(cart)) {
+        cart = [];
+        return;
+    }
+
+    cart = cart.map(item => {
+        const fresh = getCatalogProductById(item.id);
+
+        if (!fresh) {
+            return {
+                ...item,
+                qty: normalizeCartQty(item.qty),
+                img: getCartItemImage(item)
+            };
+        }
+
+        return {
+            ...item,
+            name: fresh.name,
+            category: fresh.category,
+            price: fresh.price,
+            old: fresh.old,
+            description: fresh.description,
+            img: getCartItemImage(fresh),
+            is_hit: !!fresh.is_hit,
+            is_sale: !!fresh.is_sale,
+            is_new: !!fresh.is_new,
+            qty: normalizeCartQty(item.qty)
+        };
+    });
+}
+
 function addToCart(id) {
-    const product = getCartProductFromCatalog(id);
+    const product = getCatalogProductById(id);
+
     if (!product) {
         showToast("Товар ще завантажується");
         return;
     }
 
     const qty = getProductQtyInputValue(id);
-    const item = cart.find(p => String(p.id) === String(id));
+    const existingItem = cart.find(item => String(item.id) === String(id));
 
-    if (item) {
-        item.qty = normalizeCartQty(item.qty) + qty;
-        item.name = product.name;
-        item.price = product.price;
-        item.old = product.old;
-        item.description = product.description;
-        item.category = product.category;
-        item.img = getCartItemImage(product);
+    if (existingItem) {
+        existingItem.qty = normalizeCartQty(existingItem.qty) + qty;
+        existingItem.name = product.name;
+        existingItem.category = product.category;
+        existingItem.price = product.price;
+        existingItem.old = product.old;
+        existingItem.description = product.description;
+        existingItem.img = getCartItemImage(product);
+        existingItem.is_hit = !!product.is_hit;
+        existingItem.is_sale = !!product.is_sale;
+        existingItem.is_new = !!product.is_new;
     } else {
         cart.push({
-            ...product,
+            id: product.id,
+            name: product.name,
+            category: product.category,
+            price: product.price,
+            old: product.old,
+            description: product.description,
             img: getCartItemImage(product),
+            is_hit: !!product.is_hit,
+            is_sale: !!product.is_sale,
+            is_new: !!product.is_new,
             qty
         });
     }
 
-    syncCartWithProducts();
-    renderCart();
     saveCart();
+    renderCart();
     showToast("Товар додано в кошик");
 }
 
@@ -153,9 +170,8 @@ function cartPlus(id) {
     if (!item) return;
 
     item.qty = normalizeCartQty(item.qty) + 1;
-    syncCartWithProducts();
-    renderCart();
     saveCart();
+    renderCart();
 }
 
 function cartMinus(id) {
@@ -168,9 +184,8 @@ function cartMinus(id) {
         cart = cart.filter(p => String(p.id) !== String(id));
     }
 
-    syncCartWithProducts();
-    renderCart();
     saveCart();
+    renderCart();
 }
 
 function getCartTotals() {
@@ -221,41 +236,11 @@ function renderCart() {
     const count = document.getElementById("cart-count");
     if (!items || !count) return;
 
-    syncCartWithProducts();
+    syncCartWithCatalogData();
+
     items.innerHTML = "";
 
     const { subtotal, qty, delivery, total } = getCartTotals();
-
-    cart.forEach(p => {
-        const image = getCartItemImage(p);
-        const itemTotal = Number(p.price || 0) * Number(p.qty || 0);
-
-        items.innerHTML += `
-        <div class="cart-item">
-            <div style="display:flex;align-items:flex-start;gap:10px;min-width:0;">
-                <img
-                    src="${image}"
-                    alt="${String(p.name || "")}"
-                    style="width:64px;height:64px;object-fit:cover;border-radius:14px;background:#f3f3f3;flex-shrink:0;"
-                    onerror="this.onerror=null;this.src='product-placeholder.svg'"
-                >
-                <div style="min-width:0;">
-                    <div class="cart-item-title">${String(p.name || "Товар")}</div>
-                    <div class="cart-item-sub">${Number(p.price || 0)} грн × ${Number(p.qty || 0)}</div>
-                </div>
-            </div>
-
-            <div class="cart-item-side">
-                <div class="cart-item-qty">
-                    <button type="button" onclick="cartMinus('${p.id}')">−</button>
-                    <span>${Number(p.qty || 0)}</span>
-                    <button type="button" onclick="cartPlus('${p.id}')">+</button>
-                </div>
-                <div class="cart-item-total">${itemTotal} грн</div>
-            </div>
-        </div>
-        `;
-    });
 
     if (!cart.length) {
         items.innerHTML = `
@@ -263,10 +248,40 @@ function renderCart() {
                 Кошик поки порожній
             </div>
         `;
+    } else {
+        items.innerHTML = cart.map(p => {
+            const image = getCartItemImage(p);
+            const itemTotal = Number(p.price || 0) * Number(p.qty || 0);
+
+            return `
+            <div class="cart-item">
+                <div style="display:flex;align-items:flex-start;gap:10px;min-width:0;">
+                    <img
+                        src="${image}"
+                        alt="${String(p.name || "").replaceAll('"', '&quot;')}"
+                        style="width:64px;height:64px;object-fit:cover;border-radius:14px;background:#f3f3f3;flex-shrink:0;"
+                        onerror="this.onerror=null;this.src='product-placeholder.svg'"
+                    >
+                    <div style="min-width:0;">
+                        <div class="cart-item-title">${p.name || "Товар"}</div>
+                        <div class="cart-item-sub">${Number(p.price || 0)} грн × ${Number(p.qty || 0)}</div>
+                    </div>
+                </div>
+
+                <div class="cart-item-side">
+                    <div class="cart-item-qty">
+                        <button type="button" onclick="cartMinus('${p.id}')">−</button>
+                        <span>${Number(p.qty || 0)}</span>
+                        <button type="button" onclick="cartPlus('${p.id}')">+</button>
+                    </div>
+                    <div class="cart-item-total">${itemTotal} грн</div>
+                </div>
+            </div>
+            `;
+        }).join("");
     }
 
     count.innerText = qty;
-
     renderCartProgress(subtotal);
     renderCartSummary(subtotal, delivery, total);
     renderCheckoutSummary();
@@ -526,18 +541,9 @@ async function submitCheckout() {
         saveCart();
         renderCart();
 
-        const fieldsToClear = [
-            "order-name",
-            "order-surname",
-            "order-phone",
-            "order-city",
-            "order-city-manual",
-            "order-index"
-        ];
-
-        fieldsToClear.forEach(id => {
-            const el = document.getElementById(id);
-            if (el) el.value = "";
+        ["order-name","order-surname","order-phone","order-city","order-city-manual","order-index"].forEach(id => {
+            const field = document.getElementById(id);
+            if (field) field.value = "";
         });
 
         resetWarehouses("Оберіть відділення");
@@ -554,8 +560,8 @@ async function submitCheckout() {
 }
 
 function showToast(text) {
-    const old = document.querySelector(".cart-toast");
-    if (old) old.remove();
+    const oldToast = document.querySelector(".cart-toast");
+    if (oldToast) oldToast.remove();
 
     const t = document.createElement("div");
     t.className = "cart-toast show";
@@ -579,9 +585,8 @@ function saveCart() {
     window.dispatchEvent(new CustomEvent("cart:updated", { detail: cart }));
 }
 
-renderCart();
-
 document.addEventListener("DOMContentLoaded", () => {
+    renderCart();
     handleDeliveryTypeChange();
 
     const cityInput = document.getElementById("order-city");
@@ -605,12 +610,10 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 window.addEventListener("products:ready", () => {
-    syncCartWithProducts();
     renderCart();
 });
 
 window.addEventListener("products:updated", () => {
-    syncCartWithProducts();
     renderCart();
 });
 
@@ -621,8 +624,6 @@ window.addEventListener("storage", event => {
         } catch (error) {
             cart = [];
         }
-
-        syncCartWithProducts();
         renderCart();
     }
 });
