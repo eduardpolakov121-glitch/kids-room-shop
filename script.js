@@ -389,7 +389,7 @@ function buildBundleSection(product) {
                     <div class="bundle-total">
                         <div>
                             <div style="font-size:13px;color:#748097;font-weight:700;">Економія по комплекту</div>
-                            <div style="font-size:14px;color:#2e3550;font-weight:800;">${Math.max(oldTotal - total, 0)} грн</div>
+                            <div style="font-size:14px;color:#2f3746;font-weight:800;">${Math.max(oldTotal - total, 0)} грн</div>
                         </div>
                         <div class="price">${total} грн</div>
                     </div>
