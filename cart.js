@@ -11,18 +11,29 @@ function normalizeCartQty(value) {
     return Number.isNaN(qty) || qty < 1 ? 1 : qty;
 }
 
-function getCatalogProductById(id) {
-    if (!Array.isArray(window.products)) return null;
-    return window.products.find(item => String(item.id) === String(id)) || null;
+function getStoredProductsSnapshot() {
+    try {
+        const raw = JSON.parse(localStorage.getItem("products") || "[]");
+        return Array.isArray(raw) ? raw : [];
+    } catch (error) {
+        return [];
+    }
+}
+
+function getProductForCart(id) {
+    const fromWindow = Array.isArray(window.products)
+        ? window.products.find(item => String(item.id) === String(id))
+        : null;
+
+    if (fromWindow) return fromWindow;
+
+    const snapshot = getStoredProductsSnapshot();
+    return snapshot.find(item => String(item.id) === String(id)) || null;
 }
 
 function getCartItemImage(product) {
     if (typeof getSafeProductImage === "function") {
         return getSafeProductImage(product);
-    }
-
-    if (typeof sanitizeProductImage === "function") {
-        return sanitizeProductImage(product?.img);
     }
 
     const value = String(product?.img || "").trim();
@@ -89,44 +100,27 @@ function getProductQtyInputValue(id) {
     return normalizeCartQty(input.value);
 }
 
-function syncCartWithCatalogData() {
-    if (!Array.isArray(cart)) {
-        cart = [];
-        return;
-    }
-
-    cart = cart.map(item => {
-        const fresh = getCatalogProductById(item.id);
-
-        if (!fresh) {
-            return {
-                ...item,
-                qty: normalizeCartQty(item.qty),
-                img: getCartItemImage(item)
-            };
-        }
-
-        return {
-            ...item,
-            name: fresh.name,
-            category: fresh.category,
-            price: fresh.price,
-            old: fresh.old,
-            description: fresh.description,
-            img: getCartItemImage(fresh),
-            is_hit: !!fresh.is_hit,
-            is_sale: !!fresh.is_sale,
-            is_new: !!fresh.is_new,
-            qty: normalizeCartQty(item.qty)
-        };
-    });
+function buildCartLineFromProduct(product, qty) {
+    return {
+        id: String(product.id),
+        name: String(product.name || "Товар"),
+        category: String(product.category || ""),
+        price: Number(product.price || 0),
+        old: Number(product.old || 0),
+        description: String(product.description || ""),
+        img: getCartItemImage(product),
+        is_hit: !!product.is_hit,
+        is_sale: !!product.is_sale,
+        is_new: !!product.is_new,
+        qty: normalizeCartQty(qty)
+    };
 }
 
 function addToCart(id) {
-    const product = getCatalogProductById(id);
+    const product = getProductForCart(id);
 
     if (!product) {
-        showToast("Товар ще завантажується");
+        showToast("Товар ще не завантажився");
         return;
     }
 
@@ -135,29 +129,17 @@ function addToCart(id) {
 
     if (existingItem) {
         existingItem.qty = normalizeCartQty(existingItem.qty) + qty;
-        existingItem.name = product.name;
-        existingItem.category = product.category;
-        existingItem.price = product.price;
-        existingItem.old = product.old;
-        existingItem.description = product.description;
+        existingItem.name = String(product.name || existingItem.name || "Товар");
+        existingItem.category = String(product.category || existingItem.category || "");
+        existingItem.price = Number(product.price || existingItem.price || 0);
+        existingItem.old = Number(product.old || existingItem.old || 0);
+        existingItem.description = String(product.description || existingItem.description || "");
         existingItem.img = getCartItemImage(product);
         existingItem.is_hit = !!product.is_hit;
         existingItem.is_sale = !!product.is_sale;
         existingItem.is_new = !!product.is_new;
     } else {
-        cart.push({
-            id: product.id,
-            name: product.name,
-            category: product.category,
-            price: product.price,
-            old: product.old,
-            description: product.description,
-            img: getCartItemImage(product),
-            is_hit: !!product.is_hit,
-            is_sale: !!product.is_sale,
-            is_new: !!product.is_new,
-            qty
-        });
+        cart.push(buildCartLineFromProduct(product, qty));
     }
 
     saveCart();
@@ -236,20 +218,17 @@ function renderCart() {
     const count = document.getElementById("cart-count");
     if (!items || !count) return;
 
-    syncCartWithCatalogData();
-
-    items.innerHTML = "";
-
+    const safeCart = Array.isArray(cart) ? cart : [];
     const { subtotal, qty, delivery, total } = getCartTotals();
 
-    if (!cart.length) {
+    if (!safeCart.length) {
         items.innerHTML = `
             <div style="padding:18px;border:1px dashed #e6dceb;border-radius:18px;background:#fff;text-align:center;color:#748097;">
                 Кошик поки порожній
             </div>
         `;
     } else {
-        items.innerHTML = cart.map(p => {
+        items.innerHTML = safeCart.map(p => {
             const image = getCartItemImage(p);
             const itemTotal = Number(p.price || 0) * Number(p.qty || 0);
 
@@ -258,7 +237,7 @@ function renderCart() {
                 <div style="display:flex;align-items:flex-start;gap:10px;min-width:0;">
                     <img
                         src="${image}"
-                        alt="${String(p.name || "").replaceAll('"', '&quot;')}"
+                        alt="${String(p.name || "Товар").replaceAll('"', "&quot;")}"
                         style="width:64px;height:64px;object-fit:cover;border-radius:14px;background:#f3f3f3;flex-shrink:0;"
                         onerror="this.onerror=null;this.src='product-placeholder.svg'"
                     >
@@ -609,13 +588,8 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 });
 
-window.addEventListener("products:ready", () => {
-    renderCart();
-});
-
-window.addEventListener("products:updated", () => {
-    renderCart();
-});
+window.addEventListener("products:ready", renderCart);
+window.addEventListener("products:updated", renderCart);
 
 window.addEventListener("storage", event => {
     if (event.key === "cart") {

@@ -281,6 +281,7 @@
     line-height:1.55;
     font-size:13px;
     display:-webkit-box;
+    line-clamp:2;
     -webkit-line-clamp:2;
     -webkit-box-orient:vertical;
     overflow:hidden;
@@ -1645,7 +1646,7 @@ function addHomeProductToCart(id, event) {
     const qtyInput = document.getElementById("home-qty-" + id);
     let qty = parseInt(qtyInput ? qtyInput.value : "1", 10);
 
-    if (isNaN(qty) || qty < 1) qty = 1;
+    if (Number.isNaN(qty) || qty < 1) qty = 1;
 
     const tempId = "qty-" + id;
     let tempInput = document.getElementById(tempId);

@@ -9,6 +9,7 @@ let selectedProductForModal = null;
 const mobileCatalogBreakpoint = 900;
 let headerScrollRaf = null;
 let renderScheduled = false;
+let lastRenderedSignature = "";
 
 function isMobileCatalogMode() {
     return window.innerWidth <= mobileCatalogBreakpoint;
@@ -150,6 +151,15 @@ function injectCatalogBadgeStyles() {
     document.head.appendChild(style);
 }
 
+function makeRenderSignature(list) {
+    return JSON.stringify({
+        category: activeCategory,
+        sort: activeSort,
+        search: activeSearch,
+        ids: list.map(item => item.id)
+    });
+}
+
 function renderProducts(list) {
     if (!container) return;
 
@@ -260,6 +270,13 @@ function applyFiltersAndRender() {
         list.sort((a, b) => String(a.name || "").localeCompare(String(b.name || ""), "uk"));
     }
 
+    const signature = makeRenderSignature(list);
+    if (signature === lastRenderedSignature) {
+        updateActiveCategoryUI();
+        return;
+    }
+
+    lastRenderedSignature = signature;
     currentProducts = list;
     renderProducts(currentProducts);
     updateActiveCategoryUI();
@@ -309,9 +326,8 @@ function filterCategory(category) {
     if (wideSearch) wideSearch.value = "";
 
     activeSearch = "";
-
-    scheduleRender();
     closeCatalogMenu();
+    scheduleRender();
 }
 
 function getProductModalBadges(product) {
