@@ -23,25 +23,12 @@ const SUPABASE_PRODUCTS_CONFIG = {
 };
 
 const PRODUCTS_CACHE_KEY = "products";
-const PRODUCTS_INIT_FLAG_KEY = "kids_room_products_seeded_v6_with_web_images";
+const PRODUCTS_INIT_FLAG_KEY = "kids_room_products_seeded_v3";
 
 let products = [];
 let supabaseClientInstance = null;
 let productsReady = false;
 let productsInitPromise = null;
-
-function buildRemoteProductImage(keywords, lockSeed) {
-    const safeKeywords = String(keywords || "kids,toy")
-        .toLowerCase()
-        .replace(/[^a-z0-9,\- ]+/g, "")
-        .trim()
-        .replace(/\s+/g, ",")
-        .replace(/,+/g, ",")
-        .replace(/^,|,$/g, "");
-
-    const safeLock = encodeURIComponent(String(lockSeed || "kids-room"));
-    return `https://loremflickr.com/640/640/${safeKeywords || "kids,toy"}?lock=${safeLock}`;
-}
 
 function buildDefaultProducts() {
     const make = (category, items) =>
@@ -52,7 +39,7 @@ function buildDefaultProducts() {
             price: item.price,
             old: item.old,
             description: item.description,
-            img: item.img || buildRemoteProductImage(item.imageKeywords, `${category}-${index + 1}`),
+            img: PRODUCT_PLACEHOLDER,
             is_hit: !!item.is_hit,
             is_sale: !!item.is_sale,
             is_new: !!item.is_new
@@ -60,1000 +47,160 @@ function buildDefaultProducts() {
 
     return [
         ...make("toy", [
-            {
-                name: "Ведмедик Sweet Bear Soft 35 см",
-                price: 899,
-                old: 979,
-                description: "М’який плюшевий ведмедик для обіймів, сну та затишних ігор у дитячій кімнаті.",
-                imageKeywords: "teddy,bear,plush,toy",
-                is_hit: true,
-                is_sale: true
-            },
-            {
-                name: "Плюшевий зайчик Cloud Bunny 42 см",
-                price: 729,
-                old: 789,
-                description: "Приємна на дотик м’яка іграшка, яку зручно брати з собою в ліжечко або в дорогу.",
-                imageKeywords: "bunny,plush,toy,kids"
-            },
-            {
-                name: "Розумне цуценя Happy Puppy зі звуками",
-                price: 1699,
-                old: 1799,
-                description: "Інтерактивна іграшка з веселими фразами, мелодіями та елементами раннього розвитку.",
-                imageKeywords: "interactive,dog,toy,puppy",
-                is_new: true
-            },
-            {
-                name: "Набір кубиків Mega Blocks First Set 60 деталей",
-                price: 1149,
-                old: 1239,
-                description: "Великі безпечні кубики для перших конструкцій, розвитку моторики та уяви.",
-                imageKeywords: "building,blocks,toy,baby",
-                is_hit: true
-            },
-            {
-                name: "Лялька Little Dream Fashion з аксесуарами",
-                price: 1189,
-                old: 1289,
-                description: "Яскрава лялька для рольових ігор, перевдягань і домашніх дитячих сюжетів.",
-                imageKeywords: "doll,fashion,toy,girl"
-            },
-            {
-                name: "Трек Speed Wheels стартовий набір",
-                price: 969,
-                old: 1049,
-                description: "Компактний трек з машинкою для активної гри, перегонів і веселого дозвілля.",
-                imageKeywords: "toy,car,track,kids"
-            },
-            {
-                name: "Нічник-проектор Baby Star Bear",
-                price: 1399,
-                old: 1499,
-                description: "М’який нічник із ніжним світлом та спокійними мелодіями для вечірнього засинання.",
-                imageKeywords: "baby,nightlight,projector,plush",
-                is_sale: true
-            },
-            {
-                name: "Подушка-іграшка Kitty Cloud",
-                price: 579,
-                old: 639,
-                description: "Легка м’яка іграшка-подушка для відпочинку, декору дитячої кімнати та обіймів.",
-                imageKeywords: "cat,pillow,plush,toy"
-            },
-            {
-                name: "Дитяча каса Smart Market із кошиком",
-                price: 839,
-                old: 899,
-                description: "Ігровий набір для сюжетів у магазин із кнопками, аксесуарами та товарами.",
-                imageKeywords: "toy,cashier,market,playset"
-            },
-            {
-                name: "Музичний телефон Baby Melody Touch",
-                price: 489,
-                old: 539,
-                description: "Компактна музична іграшка з кнопками, звуками та світловими елементами.",
-                imageKeywords: "toy,phone,music,baby",
-                is_new: true
-            }
+            { name: "Плюшевий ведмедик", price: 350, old: 450, description: "М'яка іграшка для обіймів та затишних ігор.", is_hit: true, is_sale: true },
+            { name: "Іграшка 2", price: 390, old: 490, description: "Яскрава дитяча іграшка для щоденних веселих ігор.", is_new: true },
+            { name: "Іграшка 3", price: 420, old: 520, description: "Безпечна іграшка для розвитку фантазії дитини." },
+            { name: "Іграшка 4", price: 460, old: 560, description: "Міцна та приємна на дотик іграшка для малюків." },
+            { name: "Іграшка 5", price: 510, old: 620, description: "Іграшка для веселого дозвілля вдома та в дорозі." },
+            { name: "Іграшка 6", price: 540, old: 650, description: "Легка іграшка для гри та сенсорного розвитку." },
+            { name: "Іграшка 7", price: 580, old: 690, description: "Красива іграшка для подарунка дитині." },
+            { name: "Іграшка 8", price: 620, old: 740, description: "Барвиста іграшка для активних дитячих ігор." },
+            { name: "Іграшка 9", price: 680, old: 790, description: "Цікава іграшка, що додає радості щодня." },
+            { name: "Іграшка 10", price: 740, old: 860, description: "Популярна іграшка для домашнього дозвілля." }
         ]),
-
         ...make("stroller", [
-            {
-                name: "Коляска прогулянкова City Walk Lite Black",
-                price: 6890,
-                old: 7040,
-                description: "Легка прогулянкова коляска для щоденних маршрутів містом, парком і торговими центрами.",
-                imageKeywords: "baby,stroller,black,city",
-                is_hit: true
-            },
-            {
-                name: "Коляска 2 в 1 Cozy Move Graphite",
-                price: 9580,
-                old: 9720,
-                description: "Універсальна модель для малюка з люлькою та прогулянковим блоком на кожен сезон.",
-                imageKeywords: "baby,stroller,graphite,pram"
-            },
-            {
-                name: "Коляска прогулянкова Travel Fold Sand",
-                price: 8240,
-                old: 8390,
-                description: "Маневрена модель зі швидким складанням, містким капюшоном і зручним сидінням.",
-                imageKeywords: "baby,stroller,beige,travel",
-                is_sale: true
-            },
-            {
-                name: "Коляска Air Ride Compact Grey",
-                price: 7180,
-                old: 7320,
-                description: "Компактна коляска для поїздок, шопінгу та щоденних прогулянок із дитиною.",
-                imageKeywords: "baby,stroller,grey,compact"
-            },
-            {
-                name: "Коляска Urban Baby Air Mint",
-                price: 9490,
-                old: 9640,
-                description: "Сучасна прогулянкова модель з плавним ходом, стильним дизайном і гарною амортизацією.",
-                imageKeywords: "baby,stroller,mint,urban",
-                is_new: true
-            },
-            {
-                name: "Коляска 2 в 1 Family Travel Beige",
-                price: 11790,
-                old: 11940,
-                description: "Практичний варіант для батьків, які шукають комфортну коляску від народження.",
-                imageKeywords: "baby,pram,beige,stroller"
-            },
-            {
-                name: "Коляска Street Comfort Olive",
-                price: 6360,
-                old: 6490,
-                description: "Всесезонна прогулянкова модель із теплим чохлом та надійними колесами.",
-                imageKeywords: "baby,stroller,olive,comfort"
-            },
-            {
-                name: "Коляска Easy Drive Navy",
-                price: 5590,
-                old: 5720,
-                description: "Доступна та зручна коляска для щоденного використання, поїздок і прогулянок.",
-                imageKeywords: "baby,stroller,navy,pram"
-            },
-            {
-                name: "Коляска Premium Soft 2 в 1 Ivory",
-                price: 14090,
-                old: 14290,
-                description: "Комфортна преміальна коляска з просторою люлькою та м’яким ходом.",
-                imageKeywords: "baby,stroller,ivory,premium",
-                is_hit: true
-            },
-            {
-                name: "Коляска Travel Mini Stone",
-                price: 7390,
-                old: 7540,
-                description: "Зручна міська коляска для активних батьків і компактного зберігання.",
-                imageKeywords: "baby,stroller,stone,travel"
-            }
+            { name: "Коляска 1", price: 3500, old: 4200, description: "Легка прогулянкова коляска для щоденних прогулянок.", is_hit: true },
+            { name: "Коляска 2", price: 3900, old: 4600, description: "Зручна дитяча коляска з м'яким ходом.", is_sale: true },
+            { name: "Коляска 3", price: 4300, old: 5000, description: "Практична модель для міста та подорожей.", is_new: true },
+            { name: "Коляска 4", price: 4700, old: 5500, description: "Стабільна коляска для комфортних прогулянок." },
+            { name: "Коляска 5", price: 5200, old: 6100, description: "Модель із просторим сидінням для малюка." },
+            { name: "Коляска 6", price: 5600, old: 6500, description: "Коляска з хорошою амортизацією та легкою рамою." },
+            { name: "Коляска 7", price: 6100, old: 7000, description: "Надійна прогулянкова коляска на кожен день." },
+            { name: "Коляска 8", price: 6700, old: 7600, description: "Функціональна модель для міських прогулянок." },
+            { name: "Коляска 9", price: 7200, old: 8200, description: "Містка та зручна коляска для дитини." },
+            { name: "Коляска 10", price: 7900, old: 9000, description: "Сучасна коляска з комфортною посадкою." }
         ]),
-
         ...make("seat", [
-            {
-                name: "Автокрісло Safe Ride 360 ISOFIX Graphite",
-                price: 4890,
-                old: 5040,
-                description: "Поворотне автокрісло з ISOFIX для безпечних поїздок і комфортної посадки дитини.",
-                imageKeywords: "child,car,seat,grey",
-                is_hit: true
-            },
-            {
-                name: "Автолюлька Baby Nest i-Size Black",
-                price: 6890,
-                old: 7040,
-                description: "Легка автолюлька для новонароджених із м’яким вкладишем і захистом голови.",
-                imageKeywords: "baby,car,seat,black"
-            },
-            {
-                name: "Автокрісло Air Protect 0-36 кг Sand",
-                price: 6190,
-                old: 6340,
-                description: "Універсальне крісло на тривалий період використання з боковим захистом.",
-                imageKeywords: "child,car,seat,beige",
-                is_sale: true
-            },
-            {
-                name: "Автокрісло Comfort Fix Junior Grey",
-                price: 4290,
-                old: 4430,
-                description: "Зручна модель для старшої дитини з ергономічною спинкою та надійною фіксацією.",
-                imageKeywords: "booster,car,seat,grey",
-                is_new: true
-            },
-            {
-                name: "Автокрісло Drive Guard Plus Black",
-                price: 9590,
-                old: 9740,
-                description: "Міцне крісло з глибокою посадкою, м’якими вставками та комфортом у дорозі.",
-                imageKeywords: "child,car,seat,black"
-            },
-            {
-                name: "Автокрісло Rotate Me 360 Deep Blue",
-                price: 14990,
-                old: 15190,
-                description: "Поворотна модель із сучасною системою безпеки та зручним доступом до дитини.",
-                imageKeywords: "child,car,seat,blue"
-            },
-            {
-                name: "Автокрісло Road Buddy 9-36 кг",
-                price: 3720,
-                old: 3860,
-                description: "Практичний варіант для щоденних міських поїздок і сімейних подорожей.",
-                imageKeywords: "child,car,seat,travel"
-            },
-            {
-                name: "Автокрісло Premium Shield i-Size Carbon",
-                price: 18290,
-                old: 18490,
-                description: "Преміальна модель для батьків, яким важливі безпека, стабільність і комфорт.",
-                imageKeywords: "premium,child,car,seat"
-            },
-            {
-                name: "Автокрісло Travel Seat Family 0-25 кг",
-                price: 5380,
-                old: 5530,
-                description: "Надійне крісло для тривалих поїздок з дитиною різного віку.",
-                imageKeywords: "family,car,seat,baby"
-            },
-            {
-                name: "Бустер Road Up Compact",
-                price: 1960,
-                old: 2080,
-                description: "Компактний бустер для старших дітей, який зручно брати в автомобіль.",
-                imageKeywords: "booster,child,car,seat",
-                is_hit: true
-            }
+            { name: "Автокрісло 1", price: 1800, old: 2200, description: "Надійне автокрісло для безпечних поїздок.", is_hit: true },
+            { name: "Автокрісло 2", price: 2100, old: 2500, description: "Комфортне автокрісло для щоденного використання." },
+            { name: "Автокрісло 3", price: 2400, old: 2850, description: "Модель із зручними бічними захистами.", is_sale: true },
+            { name: "Автокрісло 4", price: 2700, old: 3200, description: "Практичне рішення для коротких і довгих поїздок.", is_new: true },
+            { name: "Автокрісло 5", price: 3000, old: 3550, description: "Сучасне автокрісло з м'якою вкладкою." },
+            { name: "Автокрісло 6", price: 3400, old: 3950, description: "Ергономічна модель для дитини різного віку." },
+            { name: "Автокрісло 7", price: 3800, old: 4400, description: "Безпечне та зручне крісло для авто." },
+            { name: "Автокрісло 8", price: 4200, old: 4850, description: "Модель із надійним кріпленням та комфортом." },
+            { name: "Автокрісло 9", price: 4700, old: 5400, description: "Продумане автокрісло для щоденних поїздок." },
+            { name: "Автокрісло 10", price: 5200, old: 5900, description: "Преміальна модель із високим рівнем захисту." }
         ]),
-
         ...make("clothes", [
-            {
-                name: "Набір боді Baby Cotton 5 шт",
-                price: 949,
-                old: 999,
-                description: "М’який комплект боді для немовляти на кожен день, сон і домашній комфорт.",
-                imageKeywords: "baby,clothes,bodysuit,infant",
-                is_hit: true
-            },
-            {
-                name: "Піжама Sleep Time Kids 2 шт",
-                price: 679,
-                old: 729,
-                description: "Практичний комплект піжам із приємної тканини для затишного сну.",
-                imageKeywords: "kids,pajamas,clothes"
-            },
-            {
-                name: "Світшот Mini Mood із принтом Dino",
-                price: 799,
-                old: 849,
-                description: "Легкий дитячий світшот для садочка, прогулянок і повсякденного гардероба.",
-                imageKeywords: "kids,sweatshirt,dino,clothes",
-                is_new: true
-            },
-            {
-                name: "Штанці Active Baby Soft Grey",
-                price: 469,
-                old: 509,
-                description: "Комфортні штани для активних ігор удома, у дворі або в садочку.",
-                imageKeywords: "kids,pants,clothes,grey"
-            },
-            {
-                name: "Футболки Basic Color 3 шт",
-                price: 539,
-                old: 589,
-                description: "Базовий набір футболок для щоденного носіння й легкого поєднання.",
-                imageKeywords: "kids,tshirt,clothes",
-                is_sale: true
-            },
-            {
-                name: "Куртка демісезонна Little Wind Olive",
-                price: 1679,
-                old: 1789,
-                description: "Зручна демісезонна куртка для прогулянок у прохолодну та вітряну погоду.",
-                imageKeywords: "kids,jacket,clothes,olive"
-            },
-            {
-                name: "Ромпер Cozy Baby Milk",
-                price: 449,
-                old: 489,
-                description: "М’який ромпер для малюка з комфортною посадкою і зручними застібками.",
-                imageKeywords: "baby,romper,clothes"
-            },
-            {
-                name: "Шапка-шолом Warm Hug Winter",
-                price: 899,
-                old: 949,
-                description: "Теплий варіант для захисту від вітру та прохолоди в осінньо-зимовий сезон.",
-                imageKeywords: "kids,winter,hat,clothes",
-                is_hit: true
-            },
-            {
-                name: "Джинси Junior Street Fit",
-                price: 859,
-                old: 909,
-                description: "Зручні джинси для школи, прогулянок і щоденного активного дня.",
-                imageKeywords: "kids,jeans,clothes"
-            },
-            {
-                name: "Сукня Little Bloom Sky",
-                price: 719,
-                old: 769,
-                description: "Легка святкова сукня для дитячих подій, фотосесій і сімейних свят.",
-                imageKeywords: "kids,dress,clothes,girl"
-            }
+            { name: "Дитячий костюм 1", price: 450, old: 560, description: "М'який комплект одягу для щоденного носіння.", is_sale: true },
+            { name: "Дитячий костюм 2", price: 490, old: 600, description: "Зручний набір одягу для дому та прогулянок.", is_new: true },
+            { name: "Дитячий костюм 3", price: 530, old: 650, description: "Практичний одяг із приємної тканини.", is_hit: true },
+            { name: "Дитячий костюм 4", price: 580, old: 700, description: "Якісний комплект для активної дитини." },
+            { name: "Дитячий костюм 5", price: 620, old: 760, description: "Легкий одяг для садочка та прогулянок." },
+            { name: "Дитячий костюм 6", price: 680, old: 810, description: "Комфортний комплект на кожен день." },
+            { name: "Дитячий костюм 7", price: 730, old: 860, description: "Яскравий дитячий одяг із зручним кроєм." },
+            { name: "Дитячий костюм 8", price: 790, old: 930, description: "Стильний комплект для хлопчика або дівчинки." },
+            { name: "Дитячий костюм 9", price: 840, old: 980, description: "Приємний на дотик комплект для дитини." },
+            { name: "Дитячий костюм 10", price: 890, old: 1050, description: "Практичний одяг для щоденних активностей." }
         ]),
-
         ...make("transport", [
-            {
-                name: "Самокат Flash Ride зі світними колесами",
-                price: 1469,
-                old: 1520,
-                description: "Маневрений самокат для двору, парку та активних прогулянок.",
-                imageKeywords: "kids,scooter"
-            ,
-                is_hit: true
-            },
-            {
-                name: "Біговел Tiny Rider 12 Air",
-                price: 2140,
-                old: 2220,
-                description: "Легкий біговел для розвитку координації, балансу та впевненості в русі.",
-                imageKeywords: "balance,bike,kids"
-            },
-            {
-                name: "Велосипед триколісний Smart Trike Family",
-                price: 3640,
-                old: 3740,
-                description: "Зручний транспорт із батьківською ручкою для перших поїздок малюка.",
-                imageKeywords: "tricycle,kids,bike",
-                is_sale: true
-            },
-            {
-                name: "Самокат City Glide Deluxe",
-                price: 4920,
-                old: 5090,
-                description: "Плавний і стійкий самокат для щоденного міського використання.",
-                imageKeywords: "scooter,urban,kids"
-            },
-            {
-                name: "Електромобіль Mini Driver Red",
-                price: 8120,
-                old: 8290,
-                description: "Дитячий електромобіль для катання у дворі, на подвір’ї та дачі.",
-                imageKeywords: "kids,electric,car,ride",
-                is_new: true
-            },
-            {
-                name: "Толокар First Drive Blue",
-                price: 969,
-                old: 1020,
-                description: "Надійна машинка-каталка для перших самостійних рухів дитини.",
-                imageKeywords: "ride,on,toy,car,baby"
-            },
-            {
-                name: "Самокат Urban Sprint 2 Wheel",
-                price: 1929,
-                old: 1990,
-                description: "Міцна двоколісна модель для старших дітей та активних прогулянок.",
-                imageKeywords: "two,wheel,scooter,kids"
-            },
-            {
-                name: "Велосипед Kid Bike Start 16",
-                price: 4840,
-                old: 4990,
-                description: "Дитячий велосипед із додатковими колесами для перших навичок їзди.",
-                imageKeywords: "kids,bicycle"
-            },
-            {
-                name: "Квадроцикл дитячий Power ATV Green",
-                price: 9190,
-                old: 9370,
-                description: "Яскравий акумуляторний квадроцикл для впевненого катання та веселих ігор.",
-                imageKeywords: "kids,atv,quad,bike"
-            },
-            {
-                name: "Біговел Balance Move Pro",
-                price: 2820,
-                old: 2910,
-                description: "Сучасний біговел для щоденних прогулянок і розвитку координації.",
-                imageKeywords: "balance,bike,child",
-                is_hit: true
-            }
+            { name: "Дитячий транспорт 1", price: 900, old: 1100, description: "Легкий транспорт для веселих прогулянок.", is_sale: true },
+            { name: "Дитячий транспорт 2", price: 1100, old: 1320, description: "Надійна модель для активного катання." },
+            { name: "Дитячий транспорт 3", price: 1300, old: 1560, description: "Яскравий транспорт для ігор надворі.", is_new: true },
+            { name: "Дитячий транспорт 4", price: 1500, old: 1780, description: "Стійка модель для дітей різного віку.", is_hit: true },
+            { name: "Дитячий транспорт 5", price: 1750, old: 2050, description: "Зручний транспорт для щоденного дозвілля." },
+            { name: "Дитячий транспорт 6", price: 1950, old: 2280, description: "Міцна конструкція та плавний хід." },
+            { name: "Дитячий транспорт 7", price: 2200, old: 2550, description: "Безпечний варіант для прогулянок." },
+            { name: "Дитячий транспорт 8", price: 2450, old: 2820, description: "Функціональна модель для вулиці." },
+            { name: "Дитячий транспорт 9", price: 2700, old: 3090, description: "Сучасний транспорт для маленьких дослідників." },
+            { name: "Дитячий транспорт 10", price: 2950, old: 3380, description: "Комфортна модель для тривалого використання." }
         ]),
-
         ...make("sorter", [
-            {
-                name: "Сортер Color Match Animals",
-                price: 349,
-                old: 389,
-                description: "Розвивальна гра для вивчення кольорів, форм і тренування дрібної моторики.",
-                imageKeywords: "sorter,baby,toy,wood",
-                is_hit: true,
-                is_sale: true
-            },
-            {
-                name: "Дерев’яний сортер Logic Box 5 в 1",
-                price: 619,
-                old: 669,
-                description: "Універсальний набір для знайомства з формами, кольорами й першим рахунком.",
-                imageKeywords: "wooden,sorter,toy"
-            },
-            {
-                name: "Сортер Bus Shapes Junior",
-                price: 209,
-                old: 229,
-                description: "Яскравий сортер у формі автобуса для раннього розвитку та веселих занять.",
-                imageKeywords: "sorter,bus,toy,baby",
-                is_new: true
-            },
-            {
-                name: "Сортер Train Fun Blocks",
-                price: 229,
-                old: 249,
-                description: "Потяг-сортер із фігурками для простих логічних ігор у домашніх умовах.",
-                imageKeywords: "sorter,train,toy,baby"
-            },
-            {
-                name: "Сортер Wooden Geo Stars",
-                price: 569,
-                old: 619,
-                description: "Дерев’яний сортер для спокійної гри, розвитку уваги та координації.",
-                imageKeywords: "wooden,geometric,sorter"
-            },
-            {
-                name: "Сортер Baby Blocks Bucket",
-                price: 659,
-                old: 709,
-                description: "Відерце з об’ємними фігурками для перших вправ на логіку й посидючість.",
-                imageKeywords: "baby,blocks,bucket,sorter",
-                is_hit: true
-            },
-            {
-                name: "Сортер Shape Bucket Play Set",
-                price: 729,
-                old: 779,
-                description: "Набір із яскравими елементами для самостійних занять малюка.",
-                imageKeywords: "shape,sorter,bucket,toy"
-            },
-            {
-                name: "Сортер Cube Smart Mini",
-                price: 279,
-                old: 309,
-                description: "Компактний кубик для розвитку моторики та знайомства з базовими формами.",
-                imageKeywords: "sorter,cube,toy"
-            },
-            {
-                name: "Магнітна риболовля Sea Learn Set",
-                price: 419,
-                old: 469,
-                description: "Цікавий набір для уважності, координації рухів і домашніх розвивальних ігор.",
-                imageKeywords: "magnetic,fishing,toy,kids"
-            },
-            {
-                name: "Сортер Geometry Wood Start",
-                price: 499,
-                old: 549,
-                description: "Практичний дерев’яний набір для перших кроків у вивченні форм і кольорів.",
-                imageKeywords: "geometry,wooden,sorter"
-            }
+            { name: "Сортер 1", price: 400, old: 520, description: "Розвиває моторику, увагу та логіку дитини.", is_hit: true },
+            { name: "Сортер 2", price: 430, old: 550, description: "Яскравий сортер для раннього розвитку." },
+            { name: "Сортер 3", price: 470, old: 590, description: "Навчальна іграшка для координації рухів.", is_new: true },
+            { name: "Сортер 4", price: 510, old: 640, description: "Безпечний сортер із цікавими формами.", is_sale: true },
+            { name: "Сортер 5", price: 550, old: 690, description: "Розвиваюча іграшка для малюків." },
+            { name: "Сортер 6", price: 590, old: 740, description: "Дерев'яний сортер для пізнавальних ігор." },
+            { name: "Сортер 7", price: 630, old: 790, description: "Практичний сортер для навчання кольорам." },
+            { name: "Сортер 8", price: 680, old: 840, description: "Іграшка для розвитку мислення та моторики." },
+            { name: "Сортер 9", price: 730, old: 900, description: "Надійна модель для раннього навчання." },
+            { name: "Сортер 10", price: 780, old: 960, description: "Популярний сортер для домашніх занять." }
         ]),
-
         ...make("baby", [
-            {
-                name: "Пляшечка Natural Flow Baby 260 мл",
-                price: 479,
-                old: 519,
-                description: "Зручна пляшечка для щоденного годування з комфортною формою та м’якою соскою.",
-                imageKeywords: "baby,bottle,feeding",
-                is_hit: true
-            },
-            {
-                name: "Пустушка Soft Calm 0-6 міс",
-                price: 309,
-                old: 339,
-                description: "Легка пустушка для щоденного використання та спокійного засинання.",
-                imageKeywords: "baby,pacifier"
-            },
-            {
-                name: "Прорізувач Cool Teether Aqua",
-                price: 179,
-                old: 199,
-                description: "Зручний прорізувач для зменшення дискомфорту під час появи зубчиків.",
-                imageKeywords: "baby,teether"
-            },
-            {
-                name: "Підвіска на коляску Happy Fox Spiral",
-                price: 1099,
-                old: 1149,
-                description: "Розвивальна підвіска з м’якими елементами, шурхотінням і яскравими деталями.",
-                imageKeywords: "baby,stroller,toy,spiral",
-                is_new: true
-            },
-            {
-                name: "Розвивальна дуга Play Arch Day&Night",
-                price: 1999,
-                old: 2099,
-                description: "Дуга з іграшками та активностями для коляски, автокрісла або ліжечка.",
-                imageKeywords: "baby,play,arch,toy"
-            },
-            {
-                name: "Набір щітка та гребінець Baby Care Soft",
-                price: 269,
-                old: 299,
-                description: "Практичний набір для делікатного догляду за волоссям малюка.",
-                imageKeywords: "baby,brush,comb"
-            },
-            {
-                name: "Антиколікова пляшечка Easy Start 120 мл",
-                price: 229,
-                old: 259,
-                description: "Компактна пляшечка для новонароджених із комфортним потоком та м’якою соскою.",
-                imageKeywords: "baby,bottle,newborn"
-            },
-            {
-                name: "Термометр електронний Baby Check",
-                price: 419,
-                old: 459,
-                description: "Електронний термометр для швидкого та зручного домашнього контролю температури.",
-                imageKeywords: "baby,thermometer"
-            },
-            {
-                name: "Музична підвіска Sleepy Stars Mobile",
-                price: 559,
-                old: 609,
-                description: "Підвісна іграшка для розвитку уваги, слуху та заспокоєння малюка.",
-                imageKeywords: "baby,mobile,toy,crib",
-                is_sale: true
-            },
-            {
-                name: "Слинявчик Silicone Pocket Mint",
-                price: 209,
-                old: 229,
-                description: "Силіконовий слинявчик із кишенькою для зручного годування вдома та в дорозі.",
-                imageKeywords: "baby,bib,silicone"
-            }
+            { name: "Товар для немовлят 1", price: 260, old: 330, description: "Корисний товар для щоденного догляду за малюком." },
+            { name: "Товар для немовлят 2", price: 290, old: 360, description: "Зручний аксесуар для першого року життя.", is_hit: true },
+            { name: "Товар для немовлят 3", price: 320, old: 390, description: "Практичний товар для комфорту малюка." },
+            { name: "Товар для немовлят 4", price: 360, old: 440, description: "Якісний товар для догляду та зручності." },
+            { name: "Товар для немовлят 5", price: 390, old: 470, description: "Безпечне рішення для щоденного використання.", is_sale: true },
+            { name: "Товар для немовлят 6", price: 430, old: 520, description: "Продуманий товар для найменших.", is_new: true },
+            { name: "Товар для немовлят 7", price: 470, old: 560, description: "М'який і комфортний аксесуар для малюка." },
+            { name: "Товар для немовлят 8", price: 520, old: 620, description: "Практичний товар для батьків і дитини." },
+            { name: "Товар для немовлят 9", price: 580, old: 690, description: "Надійний товар для щоденних потреб." },
+            { name: "Товар для немовлят 10", price: 640, old: 760, description: "Зручний товар для догляду за дитиною." }
         ]),
-
         ...make("school", [
-            {
-                name: "Рюкзак School Move Pixel Space",
-                price: 2129,
-                old: 2179,
-                description: "Місткий шкільний рюкзак із зручною спинкою та практичними відділеннями.",
-                imageKeywords: "school,backpack,kids",
-                is_hit: true
-            },
-            {
-                name: "Пенал One Zip Smart Blue",
-                price: 459,
-                old: 499,
-                description: "Зручний пенал для ручок, олівців і дрібних речей на кожен навчальний день.",
-                imageKeywords: "school,pencil,case"
-            },
-            {
-                name: "Ланчбокс Daily Snack із секціями",
-                price: 339,
-                old: 369,
-                description: "Компактний контейнер для перекусів у школі, гуртках або поїздках.",
-                imageKeywords: "school,lunchbox,kids"
-            },
-            {
-                name: "Пляшка для води School Fresh 550 мл",
-                price: 409,
-                old: 449,
-                description: "Легка шкільна пляшка для води на кожен день.",
-                imageKeywords: "school,water,bottle",
-                is_new: true
-            },
-            {
-                name: "Набір кольорових ручок Color Line 10",
-                price: 249,
-                old: 279,
-                description: "Практичний набір для навчання, конспектів і творчих завдань.",
-                imageKeywords: "school,pens,color"
-            },
-            {
-                name: "Комплект зошитів Study Box 10 шт",
-                price: 229,
-                old: 259,
-                description: "Набір зошитів у клітинку для навчального року та щоденних занять.",
-                imageKeywords: "school,notebook"
-            },
-            {
-                name: "Альбом для малювання Art Start 30 арк",
-                price: 129,
-                old: 149,
-                description: "Альбом для уроків малювання, творчих завдань і домашніх робіт.",
-                imageKeywords: "school,sketchbook,drawing"
-            },
-            {
-                name: "Олівці Color Art 24 відтінки",
-                price: 299,
-                old: 329,
-                description: "Яскравий набір кольорових олівців для школи, творчості та дозвілля.",
-                imageKeywords: "school,colored,pencils",
-                is_sale: true
-            },
-            {
-                name: "Папка для праці Craft Folder Zip",
-                price: 269,
-                old: 299,
-                description: "Зручна папка для альбомів, кольорового паперу та уроків праці.",
-                imageKeywords: "school,folder,craft"
-            },
-            {
-                name: "Сумка для змінного взуття Easy Bag Reflect",
-                price: 319,
-                old: 349,
-                description: "Легка сумка для взуття чи спортивної форми з практичним шнурком.",
-                imageKeywords: "school,shoe,bag"
-            }
+            { name: "Шкільний товар 1", price: 180, old: 240, description: "Практичний товар для навчання та школи." },
+            { name: "Шкільний товар 2", price: 220, old: 280, description: "Корисна річ для щоденного навчального процесу.", is_new: true },
+            { name: "Шкільний товар 3", price: 260, old: 320, description: "Якісний товар для школи та занять." },
+            { name: "Шкільний товар 4", price: 300, old: 370, description: "Зручний аксесуар для навчання." },
+            { name: "Шкільний товар 5", price: 340, old: 410, description: "Практичний товар для школяра.", is_hit: true },
+            { name: "Шкільний товар 6", price: 390, old: 470, description: "Надійний і корисний товар для занять.", is_sale: true },
+            { name: "Шкільний товар 7", price: 450, old: 540, description: "Функціональний шкільний аксесуар." },
+            { name: "Шкільний товар 8", price: 510, old: 610, description: "Зручний товар для уроків і гуртків." },
+            { name: "Шкільний товар 9", price: 580, old: 690, description: "Практична річ для щоденного навчання." },
+            { name: "Шкільний товар 10", price: 650, old: 770, description: "Популярний товар для школярів." }
         ]),
-
         ...make("furniture", [
-            {
-                name: "Стіл дитячий Play Table White",
-                price: 2379,
-                old: 2439,
-                description: "Зручний дитячий столик для ігор, читання, ліплення та малювання.",
-                imageKeywords: "kids,table,furniture",
-                is_hit: true
-            },
-            {
-                name: "Стілець дитячий Kids Chair Milk",
-                price: 1179,
-                old: 1239,
-                description: "Міцний і легкий стілець для творчих занять, ігор та щоденного використання.",
-                imageKeywords: "kids,chair,furniture"
-            },
-            {
-                name: "Стелаж для іграшок Box Shelf Mini",
-                price: 4640,
-                old: 4790,
-                description: "Практичний стелаж для зберігання книг, коробок, іграшок і дитячих дрібниць.",
-                imageKeywords: "kids,shelf,furniture"
-            },
-            {
-                name: "Парта для навчання Study Desk Smart",
-                price: 6840,
-                old: 6990,
-                description: "Регульований стіл для уроків, читання та творчих занять удома.",
-                imageKeywords: "kids,desk,furniture,study",
-                is_new: true
-            },
-            {
-                name: "Крісло дитяче Ergo Junior Match",
-                price: 4920,
-                old: 5070,
-                description: "Ергономічне крісло для комфортної посадки під час навчання і занять.",
-                imageKeywords: "kids,chair,desk,furniture"
-            },
-            {
-                name: "Комод для дитячих речей Soft Home 4",
-                price: 8290,
-                old: 8440,
-                description: "Місткий комод для одягу, текстилю, підгузків та дитячих аксесуарів.",
-                imageKeywords: "kids,dresser,furniture"
-            },
-            {
-                name: "Ліжечко дитяче Sleep Wood Classic",
-                price: 6430,
-                old: 6590,
-                description: "Дерев’яне ліжечко для малюка з міцною конструкцією та затишним дизайном.",
-                imageKeywords: "baby,crib,wood,furniture",
-                is_sale: true
-            },
-            {
-                name: "Полиця для книжок Book Front Kids",
-                price: 3160,
-                old: 3270,
-                description: "Низька полиця для дитячих книжок, яка допомагає підтримувати порядок.",
-                imageKeywords: "kids,bookshelf,furniture"
-            },
-            {
-                name: "Шафа дитяча Junior Room White",
-                price: 7140,
-                old: 7310,
-                description: "Зручна шафа для одягу, коробок, іграшок і сезонних речей.",
-                imageKeywords: "kids,wardrobe,furniture"
-            },
-            {
-                name: "Скриня для іграшок Toy Box Wood",
-                price: 2860,
-                old: 2970,
-                description: "Містка скриня для акуратного зберігання іграшок у дитячій кімнаті.",
-                imageKeywords: "toy,box,wood,furniture"
-            }
+            { name: "Дитячі меблі 1", price: 1200, old: 1450, description: "Практичні меблі для дитячої кімнати." },
+            { name: "Дитячі меблі 2", price: 1450, old: 1720, description: "Зручний елемент інтер'єру для дитини." },
+            { name: "Дитячі меблі 3", price: 1700, old: 1990, description: "Якісні меблі для ігор і відпочинку.", is_hit: true },
+            { name: "Дитячі меблі 4", price: 1950, old: 2280, description: "Функціональна модель для дитячої кімнати." },
+            { name: "Дитячі меблі 5", price: 2250, old: 2620, description: "Надійні меблі для щоденного використання.", is_sale: true },
+            { name: "Дитячі меблі 6", price: 2550, old: 2960, description: "Продумане рішення для кімнати малюка.", is_new: true },
+            { name: "Дитячі меблі 7", price: 2850, old: 3300, description: "Стійка та красива модель для дитячої." },
+            { name: "Дитячі меблі 8", price: 3200, old: 3690, description: "Зручні меблі для сучасної дитячої кімнати." },
+            { name: "Дитячі меблі 9", price: 3600, old: 4140, description: "Модель для комфортного простору дитини." },
+            { name: "Дитячі меблі 10", price: 4100, old: 4700, description: "Практичне меблеве рішення для дому." }
         ]),
-
         ...make("feeding", [
-            {
-                name: "Пляшечка Baby Natural Care 330 мл",
-                price: 539,
-                old: 579,
-                description: "Пляшечка для комфортного щоденного годування з ергономічною формою.",
-                imageKeywords: "baby,bottle,feeding",
-                is_hit: true
-            },
-            {
-                name: "Ложечки м’які First Spoon 2 шт",
-                price: 209,
-                old: 229,
-                description: "М’які ложечки для першого прикорму та щоденного харчування малюка.",
-                imageKeywords: "baby,spoon,feeding"
-            },
-            {
-                name: "Стілець для годування Comfort Meal Grey",
-                price: 4840,
-                old: 4990,
-                description: "Зручний стілець для годування з м’яким сидінням і практичними регулюваннями.",
-                imageKeywords: "baby,highchair,feeding"
-            },
-            {
-                name: "Нагрудник Silicone Catch Pocket",
-                price: 199,
-                old: 219,
-                description: "Силіконовий нагрудник із кишенькою для акуратного прийому їжі.",
-                imageKeywords: "baby,bib,feeding"
-            },
-            {
-                name: "Тарілка на присосці Stay Bowl Mint",
-                price: 439,
-                old: 469,
-                description: "Тарілка, яка краще тримається на столі та зручна для першого прикорму.",
-                imageKeywords: "baby,bowl,plate,feeding",
-                is_new: true
-            },
-            {
-                name: "Поїльник Soft Spout 200 мл",
-                price: 379,
-                old: 409,
-                description: "Практичний поїльник для переходу від пляшечки до самостійного пиття.",
-                imageKeywords: "baby,sippy,cup,feeding"
-            },
-            {
-                name: "Термосумка Bottle Keep Warm",
-                price: 329,
-                old: 359,
-                description: "Сумка для збереження температури дитячої пляшечки під час прогулянок.",
-                imageKeywords: "baby,bottle,bag"
-            },
-            {
-                name: "Контейнери для прикорму Food Box 4 шт",
-                price: 309,
-                old: 339,
-                description: "Набір контейнерів для пюре, каш і зберігання дитячого харчування.",
-                imageKeywords: "baby,food,containers"
-            },
-            {
-                name: "Стерилізатор Home Steam Compact",
-                price: 1680,
-                old: 1760,
-                description: "Зручний стерилізатор для догляду за пляшечками та аксесуарами.",
-                imageKeywords: "baby,sterilizer,bottle",
-                is_sale: true
-            },
-            {
-                name: "Підігрівач для пляшечок Warm Baby Home",
-                price: 1750,
-                old: 1830,
-                description: "Компактний підігрівач для молока, суміші та дитячого харчування.",
-                imageKeywords: "baby,bottle,warmer"
-            }
+            { name: "Товар для годування 1", price: 210, old: 270, description: "Зручний товар для годування малюка." },
+            { name: "Товар для годування 2", price: 240, old: 300, description: "Практичний аксесуар для щоденного використання." },
+            { name: "Товар для годування 3", price: 280, old: 350, description: "Корисний товар для комфортного годування." },
+            { name: "Товар для годування 4", price: 320, old: 390, description: "Якісний аксесуар для дитячого харчування.", is_new: true },
+            { name: "Товар для годування 5", price: 360, old: 440, description: "Безпечний товар для щоденного догляду." },
+            { name: "Товар для годування 6", price: 410, old: 500, description: "Продуманий товар для годування вдома." },
+            { name: "Товар для годування 7", price: 460, old: 560, description: "Надійний помічник для батьків.", is_hit: true },
+            { name: "Товар для годування 8", price: 520, old: 630, description: "Комфортний товар для прийому їжі.", is_sale: true },
+            { name: "Товар для годування 9", price: 590, old: 710, description: "Функціональний аксесуар для годування." },
+            { name: "Товар для годування 10", price: 660, old: 790, description: "Популярний товар для маленьких дітей." }
         ]),
-
         ...make("hygiene", [
-            {
-                name: "Підгузки Soft Care Premium Size 3",
-                price: 879,
-                old: 929,
-                description: "Комфортні дитячі підгузки для щоденного використання вдома та на прогулянці.",
-                imageKeywords: "baby,diapers",
-                is_hit: true
-            },
-            {
-                name: "Підгузки-трусики Active Pants Size 4",
-                price: 909,
-                old: 959,
-                description: "Зручні трусики для активних малюків і швидкого переодягання.",
-                imageKeywords: "baby,diaper,pants"
-            },
-            {
-                name: "Вологі серветки Aqua Soft 60 шт",
-                price: 199,
-                old: 219,
-                description: "М’які вологі серветки для делікатного очищення шкіри малюка.",
-                imageKeywords: "baby,wipes"
-            },
-            {
-                name: "Шампунь дитячий Gentle Baby 500 мл",
-                price: 229,
-                old: 249,
-                description: "Делікатний дитячий шампунь для щоденного догляду за волоссям.",
-                imageKeywords: "baby,shampoo"
-            },
-            {
-                name: "Гель для купання Baby Moments Soft",
-                price: 249,
-                old: 269,
-                description: "М’який засіб для купання малюка з приємною текстурою.",
-                imageKeywords: "baby,bath,gel",
-                is_new: true
-            },
-            {
-                name: "Крем під підгузок Calm Skin 125 г",
-                price: 329,
-                old: 359,
-                description: "Захисний крем для догляду за чутливою дитячою шкірою.",
-                imageKeywords: "baby,cream,skin"
-            },
-            {
-                name: "Ножиці дитячі Safety Nails",
-                price: 149,
-                old: 169,
-                description: "Безпечні ножиці для догляду за нігтями новонародженого і малюка.",
-                imageKeywords: "baby,scissors,care"
-            },
-            {
-                name: "Ванночка дитяча Bath Time 102 см",
-                price: 529,
-                old: 569,
-                description: "Простора ванночка для щоденного купання вдома.",
-                imageKeywords: "baby,bath,tub",
-                is_sale: true
-            },
-            {
-                name: "Горщик дитячий Comfort Potty Mint",
-                price: 379,
-                old: 409,
-                description: "Зручний дитячий горщик зі спинкою для періоду привчання.",
-                imageKeywords: "baby,potty"
-            },
-            {
-                name: "Термометр для води Water Check Baby",
-                price: 169,
-                old: 189,
-                description: "Практичний аксесуар для контролю температури під час купання.",
-                imageKeywords: "baby,water,thermometer"
-            }
+            { name: "Товар для гігієни 1", price: 140, old: 190, description: "Практичний товар для дитячої гігієни." },
+            { name: "Товар для гігієни 2", price: 170, old: 220, description: "Зручний товар для щоденного догляду." },
+            { name: "Товар для гігієни 3", price: 200, old: 260, description: "Якісний аксесуар для чистоти та комфорту." },
+            { name: "Товар для гігієни 4", price: 240, old: 300, description: "Безпечний товар для маленької дитини.", is_sale: true },
+            { name: "Товар для гігієни 5", price: 280, old: 350, description: "Корисний товар для щоденного використання." },
+            { name: "Товар для гігієни 6", price: 320, old: 390, description: "Практичне рішення для батьків.", is_new: true },
+            { name: "Товар для гігієни 7", price: 370, old: 450, description: "Надійний товар для дитячого догляду.", is_hit: true },
+            { name: "Товар для гігієни 8", price: 420, old: 510, description: "Комфортний аксесуар для чистоти." },
+            { name: "Товар для гігієни 9", price: 480, old: 580, description: "Функціональний товар для малюків." },
+            { name: "Товар для гігієни 10", price: 540, old: 650, description: "Популярний товар для щоденного догляду." }
         ]),
-
         ...make("bedding", [
-            {
-                name: "Комплект постелі Cotton Dream Kids",
-                price: 859,
-                old: 909,
-                description: "М’який комплект дитячої постелі для затишного та комфортного сну.",
-                imageKeywords: "kids,bedding,bed",
-                is_hit: true
-            },
-            {
-                name: "Подушка дитяча Soft Sleep 40x60",
-                price: 299,
-                old: 329,
-                description: "Зручна подушка для дитячого ліжка або денного відпочинку.",
-                imageKeywords: "kids,pillow,bed"
-            },
-            {
-                name: "Ковдра дитяча Warm Cloud 105x140",
-                price: 669,
-                old: 719,
-                description: "Легка ковдра для щоденного сну та затишку у будь-яку пору року.",
-                imageKeywords: "kids,blanket,bed"
-            },
-            {
-                name: "Плед дитячий Cozy Blanket Mint",
-                price: 499,
-                old: 539,
-                description: "М’який плед для прогулянок, ліжечка або денного відпочинку.",
-                imageKeywords: "kids,plaid,blanket",
-                is_new: true
-            },
-            {
-                name: "Простирадло на резинці Soft Fit 60x120",
-                price: 269,
-                old: 289,
-                description: "Практичне простирадло, яке добре тримається на дитячому матраці.",
-                imageKeywords: "bed,sheet,kids"
-            },
-            {
-                name: "Захист у ліжечко Dream Bumper Set",
-                price: 1519,
-                old: 1599,
-                description: "М’які бортики для безпечного та затишного простору малюка.",
-                imageKeywords: "crib,bumper,baby"
-            },
-            {
-                name: "Наволочка дитяча Cotton Touch 40x60",
-                price: 189,
-                old: 209,
-                description: "Бавовняна наволочка для щоденного використання та легкого догляду.",
-                imageKeywords: "pillowcase,kids,bedding"
-            },
-            {
-                name: "Покривало в дитячу кімнату Room Decor Kids",
-                price: 809,
-                old: 859,
-                description: "Стильне покривало для охайного оформлення дитячого ліжка.",
-                imageKeywords: "bedspread,kids,bedroom",
-                is_sale: true
-            },
-            {
-                name: "Спальний мішок Baby Sleep Bag Warm",
-                price: 1860,
-                old: 1940,
-                description: "Зручний спальний мішок для спокійного сну без зайвого розкривання.",
-                imageKeywords: "baby,sleep,bag"
-            },
-            {
-                name: "Наматрацник водонепроникний Soft Protect 60x120",
-                price: 359,
-                old: 389,
-                description: "Захист матраца від вологи для дитячого ліжечка та щоденного користування.",
-                imageKeywords: "mattress,protector,baby"
-            }
+            { name: "Постіль 1", price: 520, old: 640, description: "М'яка дитяча постіль для комфортного сну." },
+            { name: "Постіль 2", price: 580, old: 710, description: "Якісний комплект для дитячого ліжечка." },
+            { name: "Постіль 3", price: 640, old: 780, description: "Практична постіль для щоденного використання." },
+            { name: "Постіль 4", price: 710, old: 860, description: "Затишний комплект для дитячої кімнати.", is_new: true },
+            { name: "Постіль 5", price: 790, old: 950, description: "М'яка тканина та приємний дизайн.", is_hit: true },
+            { name: "Постіль 6", price: 860, old: 1030, description: "Комфортна постіль для спокійного відпочинку.", is_sale: true },
+            { name: "Постіль 7", price: 940, old: 1120, description: "Зручний комплект для кожного дня." },
+            { name: "Постіль 8", price: 1030, old: 1220, description: "Приємний на дотик комплект для дитини." },
+            { name: "Постіль 9", price: 1120, old: 1320, description: "Якісна постіль для дитячого ліжка." },
+            { name: "Постіль 10", price: 1230, old: 1440, description: "Популярний комплект для затишної кімнати." }
         ]),
-
         ...make("creativity", [
-            {
-                name: "Набір алмазної мозаїки Crystal Art 40x50",
-                price: 519,
-                old: 569,
-                description: "Творчий набір для викладання картини стразами вдома.",
-                imageKeywords: "diamond,painting,craft",
-                is_hit: true
-            },
-            {
-                name: "Картина стразами Diamond Hobby Morning",
-                price: 519,
-                old: 569,
-                description: "Яскравий набір для спокійного творчого дозвілля та уважної роботи.",
-                imageKeywords: "diamond,art,craft"
-            },
-            {
-                name: "Фломастери Color Super Tips 24 кольори",
-                price: 629,
-                old: 679,
-                description: "Насичені кольори для малювання, розфарбовування і творчих проєктів.",
-                imageKeywords: "markers,color,art",
-                is_new: true
-            },
-            {
-                name: "Пластилін Soft Dough 8 баночок",
-                price: 419,
-                old: 459,
-                description: "М’яка маса для ліплення, розвитку моторики та домашньої творчості.",
-                imageKeywords: "play,dough,clay,kids"
-            },
-            {
-                name: "Набір для гравюри Art Scratch Junior",
-                price: 169,
-                old: 189,
-                description: "Компактний творчий набір для подарунка й цікавих домашніх занять.",
-                imageKeywords: "scratch,art,kit"
-            },
-            {
-                name: "Фарби акварельні Water Color 24",
-                price: 209,
-                old: 229,
-                description: "Практичний набір акварельних фарб для школи та творчих занять.",
-                imageKeywords: "watercolor,paint,art"
-            },
-            {
-                name: "Набір для творчості Create Box 6+",
-                price: 699,
-                old: 749,
-                description: "Готовий набір для малювання, аплікацій і розвитку фантазії.",
-                imageKeywords: "craft,kit,kids"
-            },
-            {
-                name: "Мольберт дитячий Double Art Board",
-                price: 1850,
-                old: 1940,
-                description: "Двосторонній мольберт для крейди, маркерів і перших уроків малювання.",
-                imageKeywords: "kids,easel,art",
-                is_sale: true
-            },
-            {
-                name: "Кінетичний пісок Sand Play Set",
-                price: 329,
-                old: 359,
-                description: "Набір кінетичного піску з формочками для творчої гри вдома.",
-                imageKeywords: "kinetic,sand,play"
-            },
-            {
-                name: "Набір наліпок і аплікацій Fun Sticker Box",
-                price: 469,
-                old: 509,
-                description: "Творчий набір для розвитку дрібної моторики, посидючості та уяви.",
-                imageKeywords: "stickers,craft,kids"
-            }
+            { name: "Товар для творчості 1", price: 160, old: 210, description: "Набір для розвитку творчих здібностей." },
+            { name: "Товар для творчості 2", price: 190, old: 240, description: "Яскравий товар для малювання та занять." },
+            { name: "Товар для творчості 3", price: 220, old: 280, description: "Корисний товар для рукоділля та навчання." },
+            { name: "Товар для творчості 4", price: 260, old: 320, description: "Зручний набір для дитячої творчості." },
+            { name: "Товар для творчості 5", price: 300, old: 370, description: "Практичний товар для домашніх занять.", is_hit: true },
+            { name: "Товар для творчості 6", price: 340, old: 420, description: "Якісний товар для розвитку уяви.", is_sale: true },
+            { name: "Товар для творчості 7", price: 390, old: 480, description: "Цікавий набір для веселих творчих ігор.", is_new: true },
+            { name: "Товар для творчості 8", price: 450, old: 550, description: "Популярний товар для дитячого хобі." },
+            { name: "Товар для творчості 9", price: 520, old: 630, description: "Натхненний набір для розвитку фантазії." },
+            { name: "Товар для творчості 10", price: 590, old: 710, description: "Функціональний товар для творчих занять." }
         ])
     ];
 }
@@ -1257,29 +404,6 @@ async function deleteProductFromSupabase(id) {
     return products;
 }
 
-function looksLikeOldTemplateCatalog(list) {
-    if (!Array.isArray(list) || !list.length) return true;
-
-    const templateMarkers = [
-        "Іграшка 2",
-        "Коляска 1",
-        "Автокрісло 1",
-        "Дитячий костюм 1",
-        "Дитячий транспорт 1",
-        "Сортер 1",
-        "Товар для немовлят 1",
-        "Шкільний товар 1",
-        "Дитячі меблі 1",
-        "Товар для годування 1",
-        "Товар для гігієни 1",
-        "Постіль 1",
-        "Товар для творчості 1"
-    ];
-
-    const names = list.map(item => String(item?.name || "").trim());
-    return templateMarkers.some(marker => names.includes(marker));
-}
-
 async function seedDefaultProductsIfNeeded() {
     const seeded = localStorage.getItem(PRODUCTS_INIT_FLAG_KEY) === "true";
 
@@ -1290,23 +414,15 @@ async function seedDefaultProductsIfNeeded() {
         console.error("Помилка читання товарів із Supabase:", error);
     }
 
-    const mustReplaceCatalog = !seeded || looksLikeOldTemplateCatalog(remoteProducts);
-
-    if (mustReplaceCatalog) {
-        await replaceAllProductsInSupabase(DEFAULT_PRODUCTS);
-        localStorage.setItem(PRODUCTS_INIT_FLAG_KEY, "true");
-        const refreshed = await fetchProductsFromSupabase();
-        setProductsState(refreshed.length ? refreshed : DEFAULT_PRODUCTS, false);
-        return products;
-    }
-
     if (remoteProducts.length > 0) {
         setProductsState(remoteProducts, false);
         return remoteProducts;
     }
 
-    await replaceAllProductsInSupabase(DEFAULT_PRODUCTS);
-    localStorage.setItem(PRODUCTS_INIT_FLAG_KEY, "true");
+    if (!seeded) {
+        await replaceAllProductsInSupabase(DEFAULT_PRODUCTS);
+        localStorage.setItem(PRODUCTS_INIT_FLAG_KEY, "true");
+    }
 
     const afterSeed = await fetchProductsFromSupabase();
     setProductsState(afterSeed.length ? afterSeed : DEFAULT_PRODUCTS, false);

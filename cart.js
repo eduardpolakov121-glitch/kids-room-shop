@@ -2,7 +2,6 @@ let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
 const NOVA_POSHTA_API_KEY = "0cddc3bd30e2e4de2f2ce8f46313a168";
 const NOVA_POSHTA_API_URL = "https://api.novaposhta.ua/v2.0/json/";
-const FREE_DELIVERY_THRESHOLD = 1000;
 
 let selectedCity = null;
 let lastCheckoutOrderNumber = "";
@@ -55,35 +54,39 @@ function closeSuccessModal(event) {
 }
 
 function toggleCart() {
-    document.getElementById("cart").classList.toggle("open");
+    const cartEl = document.getElementById("cart");
+    const overlay = document.getElementById("cart-overlay");
+    if (!cartEl || !overlay) return;
+
+    const willOpen = !cartEl.classList.contains("open");
+    cartEl.classList.toggle("open", willOpen);
+    overlay.classList.toggle("active", willOpen);
 }
 
 function closeCart() {
-    document.getElementById("cart").classList.remove("open");
+    const cartEl = document.getElementById("cart");
+    const overlay = document.getElementById("cart-overlay");
+    if (!cartEl || !overlay) return;
+
+    cartEl.classList.remove("open");
+    overlay.classList.remove("active");
 }
 
-function getCartSum() {
-    return cart.reduce((sum, item) => sum + Number(item.price || 0) * Number(item.qty || 0), 0);
-}
+function getProductQtyInputValue(id) {
+    const input = document.getElementById("qty-" + id);
+    if (!input) return 1;
 
-function hasFreeDelivery(sum = null) {
-    const total = sum === null ? getCartSum() : Number(sum || 0);
-    return total >= FREE_DELIVERY_THRESHOLD;
-}
-
-function getRemainingForFreeDelivery(sum = null) {
-    const total = sum === null ? getCartSum() : Number(sum || 0);
-    return Math.max(0, FREE_DELIVERY_THRESHOLD - total);
+    const qty = parseInt(input.value || "1", 10);
+    if (Number.isNaN(qty) || qty < 1) return 1;
+    return qty;
 }
 
 function addToCart(id) {
-    const qtyInput = document.getElementById("qty-" + id);
-    const qty = Math.max(1, parseInt(qtyInput?.value || "1", 10) || 1);
-
-    const product = products.find(p => p.id == id);
+    const qty = getProductQtyInputValue(id);
+    const product = products.find(p => String(p.id) === String(id));
     if (!product) return;
 
-    const item = cart.find(p => p.id == id);
+    const item = cart.find(p => String(p.id) === String(id));
 
     if (item) {
         item.qty += qty;
@@ -102,7 +105,7 @@ function addToCart(id) {
 }
 
 function cartPlus(id) {
-    const item = cart.find(p => p.id == id);
+    const item = cart.find(p => String(p.id) === String(id));
     if (!item) return;
 
     item.qty++;
@@ -111,67 +114,115 @@ function cartPlus(id) {
 }
 
 function cartMinus(id) {
-    const item = cart.find(p => p.id == id);
+    const item = cart.find(p => String(p.id) === String(id));
     if (!item) return;
 
     if (item.qty > 1) {
         item.qty--;
     } else {
-        cart = cart.filter(p => p.id != id);
+        cart = cart.filter(p => String(p.id) !== String(id));
     }
 
     renderCart();
     saveCart();
 }
 
+function getCartTotals() {
+    const subtotal = cart.reduce((sum, item) => sum + Number(item.price || 0) * Number(item.qty || 0), 0);
+    const qty = cart.reduce((sum, item) => sum + Number(item.qty || 0), 0);
+    const delivery = subtotal >= 1000 || subtotal === 0 ? 0 : 120;
+    const total = subtotal + delivery;
+
+    return { subtotal, qty, delivery, total };
+}
+
+function renderCartProgress(subtotal) {
+    const progress = document.getElementById("cart-progress");
+    if (!progress) return;
+
+    if (subtotal >= 1000) {
+        progress.innerHTML = `✅ У вас вже <strong>безкоштовна доставка</strong>`;
+        return;
+    }
+
+    const remain = 1000 - subtotal;
+    progress.innerHTML = `🎁 Додайте ще <strong>${remain} грн</strong> для безкоштовної доставки`;
+}
+
+function renderCartSummary(subtotal, delivery, total) {
+    const summary = document.getElementById("cart-summary");
+    if (!summary) return;
+
+    summary.innerHTML = `
+        <div class="cart-summary-box">
+            <div class="cart-summary-row">
+                <span>Товари</span>
+                <strong>${subtotal} грн</strong>
+            </div>
+            <div class="cart-summary-row">
+                <span>Доставка</span>
+                <strong>${delivery === 0 ? "Безкоштовно" : delivery + " грн"}</strong>
+            </div>
+            <div class="cart-summary-total">
+                До сплати <span>${total} грн</span>
+            </div>
+        </div>
+    `;
+}
+
 function renderCart() {
     const items = document.getElementById("cart-items");
     const count = document.getElementById("cart-count");
-    const total = document.getElementById("total");
-
-    if (!items || !count || !total) return;
+    if (!items || !count) return;
 
     items.innerHTML = "";
-    let sum = 0;
-    let qty = 0;
+
+    const { subtotal, qty, delivery, total } = getCartTotals();
 
     cart.forEach(p => {
-        sum += Number(p.price || 0) * Number(p.qty || 0);
-        qty += Number(p.qty || 0);
-
         const image = getCartItemImage(p);
+        const itemTotal = Number(p.price || 0) * Number(p.qty || 0);
 
         items.innerHTML += `
         <div class="cart-item">
-            <div style="display:flex;align-items:center;gap:10px;">
+            <div style="display:flex;align-items:flex-start;gap:10px;min-width:0;">
                 <img
                     src="${image}"
                     alt="${p.name}"
-                    style="width:55px;height:55px;object-fit:cover;border-radius:10px;background:#f3f3f3;"
+                    style="width:64px;height:64px;object-fit:cover;border-radius:14px;background:#f3f3f3;flex-shrink:0;"
                     onerror="this.onerror=null;this.src='product-placeholder.svg'"
                 >
-                <div>
-                    ${p.name}<br>
-                    ${p.price} грн
+                <div style="min-width:0;">
+                    <div class="cart-item-title">${p.name}</div>
+                    <div class="cart-item-sub">${p.price} грн × ${p.qty}</div>
                 </div>
             </div>
-            <div>
-                <button onclick="cartMinus('${p.id}')">−</button>
-                ${p.qty}
-                <button onclick="cartPlus('${p.id}')">+</button>
+
+            <div class="cart-item-side">
+                <div class="cart-item-qty">
+                    <button onclick="cartMinus('${p.id}')">−</button>
+                    <span>${p.qty}</span>
+                    <button onclick="cartPlus('${p.id}')">+</button>
+                </div>
+                <div class="cart-item-total">${itemTotal} грн</div>
             </div>
         </div>
         `;
     });
 
+    if (!cart.length) {
+        items.innerHTML = `
+            <div style="padding:18px;border:1px dashed #e6dceb;border-radius:18px;background:#fff;text-align:center;color:#748097;">
+                Кошик поки порожній
+            </div>
+        `;
+    }
+
     count.innerText = qty;
 
-    const freeDelivery = hasFreeDelivery(sum);
-    const remaining = getRemainingForFreeDelivery(sum);
-
-    total.innerHTML = freeDelivery
-        ? `Разом: ${sum} грн<br><span style="font-size:14px;color:#15803d;font-weight:700;">🚚 Доставка безкоштовна</span>`
-        : `Разом: ${sum} грн<br><span style="font-size:14px;color:#6f7b8c;font-weight:700;">До безкоштовної доставки залишилось ${remaining} грн</span>`;
+    renderCartProgress(subtotal);
+    renderCartSummary(subtotal, delivery, total);
+    renderCheckoutSummary();
 }
 
 function checkout() {
@@ -180,12 +231,53 @@ function checkout() {
         return;
     }
 
-    document.getElementById("checkout-modal").classList.add("open");
+    const modal = document.getElementById("checkout-modal");
+    if (!modal) return;
+
+    modal.classList.add("open");
     handleDeliveryTypeChange();
+    renderCheckoutSummary();
 }
 
 function closeCheckoutModal() {
-    document.getElementById("checkout-modal").classList.remove("open");
+    const modal = document.getElementById("checkout-modal");
+    if (!modal) return;
+
+    modal.classList.remove("open");
+}
+
+function renderCheckoutSummary() {
+    const box = document.getElementById("checkout-summary-box");
+    if (!box) return;
+
+    const { subtotal, delivery, total } = getCartTotals();
+
+    box.innerHTML = `
+        <h3>Ваше замовлення</h3>
+
+        ${cart.map(item => `
+            <div class="checkout-summary-item">
+                <span>${item.name} × ${item.qty}</span>
+                <strong>${Number(item.price || 0) * Number(item.qty || 0)} грн</strong>
+            </div>
+        `).join("")}
+
+        <div class="checkout-summary-total">
+            <div>
+                <div style="font-size:13px;color:#748097;font-weight:700;">Разом до сплати</div>
+                <span>${total} грн</span>
+            </div>
+            <div style="text-align:right;font-size:14px;color:#748097;font-weight:700;">
+                ${delivery === 0 ? "Доставка безкоштовна" : "Доставка " + delivery + " грн"}
+            </div>
+        </div>
+
+        <div class="checkout-summary-note">
+            ${subtotal >= 1000
+                ? "🎁 Ваше замовлення вже бере участь у безкоштовній доставці."
+                : "Додайте ще " + (1000 - subtotal) + " грн для безкоштовної доставки."}
+        </div>
+    `;
 }
 
 function handleDeliveryTypeChange() {
@@ -345,7 +437,7 @@ async function submitCheckout() {
         address = "Індекс: " + index;
     }
 
-    const totalSum = getCartSum();
+    const totals = getCartTotals();
 
     const order = {
         customer_first_name: name,
@@ -356,12 +448,12 @@ async function submitCheckout() {
         delivery,
         address,
         items: cart,
-        total: totalSum,
-        status: "Прийнято",
-        status_group: "accepted",
-        operator_comment: hasFreeDelivery(totalSum)
-            ? "Доставка безкоштовна: замовлення від 1000 грн"
-            : "",
+        total: totals.total,
+        subtotal: totals.subtotal,
+        delivery_price: totals.delivery,
+        status: "Новий",
+        status_group: "new",
+        operator_comment: "",
         day_bucket: 0,
         source: "website",
         manager_comment: ""
@@ -404,11 +496,12 @@ function showToast(text) {
     t.style.position = "fixed";
     t.style.bottom = "20px";
     t.style.right = "20px";
-    t.style.background = "#ff6600";
+    t.style.background = "#2e3550";
     t.style.color = "white";
     t.style.padding = "12px 20px";
-    t.style.borderRadius = "10px";
+    t.style.borderRadius = "12px";
     t.style.zIndex = "9999";
+    t.style.boxShadow = "0 10px 24px rgba(0,0,0,0.18)";
     t.innerText = text;
     document.body.appendChild(t);
     setTimeout(() => t.remove(), 2000);
@@ -422,6 +515,7 @@ function clearCart() {
 
 function saveCart() {
     localStorage.setItem("cart", JSON.stringify(cart));
+    window.dispatchEvent(new CustomEvent("cart:updated", { detail: cart }));
 }
 
 renderCart();
@@ -432,16 +526,17 @@ document.addEventListener("DOMContentLoaded", () => {
     const cityInput = document.getElementById("order-city");
     const list = document.getElementById("city-suggestions");
 
-    if (cityInput) {
+    if (cityInput && list) {
         cityInput.addEventListener("input", handleCityInput);
+
         cityInput.addEventListener("blur", () => {
             setTimeout(() => {
-                if (list) list.style.display = "none";
+                list.style.display = "none";
             }, 200);
         });
 
         cityInput.addEventListener("focus", () => {
-            if (list && list.innerHTML.trim() !== "") {
+            if (list.innerHTML.trim() !== "") {
                 list.style.display = "block";
             }
         });
