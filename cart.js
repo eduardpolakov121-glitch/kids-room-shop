@@ -116,7 +116,7 @@ function buildCartLineFromProduct(product, qty) {
     };
 }
 
-function addToCart(id) {
+function addToCart(id, qtyOverride = null) {
     const product = getProductForCart(id);
 
     if (!product) {
@@ -124,7 +124,10 @@ function addToCart(id) {
         return;
     }
 
-    const qty = getProductQtyInputValue(id);
+    const qty = qtyOverride !== null
+        ? normalizeCartQty(qtyOverride)
+        : getProductQtyInputValue(id);
+
     const existingItem = cart.find(item => String(item.id) === String(id));
 
     if (existingItem) {

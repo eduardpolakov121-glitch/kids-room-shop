@@ -7,7 +7,6 @@ let activeSearch = "";
 let selectedProductForModal = null;
 
 const mobileCatalogBreakpoint = 900;
-let headerScrollRaf = null;
 let renderScheduled = false;
 let lastRenderedSignature = "";
 
@@ -129,7 +128,7 @@ function injectCatalogBadgeStyles() {
         font-size:11px;
         font-weight:800;
         line-height:1;
-        box-shadow:0 8px 16px rgba(0,0,0,0.08);
+        box-shadow:0 6px 12px rgba(0,0,0,0.06);
         background:#fff;
     }
 
@@ -156,7 +155,9 @@ function makeRenderSignature(list) {
         category: activeCategory,
         sort: activeSort,
         search: activeSearch,
-        ids: list.map(item => item.id)
+        ids: list.map(item => item.id),
+        prices: list.map(item => item.price),
+        length: list.length
     });
 }
 
@@ -174,9 +175,10 @@ function renderProducts(list) {
 
     container.innerHTML = list.map(product => {
         const discount = getDiscountPercent(product);
+        const safeId = escapeHtmlAttr(product.id);
 
         return `
-        <div class="product product-card-with-badges" id="prod-${product.id}" onclick="openProduct('${escapeHtmlAttr(product.id)}')">
+        <div class="product product-card-with-badges" id="prod-${safeId}" onclick="openProduct('${safeId}')">
             <div class="product-image-wrap">
                 ${buildProductBadges(product)}
                 <img src="${getSafeProductImage(product)}" alt="${escapeHtmlAttr(product.name)}" onerror="this.onerror=null;this.src='${PRODUCT_PLACEHOLDER}'">
@@ -192,18 +194,18 @@ function renderProducts(list) {
             </div>
 
             <div class="quantity" onclick="event.stopPropagation()">
-                <button type="button" onclick="minus('${escapeHtmlAttr(product.id)}')">−</button>
+                <button type="button" onclick="changeQtyByInputId('qty-catalog-${safeId}', -1)">−</button>
                 <input
-                    id="qty-${escapeHtmlAttr(product.id)}"
+                    id="qty-catalog-${safeId}"
                     type="number"
                     value="1"
                     min="1"
                     class="qty-input"
                 >
-                <button type="button" onclick="plus('${escapeHtmlAttr(product.id)}')">+</button>
+                <button type="button" onclick="changeQtyByInputId('qty-catalog-${safeId}', 1)">+</button>
             </div>
 
-            <button class="add-btn" type="button" onclick="event.stopPropagation(); addToCart('${escapeHtmlAttr(product.id)}')">
+            <button class="add-btn" type="button" onclick="event.stopPropagation(); addCatalogProductToCart('${safeId}')">
                 Додати в кошик
             </button>
         </div>
@@ -282,7 +284,11 @@ function applyFiltersAndRender() {
     updateActiveCategoryUI();
 }
 
-function scheduleRender() {
+function scheduleRender(force = false) {
+    if (force) {
+        lastRenderedSignature = "";
+    }
+
     if (renderScheduled) return;
 
     renderScheduled = true;
@@ -303,17 +309,39 @@ function changeQtyValue(targetId, delta) {
     el.value = next < 1 ? 1 : next;
 }
 
+function changeQtyByInputId(inputId, delta) {
+    changeQtyValue(inputId, delta);
+}
+
 function plus(id) {
-    changeQtyValue("qty-" + String(id), 1);
+    changeQtyByInputId(String(id), 1);
 }
 
 function minus(id) {
-    changeQtyValue("qty-" + String(id), -1);
+    changeQtyByInputId(String(id), -1);
+}
+
+function getQtyValueFromInput(inputId) {
+    const input = document.getElementById(inputId);
+    if (!input) return 1;
+
+    const value = parseInt(input.value || "1", 10);
+    return Number.isNaN(value) || value < 1 ? 1 : value;
+}
+
+function addCatalogProductToCart(id) {
+    const qty = getQtyValueFromInput("qty-catalog-" + id);
+    if (typeof addToCart === "function") {
+        addToCart(id, qty);
+    }
+
+    const input = document.getElementById("qty-catalog-" + id);
+    if (input) input.value = "1";
 }
 
 function sortProducts(type) {
     activeSort = type || "";
-    scheduleRender();
+    scheduleRender(true);
 }
 
 function filterCategory(category) {
@@ -327,7 +355,7 @@ function filterCategory(category) {
 
     activeSearch = "";
     closeCatalogMenu();
-    scheduleRender();
+    scheduleRender(true);
 }
 
 function getProductModalBadges(product) {
@@ -416,6 +444,7 @@ function renderProductModal(product) {
     const currentPrice = Number(product.price || 0);
     const discount = getDiscountPercent(product);
     const badges = getProductModalBadges(product);
+    const safeId = escapeHtmlAttr(product.id);
 
     content.innerHTML = `
         <div class="product-detail-layout">
@@ -463,15 +492,15 @@ function renderProductModal(product) {
                         <div class="product-detail-qty">
                             <span>Кількість</span>
                             <div class="product-detail-qty-control">
-                                <button type="button" onclick="minus('modal-${escapeHtmlAttr(product.id)}')">−</button>
-                                <input id="qty-modal-${escapeHtmlAttr(product.id)}" type="number" min="1" value="1">
-                                <button type="button" onclick="plus('modal-${escapeHtmlAttr(product.id)}')">+</button>
+                                <button type="button" onclick="minus('qty-modal-${safeId}')">−</button>
+                                <input id="qty-modal-${safeId}" type="number" min="1" value="1">
+                                <button type="button" onclick="plus('qty-modal-${safeId}')">+</button>
                             </div>
                         </div>
                     </div>
 
                     <div class="product-detail-actions">
-                        <button class="primary" type="button" onclick="addModalProductToCart('${escapeHtmlAttr(product.id)}')">Додати в кошик</button>
+                        <button class="primary" type="button" onclick="addModalProductToCart('${safeId}')">Додати в кошик</button>
                         <button class="secondary" type="button" onclick="forceCloseProductModal()">Продовжити покупки</button>
                     </div>
 
@@ -515,23 +544,14 @@ function closeProductModal(event) {
 }
 
 function addModalProductToCart(id) {
-    const modalQty = document.getElementById("qty-modal-" + id);
-    const realQty = document.getElementById("qty-" + id);
-
-    let helperInput = realQty;
-
-    if (!helperInput) {
-        helperInput = document.createElement("input");
-        helperInput.type = "hidden";
-        helperInput.id = "qty-" + id;
-        document.body.appendChild(helperInput);
-    }
-
-    helperInput.value = modalQty ? modalQty.value : "1";
+    const qty = getQtyValueFromInput("qty-modal-" + id);
 
     if (typeof addToCart === "function") {
-        addToCart(id);
+        addToCart(id, qty);
     }
+
+    const input = document.getElementById("qty-modal-" + id);
+    if (input) input.value = "1";
 }
 
 function addBundleToCart(mainId) {
@@ -541,17 +561,8 @@ function addBundleToCart(mainId) {
     const bundleItems = [mainProduct, ...buildBundleCandidates(mainProduct)];
 
     bundleItems.forEach(item => {
-        let helperInput = document.getElementById("qty-" + item.id);
-        if (!helperInput) {
-            helperInput = document.createElement("input");
-            helperInput.type = "hidden";
-            helperInput.id = "qty-" + item.id;
-            document.body.appendChild(helperInput);
-        }
-        helperInput.value = "1";
-
         if (typeof addToCart === "function") {
-            addToCart(item.id);
+            addToCart(item.id, 1);
         }
     });
 }
@@ -562,7 +573,7 @@ if (searchEl) {
         activeSearch = event.target.value.trim();
         const wide = document.getElementById("search-catalog-wide");
         if (wide) wide.value = activeSearch;
-        scheduleRender();
+        scheduleRender(true);
     });
 }
 
@@ -571,35 +582,13 @@ if (wideSearchEl) {
     wideSearchEl.addEventListener("input", event => {
         activeSearch = event.target.value.trim();
         if (searchEl) searchEl.value = activeSearch;
-        scheduleRender();
+        scheduleRender(true);
     });
 }
 
-let lastScroll = 0;
-const header = document.querySelector("header");
-
-window.addEventListener("scroll", () => {
-    if (headerScrollRaf) return;
-
-    headerScrollRaf = requestAnimationFrame(() => {
-        const current = window.pageYOffset;
-
-        if (header) {
-            if (current > lastScroll && current > 100) {
-                header.classList.add("hide");
-            } else {
-                header.classList.remove("hide");
-            }
-        }
-
-        lastScroll = current;
-        headerScrollRaf = null;
-    });
-}, { passive: true });
-
 function handleProductsReady() {
     ensureSidebarCategoryMarkers();
-    scheduleRender();
+    scheduleRender(true);
 }
 
 window.addEventListener("products:ready", handleProductsReady);
@@ -627,7 +616,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (typeof window.productsReady === "function" && window.productsReady()) {
         handleProductsReady();
     } else {
-        scheduleRender();
+        scheduleRender(true);
     }
 });
 
@@ -642,3 +631,5 @@ window.plus = plus;
 window.minus = minus;
 window.toggleCatalogMenu = toggleCatalogMenu;
 window.closeCatalogMenu = closeCatalogMenu;
+window.addCatalogProductToCart = addCatalogProductToCart;
+window.changeQtyByInputId = changeQtyByInputId;
