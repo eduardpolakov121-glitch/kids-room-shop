@@ -175,6 +175,51 @@ function restoreStoreScroll() {
     }
 }
 
+/* ===== SEARCH FOCUS MODE ===== */
+
+function getSearchFocusElements() {
+    return Array.from(document.querySelectorAll(
+        ".hero-selling, .banner, .home-trust-strip, .cta-banner, .site-footer, .social, .section-wrap, .home-dynamic-block"
+    ));
+}
+
+function updateSearchFocusMode() {
+    const hasSearch = activeSearch.trim().length > 0;
+    const elements = getSearchFocusElements();
+    const productsBlock = document.querySelector(".container");
+    const searchInput = document.getElementById("search");
+
+    elements.forEach(element => {
+        if (!element) return;
+
+        const hasProductsInside = element.contains(container);
+        if (hasProductsInside) return;
+
+        if (hasSearch) {
+            element.style.display = "none";
+        } else {
+            element.style.display = "";
+        }
+    });
+
+    if (productsBlock) {
+        if (hasSearch) {
+            productsBlock.style.marginTop = "96px";
+        } else {
+            productsBlock.style.marginTop = "20px";
+        }
+    }
+
+    if (searchInput && hasSearch) {
+        setTimeout(() => {
+            searchInput.scrollIntoView({
+                block: "nearest",
+                behavior: "smooth"
+            });
+        }, 60);
+    }
+}
+
 /* ===== UI CATEGORY COUNTS ===== */
 
 function updateActiveCategoryUI() {
@@ -362,6 +407,7 @@ function applyFiltersAndRender() {
     renderProducts(currentProducts);
     updateActiveCategoryUI();
     updateProductResultsCount();
+    updateSearchFocusMode();
 }
 
 function updateProductResultsCount() {
