@@ -184,10 +184,64 @@
 }
 
 .product-showcase-grid{
-    display:grid;
-    grid-template-columns:repeat(4,minmax(0,1fr));
-    gap:16px;
+    display:block;
 }
+
+.home-slider{
+    position:relative;
+}
+
+.home-slider-track{
+    display:grid;
+    grid-auto-flow:column;
+    grid-auto-columns:calc(25% - 12px);
+    gap:16px;
+    overflow-x:auto;
+    scroll-behavior:smooth;
+    scrollbar-width:none;
+    padding-bottom:4px;
+}
+
+.home-slider-track::-webkit-scrollbar{
+    display:none;
+}
+
+.home-slider-arrow{
+    position:absolute;
+    top:50%;
+    transform:translateY(-50%);
+    width:46px;
+    height:46px;
+    border:none;
+    border-radius:50%;
+    background:#fff;
+    color:#243041;
+    box-shadow:0 10px 24px rgba(0,0,0,0.12);
+    cursor:pointer;
+    z-index:3;
+    font-size:24px;
+    font-weight:900;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+.home-slider-arrow.left{
+    left:-10px;
+}
+
+.home-slider-arrow.right{
+    right:-10px;
+}
+
+.home-slider-arrow:hover{
+    transform:translateY(-50%) scale(1.03);
+}
+
+.home-slider-arrow.hidden{
+    opacity:.35;
+}
+
 .product-showcase-card{
     background:#fffdf9;
     border:1px solid #ece7df;
@@ -503,12 +557,14 @@
 @media (max-width:1100px){
     .benefits-grid,
     .home-categories-grid,
-    .product-showcase-grid,
     .how-order-grid{
         grid-template-columns:repeat(2,minmax(0,1fr));
     }
     .site-footer-grid{
         grid-template-columns:1fr 1fr;
+    }
+    .home-slider-track{
+        grid-auto-columns:calc(50% - 8px);
     }
 }
 
@@ -535,7 +591,6 @@
 @media (max-width:680px){
     .benefits-grid,
     .home-categories-grid,
-    .product-showcase-grid,
     .how-order-grid{
         grid-template-columns:1fr;
     }
@@ -548,6 +603,20 @@
     }
     .hero-selling-copy p{
         font-size:15px;
+    }
+    .home-slider-track{
+        grid-auto-columns:85%;
+    }
+    .home-slider-arrow{
+        width:40px;
+        height:40px;
+        font-size:20px;
+    }
+    .home-slider-arrow.left{
+        left:-4px;
+    }
+    .home-slider-arrow.right{
+        right:-4px;
     }
 }
 
@@ -1083,6 +1152,18 @@ function buildShowcaseCard(product, type) {
     `;
 }
 
+function wrapShowcaseSlider(containerId, cardsHtml) {
+    return `
+        <div class="home-slider">
+            <button class="home-slider-arrow left" type="button" onclick="slideHomeSection('${containerId}', -1)">‹</button>
+            <div class="home-slider-track" id="${containerId}-track">
+                ${cardsHtml}
+            </div>
+            <button class="home-slider-arrow right" type="button" onclick="slideHomeSection('${containerId}', 1)">›</button>
+        </div>
+    `;
+}
+
 function renderShowcaseGrid(elementId, list, type, emptyText) {
     const container = document.getElementById(elementId);
     if (!container) return;
@@ -1092,7 +1173,63 @@ function renderShowcaseGrid(elementId, list, type, emptyText) {
         return;
     }
 
-    container.innerHTML = list.map(item => buildShowcaseCard(item, type)).join("");
+    const cardsHtml = list.map(item => buildShowcaseCard(item, type)).join("");
+    container.innerHTML = wrapShowcaseSlider(elementId, cardsHtml);
+
+    setTimeout(() => updateHomeSliderButtons(elementId), 30);
+}
+
+function slideHomeSection(containerId, direction) {
+    const track = document.getElementById(containerId + "-track");
+    if (!track) return;
+
+    const card = track.querySelector(".product-showcase-card");
+    const cardWidth = card ? card.getBoundingClientRect().width : 280;
+    const gap = 16;
+    const offset = (cardWidth + gap) * Math.max(1, Math.min(2, window.innerWidth < 700 ? 1 : 2));
+
+    track.scrollBy({
+        left: direction * offset,
+        behavior: "smooth"
+    });
+
+    setTimeout(() => updateHomeSliderButtons(containerId), 350);
+}
+
+function updateHomeSliderButtons(containerId) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+
+    const track = document.getElementById(containerId + "-track");
+    if (!track) return;
+
+    const slider = container.querySelector(".home-slider");
+    if (!slider) return;
+
+    const leftBtn = slider.querySelector(".home-slider-arrow.left");
+    const rightBtn = slider.querySelector(".home-slider-arrow.right");
+
+    if (!leftBtn || !rightBtn) return;
+
+    const maxScrollLeft = track.scrollWidth - track.clientWidth;
+    const current = Math.round(track.scrollLeft);
+
+    leftBtn.classList.toggle("hidden", current <= 2);
+    rightBtn.classList.toggle("hidden", current >= maxScrollLeft - 2);
+}
+
+function bindAllHomeSliders() {
+    ["home-hits-grid", "home-sales-grid", "home-new-grid"].forEach(id => {
+        const track = document.getElementById(id + "-track");
+        if (!track || track.dataset.bound === "true") return;
+
+        track.dataset.bound = "true";
+        track.addEventListener("scroll", () => updateHomeSliderButtons(id));
+    });
+}
+
+function refreshAllHomeSliderButtons() {
+    ["home-hits-grid", "home-sales-grid", "home-new-grid"].forEach(updateHomeSliderButtons);
 }
 
 function renderHomeDynamicSections() {
@@ -1102,7 +1239,7 @@ function renderHomeDynamicSections() {
     const saleProducts = allProducts.filter(product => product.is_sale);
     const newProducts = allProducts.filter(product => product.is_new);
 
-    const hits = (hitProducts.length ? hitProducts : allProducts.slice(0, 4)).slice(0, 4);
+    const hits = (hitProducts.length ? hitProducts : allProducts.slice(0, 8)).slice(0, 8);
 
     const sales = (
         saleProducts.length
@@ -1110,14 +1247,21 @@ function renderHomeDynamicSections() {
             : [...allProducts]
                 .filter(product => Number(product.old || 0) > Number(product.price || 0))
                 .sort((a, b) => (getHomeDiscountPercent(b) || 0) - (getHomeDiscountPercent(a) || 0))
-    ).slice(0, 4);
+    ).slice(0, 8);
 
-    const newest = (newProducts.length ? newProducts : [...allProducts].slice(-4).reverse()).slice(0, 4);
+    const newest = (newProducts.length ? newProducts : [...allProducts].slice(-8).reverse()).slice(0, 8);
 
     renderShowcaseGrid("home-hits-grid", hits, "hit", "Хіти продажу з’являться після додавання товарів.");
     renderShowcaseGrid("home-sales-grid", sales, "sale", "Акційні товари з’являться, коли ти позначиш товари як акційні.");
     renderShowcaseGrid("home-new-grid", newest, "new", "Новинки з’являться, коли ти позначиш товари як нові.");
+
+    setTimeout(() => {
+        bindAllHomeSliders();
+        refreshAllHomeSliderButtons();
+    }, 60);
 }
+
+window.slideHomeSection = slideHomeSection;
 
 window.addEventListener("products:ready", renderHomeDynamicSections);
 window.addEventListener("products:updated", renderHomeDynamicSections);
@@ -1125,6 +1269,10 @@ window.addEventListener("storage", function(event) {
     if (event.key === "products") {
         renderHomeDynamicSections();
     }
+});
+
+window.addEventListener("resize", function() {
+    refreshAllHomeSliderButtons();
 });
 
 document.addEventListener("DOMContentLoaded", function() {
