@@ -449,6 +449,7 @@ async function initializeProducts() {
         productsReady = true;
         window.products = products;
         window.dispatchEvent(new CustomEvent("products:ready", { detail: products }));
+        window.dispatchEvent(new CustomEvent("products:updated", { detail: products }));
         return products;
     })();
 
