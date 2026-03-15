@@ -6,6 +6,7 @@ let activeSort = "";
 let activeSearch = "";
 
 const mobileCatalogBreakpoint = 900;
+const STORE_STATE_KEY = "kids_room_store_state";
 
 function isMobileCatalogMode() {
     return window.innerWidth <= mobileCatalogBreakpoint;
@@ -67,6 +68,76 @@ function ensureSidebarCategoryMarkers() {
     });
 
     updateActiveCategoryUI();
+}
+
+function saveStoreState() {
+    const search = document.getElementById("search");
+    const sortSelect = document.querySelector(".filters select");
+
+    const state = {
+        url: window.location.href,
+        scrollY: window.scrollY || window.pageYOffset || 0,
+        activeCategory,
+        activeSort,
+        activeSearch: search ? search.value.trim() : activeSearch,
+        sortValue: sortSelect ? sortSelect.value : activeSort
+    };
+
+    sessionStorage.setItem(STORE_STATE_KEY, JSON.stringify(state));
+}
+
+function restoreStoreStateFromSession() {
+    const raw = sessionStorage.getItem(STORE_STATE_KEY);
+    if (!raw) return false;
+
+    try {
+        const state = JSON.parse(raw);
+
+        activeCategory = state.activeCategory || "all";
+        activeSort = state.activeSort || "";
+        activeSearch = state.activeSearch || "";
+
+        const search = document.getElementById("search");
+        if (search) {
+            search.value = activeSearch;
+        }
+
+        const sortSelect = document.querySelector(".filters select");
+        if (sortSelect) {
+            sortSelect.value = state.sortValue || activeSort || "";
+        }
+
+        return true;
+    } catch (error) {
+        console.error("Помилка відновлення стану магазину:", error);
+        return false;
+    }
+}
+
+function restoreStoreScroll() {
+    const raw = sessionStorage.getItem(STORE_STATE_KEY);
+    if (!raw) return;
+
+    try {
+        const state = JSON.parse(raw);
+        const scrollY = Number(state.scrollY || 0);
+
+        setTimeout(() => {
+            window.scrollTo({
+                top: scrollY,
+                behavior: "auto"
+            });
+        }, 60);
+
+        setTimeout(() => {
+            window.scrollTo({
+                top: scrollY,
+                behavior: "auto"
+            });
+        }, 260);
+    } catch (error) {
+        console.error("Помилка відновлення прокрутки:", error);
+    }
 }
 
 function applyFiltersAndRender() {
@@ -251,9 +322,11 @@ function openProduct(id) {
     const product = findProductById(id);
     if (!product) return;
 
+    saveStoreState();
     localStorage.setItem("selectedProduct", JSON.stringify(product));
     localStorage.setItem("kids_room_return_url", window.location.href);
-    window.open("product.html", "_blank");
+
+    window.location.href = "product.html";
 }
 
 const searchEl = document.getElementById("search");
@@ -261,6 +334,7 @@ if (searchEl) {
     searchEl.addEventListener("input", event => {
         activeSearch = event.target.value.trim();
         applyFiltersAndRender();
+        saveStoreState();
     });
 }
 
@@ -274,12 +348,14 @@ function filterCategory(category) {
     activeSearch = "";
 
     applyFiltersAndRender();
+    saveStoreState();
     closeCatalogMenu();
 }
 
 function sortProducts(type) {
     activeSort = type || "";
     applyFiltersAndRender();
+    saveStoreState();
 }
 
 let lastScroll = 0;
@@ -323,6 +399,7 @@ function minus(id) {
 function handleProductsReady() {
     ensureSidebarCategoryMarkers();
     applyFiltersAndRender();
+    restoreStoreScroll();
 }
 
 window.addEventListener("products:ready", handleProductsReady);
@@ -345,9 +422,13 @@ document.addEventListener("keydown", event => {
 syncCatalogMenuOnResize();
 ensureSidebarCategoryMarkers();
 
+restoreStoreStateFromSession();
+
 if (typeof window.productsReady === "function" && window.productsReady()) {
     handleProductsReady();
 }
+
+window.addEventListener("beforeunload", saveStoreState);
 
 window.filterCategory = filterCategory;
 window.sortProducts = sortProducts;

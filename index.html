@@ -1036,6 +1036,21 @@ function goToCategory(categoryId) {
     window.location.hash = "products";
 }
 
+function changeHomeQty(id, delta, event) {
+    if (event) event.stopPropagation();
+
+    const qtyInput = document.getElementById("home-qty-" + id);
+    if (!qtyInput) return;
+
+    let value = parseInt(qtyInput.value || "1", 10);
+    if (isNaN(value) || value < 1) value = 1;
+
+    value += delta;
+    if (value < 1) value = 1;
+
+    qtyInput.value = value;
+}
+
 function addHomeProductToCart(id, event) {
     if (event) event.stopPropagation();
 
@@ -1093,10 +1108,33 @@ function buildShowcaseCard(product, type) {
                     ${Number(product.old || 0) > Number(product.price || 0) ? `<span class="old">${Number(product.old || 0)} грн</span>` : ""}
                     ${discount ? `<span class="product-chip sale">-${discount}%</span>` : ""}
                 </div>
-                <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+
+                <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
                     <span style="font-size:13px;color:#6f7b8c;font-weight:700;">Кількість</span>
-                    <input id="home-qty-${escapeHomeHtml(product.id)}" type="number" min="1" value="1" style="width:74px;padding:10px 12px;border:1px solid #e1e5eb;border-radius:12px;font-weight:800;">
+                    <div style="display:inline-flex;align-items:center;gap:8px;background:#fff;border:1px solid #e1e5eb;border-radius:14px;padding:6px 8px;">
+                        <button
+                            type="button"
+                            onclick="changeHomeQty('${escapeHomeHtml(product.id)}', -1, event)"
+                            style="width:34px;height:34px;border:none;border-radius:10px;background:#f1f3f6;color:#243041;font-size:20px;font-weight:800;cursor:pointer;"
+                        >−</button>
+
+                        <input
+                            id="home-qty-${escapeHomeHtml(product.id)}"
+                            type="number"
+                            min="1"
+                            value="1"
+                            readonly
+                            style="width:48px;text-align:center;border:none;background:transparent;font-weight:800;font-size:16px;color:#243041;outline:none;"
+                        >
+
+                        <button
+                            type="button"
+                            onclick="changeHomeQty('${escapeHomeHtml(product.id)}', 1, event)"
+                            style="width:34px;height:34px;border:none;border-radius:10px;background:#f1f3f6;color:#243041;font-size:20px;font-weight:800;cursor:pointer;"
+                        >+</button>
+                    </div>
                 </div>
+
                 <div class="product-showcase-actions">
                     <button class="primary" onclick="event.stopPropagation(); addHomeProductToCart('${escapeHomeHtml(product.id)}', event)">У кошик</button>
                     <button class="secondary" onclick="event.stopPropagation(); openHomeProduct('${escapeHomeHtml(product.id)}')">${actionText}</button>
