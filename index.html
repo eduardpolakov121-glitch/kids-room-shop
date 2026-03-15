@@ -124,52 +124,6 @@
     font-size:15px;
 }
 
-.showcase-shell{
-    position:relative;
-    display:flex;
-    align-items:center;
-    gap:12px;
-}
-.showcase-nav{
-    width:48px;
-    height:48px;
-    flex:0 0 48px;
-    border:none;
-    border-radius:16px;
-    background:#fff;
-    color:#243041;
-    box-shadow:0 10px 24px rgba(0,0,0,0.08);
-    cursor:pointer;
-    font-size:24px;
-    font-weight:900;
-    transition:transform .18s ease, box-shadow .18s ease, opacity .18s ease, background .18s ease;
-}
-.showcase-nav:hover{
-    transform:translateY(-2px);
-    box-shadow:0 14px 30px rgba(0,0,0,0.12);
-}
-.showcase-nav:disabled{
-    opacity:.4;
-    cursor:default;
-    transform:none;
-    box-shadow:0 8px 18px rgba(0,0,0,0.05);
-}
-.showcase-track{
-    display:grid;
-    grid-auto-flow:column;
-    grid-auto-columns:minmax(260px, 1fr);
-    gap:16px;
-    overflow-x:auto;
-    overflow-y:hidden;
-    scroll-behavior:smooth;
-    padding:4px 2px 10px;
-    width:100%;
-    scrollbar-width:none;
-}
-.showcase-track::-webkit-scrollbar{
-    display:none;
-}
-
 .benefits-grid{
     display:grid;
     grid-template-columns:repeat(4,minmax(0,1fr));
@@ -230,7 +184,9 @@
 }
 
 .product-showcase-grid{
-    width:100%;
+    display:grid;
+    grid-template-columns:repeat(4,minmax(0,1fr));
+    gap:16px;
 }
 .product-showcase-card{
     background:#fffdf9;
@@ -343,6 +299,7 @@
 }
 
 .showcase-empty{
+    grid-column:1/-1;
     background:#fffdf9;
     border:1px solid #ece7df;
     border-radius:20px;
@@ -351,10 +308,6 @@
     text-align:center;
     color:#6f7b8c;
     line-height:1.6;
-    min-height:120px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
 }
 
 .how-order-grid{
@@ -500,17 +453,60 @@
     line-height:1.6;
 }
 
+.quick-view-modal{
+    position:fixed;
+    inset:0;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    background:rgba(17,24,39,0.54);
+    z-index:9000;
+    padding:20px;
+    box-sizing:border-box;
+}
+.quick-view-modal.open{
+    display:flex;
+}
+.quick-view-box{
+    width:100%;
+    max-width:980px;
+    max-height:90vh;
+    overflow:auto;
+    background:#fffdf9;
+    border-radius:24px;
+    border:1px solid #ece7df;
+    box-shadow:0 22px 60px rgba(0,0,0,0.24);
+    padding:20px;
+}
+.quick-view-top{
+    display:flex;
+    justify-content:space-between;
+    gap:12px;
+    align-items:center;
+    margin-bottom:14px;
+}
+.quick-view-top h2{
+    margin:0;
+    color:#243041;
+}
+.quick-view-close{
+    border:none;
+    width:42px;
+    height:42px;
+    border-radius:14px;
+    background:#eef2f7;
+    color:#243041;
+    font-size:18px;
+    cursor:pointer;
+}
+
 @media (max-width:1100px){
     .benefits-grid,
     .home-categories-grid,
+    .product-showcase-grid,
     .how-order-grid{
         grid-template-columns:repeat(2,minmax(0,1fr));
     }
-
-    .showcase-track{
-        grid-auto-columns:minmax(300px, 48%);
-    }
-
     .site-footer-grid{
         grid-template-columns:1fr 1fr;
     }
@@ -534,21 +530,12 @@
         margin:16px 16px 24px;
         padding:18px;
     }
-
-    .showcase-nav{
-        width:42px;
-        height:42px;
-        flex-basis:42px;
-        border-radius:14px;
-    }
-    .showcase-track{
-        grid-auto-columns:minmax(260px, 78%);
-    }
 }
 
 @media (max-width:680px){
     .benefits-grid,
     .home-categories-grid,
+    .product-showcase-grid,
     .how-order-grid{
         grid-template-columns:1fr;
     }
@@ -561,27 +548,6 @@
     }
     .hero-selling-copy p{
         font-size:15px;
-    }
-
-    .showcase-shell{
-        gap:8px;
-    }
-    .showcase-track{
-        grid-auto-columns:minmax(240px, 88%);
-        gap:12px;
-    }
-    .product-showcase-image{
-        height:180px;
-    }
-}
-
-@media (max-width:520px){
-    .showcase-nav{
-        display:none;
-    }
-    .showcase-track{
-        grid-auto-columns:minmax(220px, 84%);
-        padding-bottom:6px;
     }
 }
 
@@ -603,6 +569,10 @@
     .site-footer{
         margin:12px 10px 20px;
         padding:16px;
+        border-radius:18px;
+    }
+    .quick-view-box{
+        padding:14px;
         border-radius:18px;
     }
 }
@@ -656,26 +626,7 @@
         <h2>Хіти продажу</h2>
         <p>Товари, які ти сам позначиш як хіти, будуть показуватись тут.</p>
     </div>
-
-    <div class="showcase-shell">
-        <button
-            class="showcase-nav"
-            id="home-hits-grid-prev"
-            type="button"
-            aria-label="Прокрутити хіти вліво"
-            onclick="scrollShowcase('home-hits-grid', -1)"
-        >‹</button>
-
-        <div class="product-showcase-grid showcase-track" id="home-hits-grid"></div>
-
-        <button
-            class="showcase-nav"
-            id="home-hits-grid-next"
-            type="button"
-            aria-label="Прокрутити хіти вправо"
-            onclick="scrollShowcase('home-hits-grid', 1)"
-        >›</button>
-    </div>
+    <div class="product-showcase-grid" id="home-hits-grid"></div>
 </section>
 
 <section class="section-wrap">
@@ -683,26 +634,7 @@
         <h2>Акції</h2>
         <p>Товари з позначкою акції потрапляють у цей блок на головній.</p>
     </div>
-
-    <div class="showcase-shell">
-        <button
-            class="showcase-nav"
-            id="home-sales-grid-prev"
-            type="button"
-            aria-label="Прокрутити акції вліво"
-            onclick="scrollShowcase('home-sales-grid', -1)"
-        >‹</button>
-
-        <div class="product-showcase-grid showcase-track" id="home-sales-grid"></div>
-
-        <button
-            class="showcase-nav"
-            id="home-sales-grid-next"
-            type="button"
-            aria-label="Прокрутити акції вправо"
-            onclick="scrollShowcase('home-sales-grid', 1)"
-        >›</button>
-    </div>
+    <div class="product-showcase-grid" id="home-sales-grid"></div>
 </section>
 
 <section class="section-wrap">
@@ -710,26 +642,23 @@
         <h2>Новинки</h2>
         <p>Додавай нові товари та став прапорець “Новинка”, щоб показувати їх тут.</p>
     </div>
+    <div class="product-showcase-grid" id="home-new-grid"></div>
+</section>
 
-    <div class="showcase-shell">
-        <button
-            class="showcase-nav"
-            id="home-new-grid-prev"
-            type="button"
-            aria-label="Прокрутити новинки вліво"
-            onclick="scrollShowcase('home-new-grid', -1)"
-        >‹</button>
-
-        <div class="product-showcase-grid showcase-track" id="home-new-grid"></div>
-
-        <button
-            class="showcase-nav"
-            id="home-new-grid-next"
-            type="button"
-            aria-label="Прокрутити новинки вправо"
-            onclick="scrollShowcase('home-new-grid', 1)"
-        >›</button>
+<section class="home-dynamic-block">
+    <div class="home-dynamic-head">
+        <h2>Обране</h2>
+        <p>Тут будуть товари, які клієнт позначив сердечком.</p>
     </div>
+    <div class="home-mini-grid" id="home-favorites-grid"></div>
+</section>
+
+<section class="home-dynamic-block">
+    <div class="home-dynamic-head">
+        <h2>Нещодавно переглянуті</h2>
+        <p>Швидкий доступ до товарів, які дивилися останніми.</p>
+    </div>
+    <div class="home-mini-grid" id="recently-viewed-grid"></div>
 </section>
 
 <section class="section-wrap">
@@ -822,6 +751,33 @@
             </select>
         </div>
 
+        <div class="smart-filters">
+            <label class="smart-chip">
+                <input id="smart-hit" type="checkbox">
+                <span>Хіти</span>
+            </label>
+            <label class="smart-chip">
+                <input id="smart-sale" type="checkbox">
+                <span>Акції</span>
+            </label>
+            <label class="smart-chip">
+                <input id="smart-new" type="checkbox">
+                <span>Новинки</span>
+            </label>
+            <label class="smart-chip">
+                <input id="smart-available" type="checkbox">
+                <span>Є в наявності</span>
+            </label>
+            <label class="smart-chip">
+                <input id="smart-favorites" type="checkbox">
+                <span>Обране</span>
+            </label>
+        </div>
+
+        <div class="products-top-meta">
+            <span id="products-results-count">Знайдено товарів: 0</span>
+        </div>
+
         <div id="products" class="products"></div>
     </main>
 
@@ -852,7 +808,7 @@
         <div class="how-order-card">
             <div class="how-order-step">4</div>
             <h3>Отримайте підтвердження</h3>
-            <p>Після оформлення менеджер зв’яжеться з вами для підтвердження замовлення.</p>
+            <p>Після оформлення менеджер зв'яжеться з вами для підтвердження замовлення.</p>
         </div>
     </div>
 </section>
@@ -873,31 +829,18 @@
 </section>
 
 <div id="cart" class="cart">
-    <div class="cart-header">
-        <div>
-            <div class="cart-title-line">
-                <h2>Кошик</h2>
-                <span class="cart-badge" id="cart-badge">0</span>
-            </div>
-            <p class="cart-subtitle">Перевір товари перед оформленням замовлення</p>
-        </div>
-        <button class="cart-close-btn" type="button" onclick="closeCart()" aria-label="Закрити кошик">✕</button>
-    </div>
+    <h2>Кошик</h2>
 
-    <div id="cart-items" class="cart-items-list"></div>
+    <div id="cart-items"></div>
 
-    <div class="cart-summary">
-        <div class="cart-summary-row">
-            <span>Разом</span>
-            <strong id="total">Разом: 0 грн</strong>
-        </div>
-    </div>
+    <h3 id="total"></h3>
 
-    <div class="cart-bottom-actions">
-        <button class="cart-clear-btn" onclick="clearCart()">Очистити</button>
-        <button class="cart-checkout-btn" onclick="checkout()">Оформити</button>
-        <button class="cart-continue-btn" onclick="closeCart()">👉 Продовжити пошук</button>
-    </div>
+    <button onclick="clearCart()">Очистити</button>
+    <button onclick="checkout()">Оформити</button>
+
+    <br><br>
+
+    <button onclick="closeCart()">👉 Продовжити пошук</button>
 </div>
 
 <div id="checkout-modal" class="checkout-modal">
@@ -945,6 +888,16 @@
         <div class="checkout-success-actions">
             <button type="button" onclick="closeSuccessModal()">Повернутись до магазину</button>
         </div>
+    </div>
+</div>
+
+<div id="quick-view-modal" class="quick-view-modal" onclick="if(event.target===this) closeQuickView()">
+    <div class="quick-view-box">
+        <div class="quick-view-top">
+            <h2>Швидкий перегляд</h2>
+            <button class="quick-view-close" type="button" onclick="closeQuickView()">✕</button>
+        </div>
+        <div id="quick-view-body"></div>
     </div>
 </div>
 
@@ -1036,21 +989,6 @@ function goToCategory(categoryId) {
     window.location.hash = "products";
 }
 
-function changeHomeQty(id, delta, event) {
-    if (event) event.stopPropagation();
-
-    const qtyInput = document.getElementById("home-qty-" + id);
-    if (!qtyInput) return;
-
-    let value = parseInt(qtyInput.value || "1", 10);
-    if (isNaN(value) || value < 1) value = 1;
-
-    value += delta;
-    if (value < 1) value = 1;
-
-    qtyInput.value = value;
-}
-
 function addHomeProductToCart(id, event) {
     if (event) event.stopPropagation();
 
@@ -1078,6 +1016,28 @@ function addHomeProductToCart(id, event) {
     if (qtyInput) qtyInput.value = "1";
 }
 
+function homeMinus(id, event) {
+    if (event) event.stopPropagation();
+    const input = document.getElementById("home-qty-" + id);
+    if (!input) return;
+
+    const value = parseInt(input.value || "1", 10);
+    if (isNaN(value) || value <= 1) {
+        input.value = 1;
+        return;
+    }
+    input.value = value - 1;
+}
+
+function homePlus(id, event) {
+    if (event) event.stopPropagation();
+    const input = document.getElementById("home-qty-" + id);
+    if (!input) return;
+
+    const value = parseInt(input.value || "1", 10);
+    input.value = isNaN(value) || value < 1 ? 1 : value + 1;
+}
+
 function buildShowcaseCard(product, type) {
     const image = typeof getSafeProductImage === "function"
         ? getSafeProductImage(product)
@@ -1088,8 +1048,6 @@ function buildShowcaseCard(product, type) {
     const categoryName = typeof getCategoryName === "function"
         ? getCategoryName(product.category)
         : (product.category || "Товар");
-
-    const actionText = "Відкрити товар";
 
     return `
         <div class="product-showcase-card">
@@ -1108,86 +1066,21 @@ function buildShowcaseCard(product, type) {
                     ${Number(product.old || 0) > Number(product.price || 0) ? `<span class="old">${Number(product.old || 0)} грн</span>` : ""}
                     ${discount ? `<span class="product-chip sale">-${discount}%</span>` : ""}
                 </div>
-
-                <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+                <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
                     <span style="font-size:13px;color:#6f7b8c;font-weight:700;">Кількість</span>
-                    <div style="display:inline-flex;align-items:center;gap:8px;background:#fff;border:1px solid #e1e5eb;border-radius:14px;padding:6px 8px;">
-                        <button
-                            type="button"
-                            onclick="changeHomeQty('${escapeHomeHtml(product.id)}', -1, event)"
-                            style="width:34px;height:34px;border:none;border-radius:10px;background:#f1f3f6;color:#243041;font-size:20px;font-weight:800;cursor:pointer;"
-                        >−</button>
-
-                        <input
-                            id="home-qty-${escapeHomeHtml(product.id)}"
-                            type="number"
-                            min="1"
-                            value="1"
-                            readonly
-                            style="width:48px;text-align:center;border:none;background:transparent;font-weight:800;font-size:16px;color:#243041;outline:none;"
-                        >
-
-                        <button
-                            type="button"
-                            onclick="changeHomeQty('${escapeHomeHtml(product.id)}', 1, event)"
-                            style="width:34px;height:34px;border:none;border-radius:10px;background:#f1f3f6;color:#243041;font-size:20px;font-weight:800;cursor:pointer;"
-                        >+</button>
+                    <div style="display:flex;align-items:center;gap:6px;">
+                        <button type="button" onclick="homeMinus('${escapeHomeHtml(product.id)}', event)" style="width:34px;height:34px;border:none;border-radius:10px;background:#eef2f7;font-weight:900;cursor:pointer;">−</button>
+                        <input id="home-qty-${escapeHomeHtml(product.id)}" type="number" min="1" value="1" style="width:68px;padding:10px 12px;border:1px solid #e1e5eb;border-radius:12px;font-weight:800;text-align:center;">
+                        <button type="button" onclick="homePlus('${escapeHomeHtml(product.id)}', event)" style="width:34px;height:34px;border:none;border-radius:10px;background:#eef2f7;font-weight:900;cursor:pointer;">+</button>
                     </div>
                 </div>
-
                 <div class="product-showcase-actions">
                     <button class="primary" onclick="event.stopPropagation(); addHomeProductToCart('${escapeHomeHtml(product.id)}', event)">У кошик</button>
-                    <button class="secondary" onclick="event.stopPropagation(); openHomeProduct('${escapeHomeHtml(product.id)}')">${actionText}</button>
+                    <button class="secondary" onclick="event.stopPropagation(); openHomeProduct('${escapeHomeHtml(product.id)}')">Відкрити товар</button>
                 </div>
             </div>
         </div>
     `;
-}
-
-function updateShowcaseNavState(elementId) {
-    const track = document.getElementById(elementId);
-    const prev = document.getElementById(elementId + "-prev");
-    const next = document.getElementById(elementId + "-next");
-    if (!track || !prev || !next) return;
-
-    const maxScrollLeft = Math.max(0, track.scrollWidth - track.clientWidth);
-    const current = Math.round(track.scrollLeft);
-
-    prev.disabled = current <= 2;
-    next.disabled = current >= maxScrollLeft - 2;
-}
-
-function bindShowcaseScrollState(elementId) {
-    const track = document.getElementById(elementId);
-    if (!track || track.dataset.showcaseBound === "1") return;
-
-    track.dataset.showcaseBound = "1";
-    track.addEventListener("scroll", () => updateShowcaseNavState(elementId));
-}
-
-function initHomeShowcaseTracks() {
-    ["home-hits-grid", "home-sales-grid", "home-new-grid"].forEach(id => {
-        bindShowcaseScrollState(id);
-        updateShowcaseNavState(id);
-    });
-}
-
-function scrollShowcase(elementId, direction) {
-    const track = document.getElementById(elementId);
-    if (!track) return;
-
-    const firstCard = track.querySelector(".product-showcase-card");
-    const cardWidth = firstCard ? firstCard.getBoundingClientRect().width : 280;
-    const gap = 16;
-    const amount = Math.max(cardWidth + gap, track.clientWidth * 0.82);
-
-    track.scrollBy({
-        left: direction * amount,
-        behavior: "smooth"
-    });
-
-    setTimeout(() => updateShowcaseNavState(elementId), 320);
-    setTimeout(() => updateShowcaseNavState(elementId), 700);
 }
 
 function renderShowcaseGrid(elementId, list, type, emptyText) {
@@ -1196,16 +1089,10 @@ function renderShowcaseGrid(elementId, list, type, emptyText) {
 
     if (!Array.isArray(list) || !list.length) {
         container.innerHTML = `<div class="showcase-empty">${escapeHomeHtml(emptyText)}</div>`;
-        updateShowcaseNavState(elementId);
         return;
     }
 
     container.innerHTML = list.map(item => buildShowcaseCard(item, type)).join("");
-    bindShowcaseScrollState(elementId);
-
-    requestAnimationFrame(() => {
-        updateShowcaseNavState(elementId);
-    });
 }
 
 function renderHomeDynamicSections() {
@@ -1215,7 +1102,7 @@ function renderHomeDynamicSections() {
     const saleProducts = allProducts.filter(product => product.is_sale);
     const newProducts = allProducts.filter(product => product.is_new);
 
-    const hits = (hitProducts.length ? hitProducts : allProducts.slice(0, 8)).slice(0, 8);
+    const hits = (hitProducts.length ? hitProducts : allProducts.slice(0, 4)).slice(0, 4);
 
     const sales = (
         saleProducts.length
@@ -1223,15 +1110,13 @@ function renderHomeDynamicSections() {
             : [...allProducts]
                 .filter(product => Number(product.old || 0) > Number(product.price || 0))
                 .sort((a, b) => (getHomeDiscountPercent(b) || 0) - (getHomeDiscountPercent(a) || 0))
-    ).slice(0, 8);
+    ).slice(0, 4);
 
-    const newest = (newProducts.length ? newProducts : [...allProducts].slice(-8).reverse()).slice(0, 8);
+    const newest = (newProducts.length ? newProducts : [...allProducts].slice(-4).reverse()).slice(0, 4);
 
     renderShowcaseGrid("home-hits-grid", hits, "hit", "Хіти продажу з’являться після додавання товарів.");
     renderShowcaseGrid("home-sales-grid", sales, "sale", "Акційні товари з’являться, коли ти позначиш товари як акційні.");
     renderShowcaseGrid("home-new-grid", newest, "new", "Новинки з’являться, коли ти позначиш товари як нові.");
-
-    initHomeShowcaseTracks();
 }
 
 window.addEventListener("products:ready", renderHomeDynamicSections);
@@ -1243,17 +1128,11 @@ window.addEventListener("storage", function(event) {
 });
 
 document.addEventListener("DOMContentLoaded", function() {
-    initHomeShowcaseTracks();
     setTimeout(renderHomeDynamicSections, 200);
 });
 
 window.addEventListener("load", function() {
-    initHomeShowcaseTracks();
     setTimeout(renderHomeDynamicSections, 400);
-});
-
-window.addEventListener("resize", function() {
-    initHomeShowcaseTracks();
 });
 </script>
 

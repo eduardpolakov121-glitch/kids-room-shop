@@ -31,7 +31,7 @@
     }
 
     .product-topbar-inner{
-      max-width:1280px;
+      max-width:1320px;
       margin:0 auto;
       padding:14px 20px;
       display:flex;
@@ -252,7 +252,7 @@
       display:flex;
       flex-wrap:wrap;
       gap:8px;
-      max-width:70%;
+      max-width:72%;
     }
 
     .product-flag{
@@ -271,6 +271,31 @@
     .product-flag.hit{ background:#fff1e6; color:#ca6200; }
     .product-flag.sale{ background:#fff0f0; color:#c64c4c; }
     .product-flag.new{ background:#edf8ff; color:#23628d; }
+    .product-flag.stock-in{ background:#ecfdf3; color:#15803d; }
+    .product-flag.stock-low{ background:#fff7ed; color:#c2410c; }
+    .product-flag.stock-out{ background:#f3f4f6; color:#6b7280; }
+
+    .product-thumb-row{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:14px;
+    }
+
+    .product-thumb{
+      width:82px;
+      height:82px;
+      object-fit:cover;
+      border-radius:14px;
+      border:2px solid transparent;
+      cursor:pointer;
+      background:#fff;
+      box-shadow:0 8px 18px rgba(0,0,0,0.05);
+    }
+
+    .product-thumb.active{
+      border-color:var(--kr-orange);
+    }
 
     .product-info-card{
       padding:28px;
@@ -344,6 +369,25 @@
       margin:0 0 22px;
     }
 
+    .product-tags{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      margin:0 0 18px;
+    }
+
+    .product-tag{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      padding:7px 11px;
+      border-radius:999px;
+      font-size:12px;
+      font-weight:800;
+      background:#f1f5f9;
+      color:#334155;
+    }
+
     .product-feature-list{
       display:grid;
       grid-template-columns:repeat(2,minmax(0,1fr));
@@ -388,13 +432,29 @@
     }
 
     .product-stock{
-      color:#15803d;
-      background:#ecfdf3;
-      border:1px solid #b7efca;
       padding:9px 14px;
       border-radius:999px;
       font-weight:700;
       font-size:14px;
+      border:1px solid transparent;
+    }
+
+    .product-stock.stock-in{
+      color:#15803d;
+      background:#ecfdf3;
+      border-color:#b7efca;
+    }
+
+    .product-stock.stock-low{
+      color:#c2410c;
+      background:#fff7ed;
+      border-color:#fed7aa;
+    }
+
+    .product-stock.stock-out{
+      color:#6b7280;
+      background:#f3f4f6;
+      border-color:#e5e7eb;
     }
 
     .product-qty{
@@ -459,6 +519,12 @@
       font-size:16px;
     }
 
+    .product-primary-btn[disabled]{
+      cursor:not-allowed;
+      opacity:.7;
+      box-shadow:none;
+    }
+
     .product-secondary-btn{
       min-height:56px;
       padding:14px 22px;
@@ -474,6 +540,65 @@
       font-size:14px;
       color:var(--kr-muted);
       line-height:1.6;
+    }
+
+    .product-reviews{
+      margin-top:22px;
+      padding-top:20px;
+      border-top:1px solid #ece7df;
+    }
+
+    .product-reviews h3{
+      margin:0 0 14px;
+      color:var(--kr-text);
+      font-size:22px;
+    }
+
+    .product-review-list{
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+    }
+
+    .product-review-card{
+      background:#fff;
+      border:1px solid #ece7df;
+      border-radius:18px;
+      padding:14px;
+      box-shadow:0 8px 18px rgba(0,0,0,0.04);
+    }
+
+    .product-review-top{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-bottom:8px;
+    }
+
+    .product-review-author{
+      font-weight:800;
+      color:#243041;
+    }
+
+    .product-review-date{
+      color:#6f7b8c;
+      font-size:13px;
+    }
+
+    .product-review-stars{
+      color:#ff6600;
+      font-size:14px;
+      letter-spacing:1px;
+      font-weight:900;
+      margin-bottom:6px;
+    }
+
+    .product-review-text{
+      color:#4d596b;
+      line-height:1.6;
+      font-size:14px;
     }
 
     .product-related-side{
@@ -760,7 +885,7 @@
 
   <main class="product-shell">
     <div class="product-breadcrumbs">
-      <a href="#" onclick="goHome(event)">Головна</a>
+      <a href="index.html">Головна</a>
       <span>›</span>
       <button type="button" onclick="goBack()">Каталог</button>
       <span>›</span>
@@ -773,6 +898,9 @@
   <script src="products.js"></script>
   <script src="cart.js"></script>
   <script>
+    const STORE_STATE_KEY = "kids_room_store_state";
+    const RECENTLY_VIEWED_KEY = "kids_room_recently_viewed";
+
     function plus(id){
       const el = document.getElementById("qty-" + id);
       if (!el) return;
@@ -823,7 +951,7 @@
       return value;
     }
 
-    function getCategoryName(cat){
+    function getCategoryNameLocal(cat){
       return CATEGORY_NAMES[cat] || cat || 'Категорія';
     }
 
@@ -831,19 +959,6 @@
       if (typeof refreshProductsFromStorage === 'function') {
         refreshProductsFromStorage();
       }
-    }
-
-    function getReturnUrl(){
-      const saved = localStorage.getItem('kids_room_return_url');
-      if (saved && typeof saved === 'string' && saved.trim()) {
-        return saved;
-      }
-      return 'index.html';
-    }
-
-    function goHome(event){
-      if (event) event.preventDefault();
-      window.location.href = getReturnUrl();
     }
 
     function getSelectedProduct(){
@@ -871,12 +986,29 @@
       return Math.round(((oldVal - curVal) / oldVal) * 100);
     }
 
+    function getStockClass(status){
+      const safe = String(status || "in_stock");
+      if (safe === "low_stock") return "stock-low";
+      if (safe === "out_of_stock") return "stock-out";
+      return "stock-in";
+    }
+
+    function getStockLabel(status){
+      if (typeof getStockStatusName === "function") {
+        return getStockStatusName(status);
+      }
+      const safe = String(status || "in_stock");
+      if (safe === "low_stock") return "Закінчується";
+      if (safe === "out_of_stock") return "Немає в наявності";
+      return "Є в наявності";
+    }
+
     function buildProductFlags(product){
       const items = [];
       if (product?.is_hit) items.push('<span class="product-flag hit">ХІТ</span>');
       if (product?.is_sale) items.push('<span class="product-flag sale">АКЦІЯ</span>');
       if (product?.is_new) items.push('<span class="product-flag new">НОВИНКА</span>');
-      if (!items.length) return '';
+      items.push(`<span class="product-flag ${getStockClass(product?.stock_status)}">${escapeHtml(getStockLabel(product?.stock_status))}</span>`);
       return `<div class="product-image-flags">${items.join('')}</div>`;
     }
 
@@ -913,14 +1045,22 @@
       if (countEl) countEl.textContent = count;
     }
 
+    function getStoreState() {
+      try {
+        return JSON.parse(sessionStorage.getItem(STORE_STATE_KEY) || "null");
+      } catch {
+        return null;
+      }
+    }
+
     function goBack(){
-      window.location.href = getReturnUrl();
+      const returnUrl = localStorage.getItem("kids_room_return_url") || "index.html";
+      window.location.href = returnUrl;
     }
 
     function goHomeToCart(){
-      const returnUrl = getReturnUrl();
-      const cleanUrl = returnUrl.split('#')[0];
-      window.location.href = cleanUrl + '#cart';
+      localStorage.setItem("kids_room_open_cart_after_return", "true");
+      window.location.href = "index.html";
     }
 
     function animateToCartFromProduct(){
@@ -968,6 +1108,7 @@
       if (!product) return;
 
       localStorage.setItem('selectedProduct', JSON.stringify(product));
+      addRecentlyViewed(id);
       window.location.href = 'product.html';
     }
 
@@ -992,6 +1133,30 @@
       }
 
       setTimeout(updateProductCartCount, 120);
+    }
+
+    function addRecentlyViewed(id) {
+      const value = String(id);
+      let list = [];
+      try {
+        list = JSON.parse(localStorage.getItem(RECENTLY_VIEWED_KEY) || "[]");
+        if (!Array.isArray(list)) list = [];
+      } catch {
+        list = [];
+      }
+
+      list = [value, ...list.filter(item => item !== value)].slice(0, 16);
+      localStorage.setItem(RECENTLY_VIEWED_KEY, JSON.stringify(list));
+    }
+
+    function setMainGalleryImage(src, element){
+      const main = document.getElementById("product-main-image");
+      if (!main) return;
+      main.src = src;
+
+      const thumbs = document.querySelectorAll(".product-thumb");
+      thumbs.forEach(item => item.classList.remove("active"));
+      if (element) element.classList.add("active");
     }
 
     function buildRelatedSection(product){
@@ -1024,7 +1189,7 @@
               <article class="product-related-card" onclick="openRelatedProduct('${escapeHtml(item.id)}')">
                 <div class="product-related-image">
                   ${buildRelatedFlags(item)}
-                  <img src="${escapeHtml(sanitizeImage(item.img))}" alt="${escapeHtml(item.name)}" onerror="this.onerror=null;this.src=fallbackImage();">
+                  <img src="${escapeHtml(sanitizeImage((typeof getSafeProductImage === 'function' ? getSafeProductImage(item) : item.img)))}" alt="${escapeHtml(item.name)}" onerror="this.onerror=null;this.src=fallbackImage();">
                 </div>
 
                 <div class="product-related-body">
@@ -1048,6 +1213,39 @@
       `;
     }
 
+    function buildReviewsSection(product) {
+      const reviews = Array.isArray(product?.reviews) ? product.reviews.filter(item => item && item.text) : [];
+
+      if (!reviews.length) {
+        return `
+          <section class="product-reviews">
+            <h3>Відгуки</h3>
+            <div class="product-review-card">
+              <div class="product-review-text">Поки що відгуків немає. Цей блок готовий для майбутнього наповнення.</div>
+            </div>
+          </section>
+        `;
+      }
+
+      return `
+        <section class="product-reviews">
+          <h3>Відгуки</h3>
+          <div class="product-review-list">
+            ${reviews.map(item => `
+              <article class="product-review-card">
+                <div class="product-review-top">
+                  <div class="product-review-author">${escapeHtml(item.author || "Покупець")}</div>
+                  <div class="product-review-date">${escapeHtml(item.date || "")}</div>
+                </div>
+                <div class="product-review-stars">${"★".repeat(Math.max(1, Math.min(5, Number(item.rating || 5))))}</div>
+                <div class="product-review-text">${escapeHtml(item.text || "")}</div>
+              </article>
+            `).join("")}
+          </div>
+        </section>
+      `;
+    }
+
     function renderProductPage(){
       const container = document.getElementById('product-page');
       const crumb = document.getElementById('breadcrumb-name');
@@ -1061,18 +1259,32 @@
           <section class="product-empty">
             <h1>Товар не знайдено</h1>
             <p>Схоже, сторінка була відкрита без вибору товару. Повернись у каталог і відкрий потрібну картку ще раз.</p>
-            <button class="product-primary-btn" type="button" onclick="window.location.href=getReturnUrl()">Перейти в каталог</button>
+            <button class="product-primary-btn" type="button" onclick="window.location.href='index.html'">Перейти в каталог</button>
           </section>
         `;
         return;
       }
 
-      const imageSrc = sanitizeImage(product.img);
-      const categoryName = getCategoryName(product.category);
+      addRecentlyViewed(product.id);
+
+      const imageSrc = sanitizeImage(typeof getSafeProductImage === "function" ? getSafeProductImage(product) : product.img);
+      const gallery = Array.isArray(product.gallery) && product.gallery.length
+        ? product.gallery.map(item => sanitizeImage(item))
+        : [imageSrc];
+
+      const categoryName = typeof getCategoryName === "function"
+        ? getCategoryName(product.category)
+        : getCategoryNameLocal(product.category);
+
       const discount = getDiscountPercent(product.old, product.price);
       const description = product.description || 'Якісний дитячий товар для щоденного використання.';
       const flagsHtml = buildProductFlags(product);
       const relatedHtml = buildRelatedSection(product);
+      const reviewsHtml = buildReviewsSection(product);
+      const stockClass = getStockClass(product.stock_status);
+      const stockLabel = getStockLabel(product.stock_status);
+      const isOutOfStock = String(product.stock_status || "in_stock") === "out_of_stock";
+      const tags = Array.isArray(product.tags) ? product.tags.filter(Boolean) : [];
 
       if (crumb) crumb.textContent = product.name || 'Товар';
       document.title = `Kids Room — ${product.name || 'Товар'}`;
@@ -1086,6 +1298,20 @@
                 <img id="product-main-image" class="product-main-image" src="${imageSrc}" alt="${escapeHtml(product.name)}" onerror="this.onerror=null;this.src=fallbackImage();">
                 <div class="product-image-chip">🧸 ${escapeHtml(categoryName)}</div>
               </div>
+
+              ${gallery.length > 1 ? `
+                <div class="product-thumb-row">
+                  ${gallery.map((img, index) => `
+                    <img
+                      src="${escapeHtml(img)}"
+                      alt="${escapeHtml(product.name)}"
+                      class="product-thumb ${index === 0 ? "active" : ""}"
+                      onclick="setMainGalleryImage('${escapeHtml(img)}', this)"
+                      onerror="this.onerror=null;this.src=fallbackImage();"
+                    >
+                  `).join("")}
+                </div>
+              ` : ``}
             </div>
 
             <article class="product-info-card">
@@ -1107,31 +1333,39 @@
 
               <p class="product-desc">${escapeHtml(description)}</p>
 
+              ${tags.length ? `
+                <div class="product-tags">
+                  ${tags.map(tag => `<span class="product-tag">${escapeHtml(tag)}</span>`).join("")}
+                </div>
+              ` : ``}
+
               <ul class="product-feature-list">
                 <li><strong>Категорія</strong>${escapeHtml(categoryName)}</li>
-                <li><strong>Наявність</strong>Актуальна на момент перегляду сторінки</li>
+                <li><strong>Наявність</strong>${escapeHtml(stockLabel)}</li>
               </ul>
 
               <div class="product-buy-box">
                 <div class="product-buy-top">
-                  <div class="product-stock">✅ Є в наявності</div>
+                  <div class="product-stock ${stockClass}">${stockClass === "stock-in" ? "✅ " : stockClass === "stock-low" ? "⚠️ " : "⛔ "} ${escapeHtml(stockLabel)}</div>
                   <div class="product-qty">
                     <span class="product-qty-label">Кількість</span>
                     <div class="product-qty-control">
-                      <button type="button" onclick="minus('${escapeHtml(product.id)}')">−</button>
-                      <input id="qty-${escapeHtml(product.id)}" type="number" value="1" min="1" inputmode="numeric">
-                      <button type="button" onclick="plus('${escapeHtml(product.id)}')">+</button>
+                      <button type="button" onclick="minus('${escapeHtml(product.id)}')" ${isOutOfStock ? "disabled" : ""}>−</button>
+                      <input id="qty-${escapeHtml(product.id)}" type="number" value="1" min="1" inputmode="numeric" ${isOutOfStock ? "disabled" : ""}>
+                      <button type="button" onclick="plus('${escapeHtml(product.id)}')" ${isOutOfStock ? "disabled" : ""}>+</button>
                     </div>
                   </div>
                 </div>
 
                 <div class="product-actions">
-                  <button class="product-primary-btn" type="button" onclick="handleProductAddToCart('${escapeHtml(product.id)}')">🛒 Додати в кошик</button>
+                  <button class="product-primary-btn" type="button" ${isOutOfStock ? "disabled" : ""} onclick="handleProductAddToCart('${escapeHtml(product.id)}')">${isOutOfStock ? "⛔ Немає в наявності" : "🛒 Додати в кошик"}</button>
                   <button class="product-secondary-btn" type="button" onclick="goBack()">← Повернутись до товарів</button>
                 </div>
 
                 <div class="product-note">Після натискання товар одразу додається в кошик. Менеджер підтвердить замовлення після оформлення.</div>
               </div>
+
+              ${reviewsHtml}
             </article>
           </section>
 
@@ -1160,6 +1394,22 @@
 
     window.addEventListener('products:updated', renderProductPage);
     window.addEventListener('cart:updated', updateProductCartCount);
+
+    document.addEventListener("DOMContentLoaded", function () {
+      const openCartAfterReturn = localStorage.getItem("kids_room_open_cart_after_return");
+      if (openCartAfterReturn === "true") {
+        localStorage.removeItem("kids_room_open_cart_after_return");
+      }
+    });
+
+    window.plus = plus;
+    window.minus = minus;
+    window.goBack = goBack;
+    window.goHomeToCart = goHomeToCart;
+    window.openRelatedProduct = openRelatedProduct;
+    window.addRelatedToCart = addRelatedToCart;
+    window.handleProductAddToCart = handleProductAddToCart;
+    window.setMainGalleryImage = setMainGalleryImage;
   </script>
 </body>
 </html>
