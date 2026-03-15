@@ -16,6 +16,12 @@ const CATEGORIES = [
     { id: "creativity", name: "Творчість", icon: "🎨" }
 ];
 
+const STOCK_STATUSES = [
+    { id: "in_stock", name: "Є в наявності" },
+    { id: "low_stock", name: "Закінчується" },
+    { id: "out_of_stock", name: "Немає в наявності" }
+];
+
 const SUPABASE_PRODUCTS_CONFIG = {
     url: "https://xhhzxiithajxgngmbzzd.supabase.co",
     anonKey: "sb_publishable_cRp6r2C_3nszludByS9V9Q_sl1QlHg5",
@@ -23,7 +29,7 @@ const SUPABASE_PRODUCTS_CONFIG = {
 };
 
 const PRODUCTS_CACHE_KEY = "products";
-const PRODUCTS_INIT_FLAG_KEY = "kids_room_products_seeded_v3";
+const PRODUCTS_INIT_FLAG_KEY = "kids_room_products_seeded_v4";
 
 let products = [];
 let supabaseClientInstance = null;
@@ -32,18 +38,26 @@ let productsInitPromise = null;
 
 function buildDefaultProducts() {
     const make = (category, items) =>
-        items.map((item, index) => ({
-            id: `${category}-${index + 1}`,
-            name: item.name,
-            category,
-            price: item.price,
-            old: item.old,
-            description: item.description,
-            img: PRODUCT_PLACEHOLDER,
-            is_hit: !!item.is_hit,
-            is_sale: !!item.is_sale,
-            is_new: !!item.is_new
-        }));
+        items.map((item, index) => {
+            const mainImg = PRODUCT_PLACEHOLDER;
+
+            return {
+                id: `${category}-${index + 1}`,
+                name: item.name,
+                category,
+                price: item.price,
+                old: item.old,
+                description: item.description,
+                img: mainImg,
+                gallery: [mainImg],
+                tags: [],
+                stock_status: item.stock_status || "in_stock",
+                is_hit: !!item.is_hit,
+                is_sale: !!item.is_sale,
+                is_new: !!item.is_new,
+                reviews: Array.isArray(item.reviews) ? item.reviews : []
+            };
+        });
 
     return [
         ...make("toy", [
@@ -234,10 +248,64 @@ function sanitizeProductImage(url) {
     return PRODUCT_PLACEHOLDER;
 }
 
+function normalizeGallery(rawGallery, fallbackMainImage) {
+    const list = Array.isArray(rawGallery) ? rawGallery : [];
+    const normalized = list
+        .map(item => sanitizeProductImage(item))
+        .filter(Boolean);
+
+    const main = sanitizeProductImage(fallbackMainImage || PRODUCT_PLACEHOLDER);
+
+    if (!normalized.length) return [main];
+    if (!normalized.includes(main) && main !== PRODUCT_PLACEHOLDER) {
+        return [main, ...normalized];
+    }
+
+    return normalized;
+}
+
+function normalizeTags(rawTags) {
+    if (Array.isArray(rawTags)) {
+        return rawTags
+            .map(item => String(item || "").trim())
+            .filter(Boolean)
+            .slice(0, 20);
+    }
+
+    if (typeof rawTags === "string") {
+        return rawTags
+            .split(",")
+            .map(item => item.trim())
+            .filter(Boolean)
+            .slice(0, 20);
+    }
+
+    return [];
+}
+
+function normalizeReviews(rawReviews) {
+    const list = Array.isArray(rawReviews) ? rawReviews : [];
+
+    return list
+        .map(item => ({
+            author: String(item?.author || "Покупець").trim(),
+            rating: Math.max(1, Math.min(5, Number(item?.rating || 5))),
+            text: String(item?.text || "").trim(),
+            date: String(item?.date || new Date().toISOString().slice(0, 10)).trim()
+        }))
+        .filter(item => item.text);
+}
+
+function normalizeStockStatus(value) {
+    const normalized = String(value || "in_stock").trim();
+    return STOCK_STATUSES.some(item => item.id === normalized) ? normalized : "in_stock";
+}
+
 function normalizeProduct(raw, fallbackId = null) {
     const price = Number(raw?.price || 0);
     const oldPrice = Number(raw?.old || raw?.price || 0);
     const knownCategory = CATEGORIES.some(category => category.id === String(raw?.category || "").trim());
+    const img = sanitizeProductImage(raw?.img);
 
     return {
         id: String(raw?.id || fallbackId || `prod_${Date.now()}`),
@@ -246,10 +314,14 @@ function normalizeProduct(raw, fallbackId = null) {
         price: Number.isFinite(price) ? Math.round(price) : 0,
         old: Number.isFinite(oldPrice) ? Math.round(oldPrice) : 0,
         description: String(raw?.description || "").trim(),
-        img: sanitizeProductImage(raw?.img),
+        img,
+        gallery: normalizeGallery(raw?.gallery, img),
+        tags: normalizeTags(raw?.tags),
+        stock_status: normalizeStockStatus(raw?.stock_status),
         is_hit: toBool(raw?.is_hit),
         is_sale: toBool(raw?.is_sale),
-        is_new: toBool(raw?.is_new)
+        is_new: toBool(raw?.is_new),
+        reviews: normalizeReviews(raw?.reviews)
     };
 }
 
@@ -261,6 +333,11 @@ function getCategoryName(categoryId) {
 function getCategoryIcon(categoryId) {
     const category = CATEGORIES.find(item => item.id === categoryId);
     return category ? category.icon : "📦";
+}
+
+function getStockStatusName(statusId) {
+    const status = STOCK_STATUSES.find(item => item.id === statusId);
+    return status ? status.name : "Є в наявності";
 }
 
 function getSafeProductImage(product) {
@@ -329,7 +406,7 @@ async function fetchProductsFromSupabase() {
 
     const { data, error } = await client
         .from(SUPABASE_PRODUCTS_CONFIG.table)
-        .select("id, name, category, price, old, description, img, is_hit, is_sale, is_new")
+        .select("*")
         .order("id", { ascending: true });
 
     if (error) throw error;
@@ -479,6 +556,7 @@ function findProductById(id) {
 
 window.PRODUCT_PLACEHOLDER = PRODUCT_PLACEHOLDER;
 window.CATEGORIES = CATEGORIES;
+window.STOCK_STATUSES = STOCK_STATUSES;
 window.DEFAULT_PRODUCTS = DEFAULT_PRODUCTS;
 window.products = products;
 window.productsReady = () => productsReady;
@@ -488,6 +566,7 @@ window.refreshProductsFromSupabase = refreshProductsFromSupabase;
 window.normalizeProduct = normalizeProduct;
 window.getCategoryName = getCategoryName;
 window.getCategoryIcon = getCategoryIcon;
+window.getStockStatusName = getStockStatusName;
 window.getSafeProductImage = getSafeProductImage;
 window.saveProducts = saveProducts;
 window.saveSingleProductToSupabase = saveSingleProductToSupabase;

@@ -760,7 +760,7 @@
 
   <main class="product-shell">
     <div class="product-breadcrumbs">
-      <a href="index.html">Головна</a>
+      <a href="#" onclick="goHome(event)">Головна</a>
       <span>›</span>
       <button type="button" onclick="goBack()">Каталог</button>
       <span>›</span>
@@ -833,6 +833,19 @@
       }
     }
 
+    function getReturnUrl(){
+      const saved = localStorage.getItem('kids_room_return_url');
+      if (saved && typeof saved === 'string' && saved.trim()) {
+        return saved;
+      }
+      return 'index.html';
+    }
+
+    function goHome(event){
+      if (event) event.preventDefault();
+      window.location.href = getReturnUrl();
+    }
+
     function getSelectedProduct(){
       refreshProductsSafe();
 
@@ -901,16 +914,13 @@
     }
 
     function goBack(){
-      const ref = document.referrer || "";
-      if (ref && ref.includes(location.host) && !ref.includes('product.html')) {
-        window.location.href = ref;
-        return;
-      }
-      window.location.href = 'index.html';
+      window.location.href = getReturnUrl();
     }
 
     function goHomeToCart(){
-      window.location.href = 'index.html#cart';
+      const returnUrl = getReturnUrl();
+      const cleanUrl = returnUrl.split('#')[0];
+      window.location.href = cleanUrl + '#cart';
     }
 
     function animateToCartFromProduct(){
@@ -1051,7 +1061,7 @@
           <section class="product-empty">
             <h1>Товар не знайдено</h1>
             <p>Схоже, сторінка була відкрита без вибору товару. Повернись у каталог і відкрий потрібну картку ще раз.</p>
-            <button class="product-primary-btn" type="button" onclick="window.location.href='index.html'">Перейти в каталог</button>
+            <button class="product-primary-btn" type="button" onclick="window.location.href=getReturnUrl()">Перейти в каталог</button>
           </section>
         `;
         return;
