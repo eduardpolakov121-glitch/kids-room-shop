@@ -29,7 +29,7 @@ const SUPABASE_PRODUCTS_CONFIG = {
 };
 
 const PRODUCTS_CACHE_KEY = "products";
-const PRODUCTS_INIT_FLAG_KEY = "kids_room_products_seeded_v4";
+const PRODUCTS_INIT_FLAG_KEY = "kids_room_products_seeded_v3";
 
 let products = [];
 let supabaseClientInstance = null;
@@ -38,26 +38,22 @@ let productsInitPromise = null;
 
 function buildDefaultProducts() {
     const make = (category, items) =>
-        items.map((item, index) => {
-            const mainImg = PRODUCT_PLACEHOLDER;
-
-            return {
-                id: `${category}-${index + 1}`,
-                name: item.name,
-                category,
-                price: item.price,
-                old: item.old,
-                description: item.description,
-                img: mainImg,
-                gallery: [mainImg],
-                tags: [],
-                stock_status: item.stock_status || "in_stock",
-                is_hit: !!item.is_hit,
-                is_sale: !!item.is_sale,
-                is_new: !!item.is_new,
-                reviews: Array.isArray(item.reviews) ? item.reviews : []
-            };
-        });
+        items.map((item, index) => ({
+            id: `${category}-${index + 1}`,
+            name: item.name,
+            category,
+            price: item.price,
+            old: item.old,
+            description: item.description,
+            img: PRODUCT_PLACEHOLDER,
+            is_hit: !!item.is_hit,
+            is_sale: !!item.is_sale,
+            is_new: !!item.is_new,
+            stock_status: item.stock_status || "in_stock",
+            gallery: Array.isArray(item.gallery) ? item.gallery : [PRODUCT_PLACEHOLDER],
+            tags: Array.isArray(item.tags) ? item.tags : [],
+            reviews: Array.isArray(item.reviews) ? item.reviews : []
+        }));
 
     return [
         ...make("toy", [
@@ -221,10 +217,6 @@ function buildDefaultProducts() {
 
 const DEFAULT_PRODUCTS = buildDefaultProducts();
 
-function toBool(value) {
-    return value === true || value === "true" || value === 1 || value === "1";
-}
-
 function sanitizeProductImage(url) {
     const value = String(url || "").trim();
 
@@ -248,57 +240,47 @@ function sanitizeProductImage(url) {
     return PRODUCT_PLACEHOLDER;
 }
 
-function normalizeGallery(rawGallery, fallbackMainImage) {
-    const list = Array.isArray(rawGallery) ? rawGallery : [];
-    const normalized = list
-        .map(item => sanitizeProductImage(item))
-        .filter(Boolean);
-
-    const main = sanitizeProductImage(fallbackMainImage || PRODUCT_PLACEHOLDER);
-
-    if (!normalized.length) return [main];
-    if (!normalized.includes(main) && main !== PRODUCT_PLACEHOLDER) {
-        return [main, ...normalized];
-    }
-
-    return normalized;
-}
-
 function normalizeTags(rawTags) {
     if (Array.isArray(rawTags)) {
-        return rawTags
-            .map(item => String(item || "").trim())
-            .filter(Boolean)
-            .slice(0, 20);
+        return rawTags.map(item => String(item || "").trim()).filter(Boolean);
     }
 
     if (typeof rawTags === "string") {
-        return rawTags
-            .split(",")
-            .map(item => item.trim())
-            .filter(Boolean)
-            .slice(0, 20);
+        return rawTags.split(",").map(item => item.trim()).filter(Boolean);
     }
 
     return [];
 }
 
 function normalizeReviews(rawReviews) {
-    const list = Array.isArray(rawReviews) ? rawReviews : [];
+    if (!Array.isArray(rawReviews)) return [];
 
-    return list
+    return rawReviews
         .map(item => ({
             author: String(item?.author || "Покупець").trim(),
             rating: Math.max(1, Math.min(5, Number(item?.rating || 5))),
             text: String(item?.text || "").trim(),
-            date: String(item?.date || new Date().toISOString().slice(0, 10)).trim()
+            date: String(item?.date || "").trim()
         }))
         .filter(item => item.text);
 }
 
+function normalizeGallery(rawGallery, mainImage) {
+    const gallery = Array.isArray(rawGallery)
+        ? rawGallery.map(item => sanitizeProductImage(item)).filter(Boolean)
+        : [];
+
+    const main = sanitizeProductImage(mainImage);
+
+    if (!gallery.length) return [main];
+    if (!gallery.includes(main)) return [main, ...gallery];
+
+    return gallery;
+}
+
 function normalizeStockStatus(value) {
-    const normalized = String(value || "in_stock").trim();
-    return STOCK_STATUSES.some(item => item.id === normalized) ? normalized : "in_stock";
+    const safe = String(value || "in_stock").trim();
+    return STOCK_STATUSES.some(item => item.id === safe) ? safe : "in_stock";
 }
 
 function normalizeProduct(raw, fallbackId = null) {
@@ -315,12 +297,12 @@ function normalizeProduct(raw, fallbackId = null) {
         old: Number.isFinite(oldPrice) ? Math.round(oldPrice) : 0,
         description: String(raw?.description || "").trim(),
         img,
+        is_hit: raw?.is_hit === true || raw?.is_hit === "true" || raw?.is_hit === 1 || raw?.is_hit === "1",
+        is_sale: raw?.is_sale === true || raw?.is_sale === "true" || raw?.is_sale === 1 || raw?.is_sale === "1",
+        is_new: raw?.is_new === true || raw?.is_new === "true" || raw?.is_new === 1 || raw?.is_new === "1",
+        stock_status: normalizeStockStatus(raw?.stock_status),
         gallery: normalizeGallery(raw?.gallery, img),
         tags: normalizeTags(raw?.tags),
-        stock_status: normalizeStockStatus(raw?.stock_status),
-        is_hit: toBool(raw?.is_hit),
-        is_sale: toBool(raw?.is_sale),
-        is_new: toBool(raw?.is_new),
         reviews: normalizeReviews(raw?.reviews)
     };
 }
@@ -355,13 +337,16 @@ function getProductsFromStorage() {
     }
 }
 
-function setProductsState(list, emitEvent = true) {
+function setProductsState(list, emitEvent = true, saveToStorage = true) {
     products = Array.isArray(list)
         ? list.map((item, index) => normalizeProduct(item, item?.id || `prod_${index + 1}`))
         : [];
 
     window.products = products;
-    localStorage.setItem(PRODUCTS_CACHE_KEY, JSON.stringify(products));
+
+    if (saveToStorage) {
+        localStorage.setItem(PRODUCTS_CACHE_KEY, JSON.stringify(products));
+    }
 
     if (emitEvent) {
         window.dispatchEvent(new CustomEvent("products:updated", { detail: products }));
@@ -406,7 +391,7 @@ async function fetchProductsFromSupabase() {
 
     const { data, error } = await client
         .from(SUPABASE_PRODUCTS_CONFIG.table)
-        .select("*")
+        .select("id, name, category, price, old, description, img, is_hit, is_sale, is_new, stock_status, gallery, tags, reviews")
         .order("id", { ascending: true });
 
     if (error) throw error;
@@ -454,7 +439,7 @@ async function replaceAllProductsInSupabase(list) {
 
 async function saveProducts() {
     const snapshot = Array.isArray(products) ? [...products] : [];
-    setProductsState(snapshot, true);
+    setProductsState(snapshot, true, true);
     await replaceAllProductsInSupabase(snapshot);
     return products;
 }
@@ -469,14 +454,14 @@ async function saveSingleProductToSupabase(product) {
         products.push(normalized);
     }
 
-    setProductsState(products, true);
+    setProductsState(products, true, true);
     await replaceAllProductsInSupabase(products);
     return products;
 }
 
 async function deleteProductFromSupabase(id) {
     products = products.filter(item => String(item.id) !== String(id));
-    setProductsState(products, true);
+    setProductsState(products, true, true);
     await replaceAllProductsInSupabase(products);
     return products;
 }
@@ -492,7 +477,7 @@ async function seedDefaultProductsIfNeeded() {
     }
 
     if (remoteProducts.length > 0) {
-        setProductsState(remoteProducts, false);
+        setProductsState(remoteProducts, false, true);
         return remoteProducts;
     }
 
@@ -502,7 +487,7 @@ async function seedDefaultProductsIfNeeded() {
     }
 
     const afterSeed = await fetchProductsFromSupabase();
-    setProductsState(afterSeed.length ? afterSeed : DEFAULT_PRODUCTS, false);
+    setProductsState(afterSeed.length ? afterSeed : DEFAULT_PRODUCTS, false, true);
     return products;
 }
 
@@ -511,10 +496,11 @@ async function initializeProducts() {
 
     productsInitPromise = (async () => {
         const cached = getProductsFromStorage();
+
         if (cached.length) {
-            setProductsState(cached, false);
+            setProductsState(cached, false, false);
         } else {
-            setProductsState(DEFAULT_PRODUCTS, false);
+            setProductsState(DEFAULT_PRODUCTS, false, true);
         }
 
         try {
@@ -541,7 +527,7 @@ async function refreshProductsFromSupabase() {
     try {
         const remoteProducts = await fetchProductsFromSupabase();
         if (remoteProducts.length) {
-            setProductsState(remoteProducts, true);
+            setProductsState(remoteProducts, true, true);
         }
         return products;
     } catch (error) {
@@ -577,7 +563,7 @@ window.sanitizeProductImage = sanitizeProductImage;
 window.addEventListener("storage", event => {
     if (event.key === PRODUCTS_CACHE_KEY) {
         const cached = getProductsFromStorage();
-        setProductsState(cached, true);
+        setProductsState(cached, true, false);
     }
 });
 
