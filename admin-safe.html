@@ -21,6 +21,7 @@
     }
 
     *{box-sizing:border-box}
+
     body{
       margin:0;
       font-family:Arial,Helvetica,sans-serif;
@@ -29,7 +30,7 @@
     }
 
     .wrap{
-      max-width:1200px;
+      max-width:1280px;
       margin:0 auto;
       padding:24px 16px 60px;
     }
@@ -152,7 +153,7 @@
 
     .grid{
       display:grid;
-      grid-template-columns:1.2fr .8fr;
+      grid-template-columns:1.15fr .85fr;
       gap:18px;
     }
 
@@ -223,6 +224,41 @@
       border-radius:14px;
       background:#fff;
       border:1px solid var(--line);
+    }
+
+    .gallery-preview{
+      display:grid;
+      grid-template-columns:repeat(auto-fill,minmax(88px,1fr));
+      gap:10px;
+      margin-top:10px;
+    }
+
+    .gallery-item{
+      position:relative;
+      border:1px solid var(--line);
+      border-radius:14px;
+      overflow:hidden;
+      background:#fff;
+      min-height:88px;
+    }
+
+    .gallery-item img{
+      width:100%;
+      height:88px;
+      object-fit:cover;
+      display:block;
+    }
+
+    .gallery-item-badge{
+      position:absolute;
+      left:6px;
+      top:6px;
+      background:rgba(255,255,255,0.94);
+      color:#ff6600;
+      border-radius:999px;
+      padding:4px 8px;
+      font-size:11px;
+      font-weight:800;
     }
 
     .actions{
@@ -298,6 +334,21 @@
     .badge-new{
       background:#ebf5ff;
       color:#2563eb;
+    }
+
+    .badge-stock-in{
+      background:#ecfdf3;
+      color:#15803d;
+    }
+
+    .badge-stock-low{
+      background:#fff7ed;
+      color:#c2410c;
+    }
+
+    .badge-stock-out{
+      background:#f3f4f6;
+      color:#6b7280;
     }
 
     .row-actions{
@@ -452,7 +503,7 @@
       <div class="toolbar">
         <div>
           <h1 class="title" style="margin-bottom:4px;">Адмін-панель Kids Room</h1>
-          <div class="muted">Товари, зображення, швидкий перегляд замовлень.</div>
+          <div class="muted">Товари, зображення, галерея, теги, відгуки та швидкий перегляд замовлень.</div>
         </div>
 
         <div class="toolbar-actions">
@@ -487,6 +538,11 @@
             </div>
 
             <div class="field">
+              <label class="label" for="productStock">Наявність</label>
+              <select id="productStock"></select>
+            </div>
+
+            <div class="field">
               <label class="label" for="productPrice">Ціна</label>
               <input id="productPrice" type="number" min="0" step="1" placeholder="0" />
             </div>
@@ -502,9 +558,21 @@
             </div>
 
             <div class="field full">
-              <label class="label" for="productFile">Нове зображення</label>
+              <label class="label" for="productTags">Теги</label>
+              <input id="productTags" type="text" placeholder="Наприклад: мʼяка іграшка, подарунок, топ" />
+              <div class="muted" style="margin-top:6px;">Теги вказуй через кому.</div>
+            </div>
+
+            <div class="field full">
+              <label class="label" for="productFile">Головне зображення</label>
               <input id="productFile" type="file" accept="image/*" />
               <div class="muted" style="margin-top:6px;">Дозволено: JPG, PNG, WEBP, GIF, SVG. Максимум 5 MB.</div>
+            </div>
+
+            <div class="field full">
+              <label class="label" for="productGalleryFiles">Галерея товару</label>
+              <input id="productGalleryFiles" type="file" accept="image/*" multiple />
+              <div class="muted" style="margin-top:6px;">Можна вибрати кілька фото одразу. Перше фото буде головним, якщо головне не завантажене окремо.</div>
             </div>
 
             <div class="field full">
@@ -527,7 +595,7 @@
             </div>
 
             <div class="field full">
-              <label class="label">Попередній перегляд</label>
+              <label class="label">Попередній перегляд головного фото</label>
               <div class="preview-wrap">
                 <img id="previewImage" src="product-placeholder.svg" alt="preview" />
                 <div>
@@ -535,6 +603,17 @@
                   <div class="muted">Якщо зображення не завантажене або посилання некоректне, буде показано placeholder.</div>
                 </div>
               </div>
+            </div>
+
+            <div class="field full">
+              <label class="label">Попередній перегляд галереї</label>
+              <div id="galleryPreview" class="gallery-preview"></div>
+            </div>
+
+            <div class="field full">
+              <label class="label" for="productReviews">Відгуки</label>
+              <textarea id="productReviews" placeholder='Формат: Імʼя|5|Текст відгуку|2026-03-15'></textarea>
+              <div class="muted" style="margin-top:6px;">Кожен відгук з нового рядка. Формат: Імʼя | рейтинг 1-5 | текст | дата</div>
             </div>
           </div>
 
@@ -576,14 +655,19 @@
     const productIdInput = document.getElementById("productId");
     const productNameInput = document.getElementById("productName");
     const productCategoryInput = document.getElementById("productCategory");
+    const productStockInput = document.getElementById("productStock");
     const productPriceInput = document.getElementById("productPrice");
     const productOldPriceInput = document.getElementById("productOldPrice");
     const productDescInput = document.getElementById("productDesc");
+    const productTagsInput = document.getElementById("productTags");
     const productFileInput = document.getElementById("productFile");
+    const productGalleryFilesInput = document.getElementById("productGalleryFiles");
+    const productReviewsInput = document.getElementById("productReviews");
     const productHitInput = document.getElementById("productHit");
     const productSaleInput = document.getElementById("productSale");
     const productNewInput = document.getElementById("productNew");
     const previewImage = document.getElementById("previewImage");
+    const galleryPreview = document.getElementById("galleryPreview");
     const formTitle = document.getElementById("formTitle");
 
     const SUPABASE_CONFIG = window.KIDS_ROOM_SUPABASE_CONFIG || null;
@@ -592,6 +676,7 @@
       : null;
 
     let editingExistingImage = PRODUCT_PLACEHOLDER;
+    let editingGalleryImages = [];
 
     function isSupabaseReady() {
       return !!(SUPABASE_CONFIG && supabaseClient);
@@ -619,6 +704,7 @@
       loginScreen.classList.add("hidden");
       adminScreen.classList.remove("hidden");
       fillCategories();
+      fillStockStatuses();
       renderProducts();
       renderOrders();
     }
@@ -634,28 +720,69 @@
       }).join("");
     }
 
+    function fillStockStatuses() {
+      const statuses = Array.isArray(window.STOCK_STATUSES) ? window.STOCK_STATUSES : [
+        { id: "in_stock", name: "Є в наявності" },
+        { id: "low_stock", name: "Закінчується" },
+        { id: "out_of_stock", name: "Немає в наявності" }
+      ];
+
+      productStockInput.innerHTML = statuses.map(status => {
+        return `<option value="${escapeHtml(status.id)}">${escapeHtml(status.name)}</option>`;
+      }).join("");
+    }
+
+    function renderGalleryPreview(images) {
+      const list = Array.isArray(images) ? images : [];
+
+      if (!list.length) {
+        galleryPreview.innerHTML = `<div class="empty">Галерея поки порожня.</div>`;
+        return;
+      }
+
+      galleryPreview.innerHTML = list.map((img, index) => `
+        <div class="gallery-item">
+          <img src="${escapeHtml(img)}" alt="gallery-${index}" onerror="this.onerror=null;this.src='product-placeholder.svg'">
+          ${index === 0 ? `<div class="gallery-item-badge">Головне</div>` : ``}
+        </div>
+      `).join("");
+    }
+
     function resetForm() {
       formTitle.textContent = "Додати товар";
       productIdInput.value = "";
       productNameInput.value = "";
       productCategoryInput.value = CATEGORIES[0]?.id || "toy";
+      productStockInput.value = "in_stock";
       productPriceInput.value = "";
       productOldPriceInput.value = "";
       productDescInput.value = "";
+      productTagsInput.value = "";
       productFileInput.value = "";
+      productGalleryFilesInput.value = "";
+      productReviewsInput.value = "";
       productHitInput.checked = false;
       productSaleInput.checked = false;
       productNewInput.checked = false;
       editingExistingImage = PRODUCT_PLACEHOLDER;
+      editingGalleryImages = [];
       previewImage.src = PRODUCT_PLACEHOLDER;
+      renderGalleryPreview([]);
       clearNotice(formNotice);
     }
 
     function renderProductBadges(product) {
       const badges = [];
+
       if (product.is_hit) badges.push('<span class="badge badge-hit">Хіт</span>');
       if (product.is_sale) badges.push('<span class="badge badge-sale">Акція</span>');
       if (product.is_new) badges.push('<span class="badge badge-new">Новинка</span>');
+
+      const stock = String(product.stock_status || "in_stock");
+      if (stock === "low_stock") badges.push('<span class="badge badge-stock-low">Закінчується</span>');
+      else if (stock === "out_of_stock") badges.push('<span class="badge badge-stock-out">Немає в наявності</span>');
+      else badges.push('<span class="badge badge-stock-in">Є в наявності</span>');
+
       return badges.length ? `<div class="badge-row">${badges.join("")}</div>` : "";
     }
 
@@ -666,7 +793,10 @@
       }
 
       productsList.innerHTML = window.products.map(product => {
-        const img = getSafeProductImage(product);
+        const img = typeof getSafeProductImage === "function" ? getSafeProductImage(product) : (product.img || "product-placeholder.svg");
+        const tags = Array.isArray(product.tags) ? product.tags : [];
+        const galleryCount = Array.isArray(product.gallery) ? product.gallery.length : 0;
+
         return `
           <div class="product-item">
             <img src="${img}" alt="${escapeHtml(product.name)}" onerror="this.onerror=null;this.src='product-placeholder.svg'">
@@ -676,6 +806,8 @@
                 ID: ${escapeHtml(String(product.id))}<br>
                 Категорія: ${escapeHtml(getCategoryName(product.category))}<br>
                 Ціна: ${Number(product.price || 0)} грн${product.old ? ` • Стара: ${Number(product.old)} грн` : ""}<br>
+                Наявність: ${escapeHtml(typeof getStockStatusName === "function" ? getStockStatusName(product.stock_status) : "Є в наявності")}<br>
+                Галерея: ${galleryCount} фото${tags.length ? `<br>Теги: ${escapeHtml(tags.join(", "))}` : ""}<br>
                 ${product.description ? escapeHtml(product.description) : "Без опису"}
               </div>
               ${renderProductBadges(product)}
@@ -698,6 +830,42 @@
         .replaceAll("'", "&#039;");
     }
 
+    function parseTags(raw) {
+      return String(raw || "")
+        .split(",")
+        .map(item => item.trim())
+        .filter(Boolean);
+    }
+
+    function serializeReviews(reviews) {
+      if (!Array.isArray(reviews) || !reviews.length) return "";
+      return reviews.map(item => {
+        return [
+          item.author || "Покупець",
+          item.rating || 5,
+          item.text || "",
+          item.date || ""
+        ].join("|");
+      }).join("\n");
+    }
+
+    function parseReviews(raw) {
+      return String(raw || "")
+        .split("\n")
+        .map(line => line.trim())
+        .filter(Boolean)
+        .map(line => {
+          const [author, rating, text, date] = line.split("|").map(item => String(item || "").trim());
+          return {
+            author: author || "Покупець",
+            rating: Math.max(1, Math.min(5, Number(rating || 5))),
+            text: text || "",
+            date: date || ""
+          };
+        })
+        .filter(item => item.text);
+    }
+
     function editProduct(id) {
       const product = findProductById(id);
       if (!product) return;
@@ -706,16 +874,23 @@
       productIdInput.value = product.id || "";
       productNameInput.value = product.name || "";
       productCategoryInput.value = product.category || "toy";
+      productStockInput.value = product.stock_status || "in_stock";
       productPriceInput.value = product.price || 0;
       productOldPriceInput.value = product.old || 0;
       productDescInput.value = product.description || "";
+      productTagsInput.value = Array.isArray(product.tags) ? product.tags.join(", ") : "";
+      productReviewsInput.value = serializeReviews(product.reviews || []);
       productFileInput.value = "";
+      productGalleryFilesInput.value = "";
       productHitInput.checked = !!product.is_hit;
       productSaleInput.checked = !!product.is_sale;
       productNewInput.checked = !!product.is_new;
 
       editingExistingImage = sanitizeProductImage(product.img || PRODUCT_PLACEHOLDER);
+      editingGalleryImages = Array.isArray(product.gallery) ? product.gallery.map(item => sanitizeProductImage(item)) : [editingExistingImage];
+
       previewImage.src = editingExistingImage;
+      renderGalleryPreview(editingGalleryImages);
 
       clearNotice(formNotice);
       window.scrollTo({ top: 0, behavior: "smooth" });
@@ -798,16 +973,32 @@
       return publicUrl;
     }
 
+    async function uploadMultipleImages(files) {
+      const list = Array.from(files || []);
+      const result = [];
+
+      for (const file of list) {
+        const uploaded = await uploadImageToSupabase(file);
+        if (uploaded) result.push(uploaded);
+      }
+
+      return result;
+    }
+
     async function saveCurrentProduct() {
       clearNotice(formNotice);
 
       const id = productIdInput.value.trim();
       const name = productNameInput.value.trim();
       const category = productCategoryInput.value;
+      const stock_status = productStockInput.value;
       const price = parseInt(productPriceInput.value, 10);
       const old = parseInt(productOldPriceInput.value, 10);
       const description = productDescInput.value.trim();
+      const tags = parseTags(productTagsInput.value);
+      const reviews = parseReviews(productReviewsInput.value);
       const file = productFileInput.files[0];
+      const galleryFiles = productGalleryFilesInput.files;
 
       if (!name) {
         showNotice(formNotice, "Вкажи назву товару.", "error");
@@ -822,9 +1013,37 @@
       try {
         const existingProduct = id ? findProductById(id) : null;
         let finalImage = existingProduct?.img || editingExistingImage || PRODUCT_PLACEHOLDER;
+        let finalGallery = Array.isArray(existingProduct?.gallery) ? [...existingProduct.gallery] : [...editingGalleryImages];
 
         if (file) {
           finalImage = await uploadImageToSupabase(file);
+        }
+
+        if (galleryFiles && galleryFiles.length) {
+          const uploadedGallery = await uploadMultipleImages(galleryFiles);
+          if (uploadedGallery.length) {
+            finalGallery = uploadedGallery;
+          }
+        }
+
+        if (!finalGallery.length && finalImage) {
+          finalGallery = [finalImage];
+        }
+
+        if (finalImage && !finalGallery.includes(finalImage)) {
+          finalGallery = [finalImage, ...finalGallery];
+        }
+
+        if (!finalImage && finalGallery.length) {
+          finalImage = finalGallery[0];
+        }
+
+        if (!finalImage) {
+          finalImage = PRODUCT_PLACEHOLDER;
+        }
+
+        if (!finalGallery.length) {
+          finalGallery = [finalImage];
         }
 
         const finalId = id || `prod_${Date.now()}`;
@@ -834,10 +1053,14 @@
           id: finalId,
           name,
           category,
+          stock_status,
           price,
           old: finalOld < price ? price : finalOld,
           description,
+          tags,
+          reviews,
           img: sanitizeProductImage(finalImage || PRODUCT_PLACEHOLDER),
+          gallery: finalGallery.map(item => sanitizeProductImage(item)),
           is_hit: productHitInput.checked,
           is_sale: productSaleInput.checked,
           is_new: productNewInput.checked
@@ -846,7 +1069,9 @@
         await saveSingleProductToSupabase(product);
 
         editingExistingImage = product.img;
-        previewImage.src = getSafeProductImage(product);
+        editingGalleryImages = Array.isArray(product.gallery) ? [...product.gallery] : [product.img];
+        previewImage.src = typeof getSafeProductImage === "function" ? getSafeProductImage(product) : product.img;
+        renderGalleryPreview(editingGalleryImages);
         renderProducts();
         showNotice(formNotice, "Товар успішно збережено.", "success");
         resetForm();
@@ -875,7 +1100,7 @@
           const itemsHtml = items.length
             ? `<div class="order-items">${items.map(item => `
                 <div class="order-item">
-                  <img src="${getSafeProductImage(item)}" alt="${escapeHtml(item.name || "Товар")}" onerror="this.onerror=null;this.src='product-placeholder.svg'">
+                  <img src="${typeof getSafeProductImage === "function" ? getSafeProductImage(item) : (item.img || "product-placeholder.svg")}" alt="${escapeHtml(item.name || "Товар")}" onerror="this.onerror=null;this.src='product-placeholder.svg'">
                   <div>
                     <div class="order-item-name">${escapeHtml(item.name || "Товар")}</div>
                     <div class="muted">Кількість: ${Number(item.qty || 1)} • Ціна: ${Number(item.price || 0)} грн</div>
@@ -926,6 +1151,28 @@
       previewImage.src = objectUrl;
     });
 
+    productGalleryFilesInput.addEventListener("change", event => {
+      const files = Array.from(event.target.files || []);
+
+      if (!files.length) {
+        renderGalleryPreview(editingGalleryImages);
+        return;
+      }
+
+      const previewUrls = files.map(file => URL.createObjectURL(file));
+
+      galleryPreview.innerHTML = previewUrls.map((src, index) => `
+        <div class="gallery-item">
+          <img src="${src}" alt="preview-${index}">
+          ${index === 0 ? `<div class="gallery-item-badge">Нове</div>` : ``}
+        </div>
+      `).join("");
+
+      setTimeout(() => {
+        previewUrls.forEach(url => URL.revokeObjectURL(url));
+      }, 5000);
+    });
+
     loginBtn.addEventListener("click", () => {
       const login = document.getElementById("loginUser").value.trim();
       const password = document.getElementById("loginPass").value.trim();
@@ -953,6 +1200,7 @@
 
     window.addEventListener("load", async () => {
       fillCategories();
+      fillStockStatuses();
       await initializeProducts();
 
       if (isLoggedIn()) {
