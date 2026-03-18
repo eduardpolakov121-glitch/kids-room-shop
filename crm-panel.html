@@ -8,134 +8,425 @@
     :root{
       --bg:#f5f7fb;
       --panel:#ffffff;
-      --line:#e7ebf3;
+      --line:#e4e9f2;
+      --line-soft:#edf1f7;
       --text:#1f2a44;
-      --muted:#75809a;
+      --muted:#7a859d;
       --accent:#ff8f3d;
       --accent-dark:#ef7d27;
-      --soft:#eef3fb;
       --danger:#e05650;
       --success:#2db783;
+      --blue:#4a89dc;
+      --warning:#d98c00;
       --shadow:0 12px 35px rgba(31,42,68,.10);
-      --radius:18px;
+      --radius:20px;
     }
+
     *{box-sizing:border-box}
-    body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:var(--text)}
+
+    body{
+      margin:0;
+      font-family:Arial,sans-serif;
+      background:var(--bg);
+      color:var(--text);
+    }
+
     .hidden{display:none!important}
-    .app-header{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:18px 22px;background:var(--panel);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:20}
+
+    .app-header{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:16px;
+      padding:18px 22px;
+      background:var(--panel);
+      border-bottom:1px solid var(--line);
+      position:sticky;
+      top:0;
+      z-index:20;
+    }
+
     .brand{display:flex;align-items:center;gap:12px}
-    .brand-badge{width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg,#ff8f3d,#ffd66e);display:flex;align-items:center;justify-content:center;color:#fff;font-size:22px;font-weight:700}
+    .brand-badge{
+      width:44px;
+      height:44px;
+      border-radius:14px;
+      background:linear-gradient(135deg,#ff8f3d,#ffd66e);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:#fff;
+      font-size:22px;
+      font-weight:700;
+    }
+
     .brand h1{margin:0;font-size:24px}
-    .header-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-    .btn{border:none;border-radius:12px;padding:12px 14px;font-size:14px;font-weight:700;cursor:pointer}
+
+    .header-actions{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    .btn{
+      border:none;
+      border-radius:12px;
+      padding:12px 14px;
+      font-size:14px;
+      font-weight:700;
+      cursor:pointer;
+    }
+
     .btn.primary{background:var(--accent);color:#fff}
     .btn.primary:hover{background:var(--accent-dark)}
     .btn.secondary{background:#eef2fb;color:var(--text)}
     .btn.danger{background:var(--danger);color:#fff}
     .btn.success{background:var(--success);color:#fff}
     .btn:disabled{opacity:.6;cursor:not-allowed}
-    .role-badge{padding:8px 12px;border-radius:999px;background:#eef2fb;font-weight:700;font-size:13px}
+
+    .role-badge{
+      padding:8px 12px;
+      border-radius:999px;
+      background:#eef2fb;
+      font-weight:700;
+      font-size:13px;
+    }
+
     .muted{color:var(--muted)}
+
     .layout{padding:22px}
-    .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:18px}
-    .stat-card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow)}
-    .stat-card .label{color:var(--muted);font-size:13px;margin-bottom:8px}
-    .stat-card .value{font-size:28px;font-weight:700}
-    .toolbar{display:grid;grid-template-columns:1.35fr .85fr .8fr auto;gap:12px;align-items:center;margin-bottom:16px}
-    .toolbar input,.toolbar select{width:100%;padding:14px;border:1px solid var(--line);border-radius:14px;background:#fff;font-size:14px}
-    .tabs{display:flex;gap:10px;overflow:auto;padding-bottom:8px;margin-bottom:16px}
-    .tab-btn{border:none;background:#eaf0fb;color:var(--text);padding:12px 16px;border-radius:14px;font-weight:700;cursor:pointer;white-space:nowrap;display:flex;align-items:center;gap:8px}
-    .tab-btn.active{background:var(--accent);color:#fff}
-    .tab-count{padding:4px 8px;border-radius:999px;background:rgba(255,255,255,.8);color:#28324a;font-size:12px;font-weight:700}
-    .tab-btn.active .tab-count{background:rgba(255,255,255,.22);color:#fff}
 
-    .list-card{background:var(--panel);border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow);overflow:hidden}
-    .list-head,.order-row{display:grid;grid-template-columns:130px 1.2fr 1fr 1.2fr 140px 160px 130px;gap:12px;align-items:center}
-    .list-head{padding:16px 18px;background:#f8faff;border-bottom:1px solid var(--line);font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
-    .order-row{padding:16px 18px;border-bottom:1px solid var(--line);cursor:pointer;transition:.15s;background:#fff}
-    .order-row:last-child{border-bottom:none}
-    .order-row:hover{background:#fff9f4}
-    .order-id{font-weight:700}
-    .order-main{display:flex;flex-direction:column;gap:5px;min-width:0}
-    .order-name{font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    .order-sub{font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    .stage-pill{display:inline-flex;align-items:center;justify-content:center;min-height:34px;padding:6px 12px;border-radius:999px;background:#fff1e7;color:#d86b14;font-size:12px;font-weight:700;justify-self:start}
-    .sum{font-weight:700;font-size:16px}
-    .empty{padding:28px;text-align:center;color:var(--muted)}
-
-    .drawer-wrap{position:fixed;inset:0;background:rgba(10,18,34,.42);display:none;z-index:60}
-    .drawer-wrap.open{display:block}
-    .drawer{position:absolute;top:0;right:0;height:100%;width:min(980px,100%);background:#fff;box-shadow:-12px 0 40px rgba(0,0,0,.18);display:flex;flex-direction:column}
-    .drawer-head{padding:18px 20px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:12px}
-    .drawer-head h2{margin:0;font-size:22px}
-    .drawer-body{padding:18px 20px 108px;overflow:auto}
-    .drawer-footer{position:absolute;left:0;right:0;bottom:0;padding:16px 20px;border-top:1px solid var(--line);background:#fff;display:flex;gap:10px;flex-wrap:wrap}
-
-    .drawer-grid{
+    .stats{
       display:grid;
-      grid-template-columns:1.18fr .92fr;
+      grid-template-columns:repeat(4,1fr);
       gap:16px;
-      align-items:start;
+      margin-bottom:18px;
     }
 
-    .panel{
-      background:#f8faff;
+    .stat-card{
+      background:var(--panel);
       border:1px solid var(--line);
-      border-radius:18px;
+      border-radius:var(--radius);
       padding:16px;
-      margin-bottom:14px;
+      box-shadow:var(--shadow);
     }
 
-    .panel h3{margin:0 0 12px;font-size:17px}
+    .stat-card .label{
+      color:var(--muted);
+      font-size:13px;
+      margin-bottom:8px;
+    }
 
-    .field{margin-bottom:12px}
-    .field:last-child{margin-bottom:0}
-    .field label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.03em;font-weight:700}
-    .field input,.field select,.field textarea{
+    .stat-card .value{
+      font-size:28px;
+      font-weight:700;
+    }
+
+    .toolbar{
+      display:grid;
+      grid-template-columns:1.35fr .85fr .8fr auto;
+      gap:12px;
+      align-items:center;
+      margin-bottom:16px;
+    }
+
+    .toolbar input,
+    .toolbar select{
       width:100%;
-      padding:12px 13px;
+      padding:14px;
       border:1px solid var(--line);
-      border-radius:12px;
+      border-radius:14px;
       background:#fff;
       font-size:14px;
     }
-    .field textarea{min-height:92px;resize:vertical}
 
-    .customer-stack{
+    .tabs{
+      display:flex;
+      gap:10px;
+      overflow:auto;
+      padding-bottom:8px;
+      margin-bottom:16px;
+    }
+
+    .tab-btn{
+      border:none;
+      background:#eaf0fb;
+      color:var(--text);
+      padding:12px 16px;
+      border-radius:14px;
+      font-weight:700;
+      cursor:pointer;
+      white-space:nowrap;
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+
+    .tab-btn.active{
+      background:var(--accent);
+      color:#fff;
+    }
+
+    .tab-count{
+      padding:4px 8px;
+      border-radius:999px;
+      background:rgba(255,255,255,.8);
+      color:#28324a;
+      font-size:12px;
+      font-weight:700;
+    }
+
+    .tab-btn.active .tab-count{
+      background:rgba(255,255,255,.22);
+      color:#fff;
+    }
+
+    .list-card{
+      background:var(--panel);
+      border:1px solid var(--line);
+      border-radius:20px;
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+
+    .list-head,
+    .order-row{
+      display:grid;
+      grid-template-columns:130px 1.2fr 1fr 1.2fr 150px 160px 130px;
+      gap:12px;
+      align-items:center;
+    }
+
+    .list-head{
+      padding:16px 18px;
+      background:#f8faff;
+      border-bottom:1px solid var(--line);
+      font-size:12px;
+      font-weight:700;
+      color:var(--muted);
+      text-transform:uppercase;
+      letter-spacing:.04em;
+    }
+
+    .order-row{
+      padding:16px 18px;
+      border-bottom:1px solid var(--line);
+      cursor:pointer;
+      transition:.15s;
+      background:#fff;
+    }
+
+    .order-row:last-child{border-bottom:none}
+    .order-row:hover{background:#fff9f4}
+
+    .order-id{font-weight:700}
+
+    .order-main{
       display:flex;
       flex-direction:column;
-      gap:12px;
+      gap:5px;
+      min-width:0;
     }
 
-    .field-rect input{
-      min-height:50px;
+    .order-name{
+      font-weight:700;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+
+    .order-sub{
+      font-size:13px;
+      color:var(--muted);
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+
+    .stage-pill{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      min-height:34px;
+      padding:6px 12px;
+      border-radius:999px;
+      background:#fff1e7;
+      color:#d86b14;
+      font-size:12px;
+      font-weight:700;
+      justify-self:start;
+    }
+
+    .sum{
+      font-weight:700;
+      font-size:16px;
+    }
+
+    .empty{
+      padding:28px;
+      text-align:center;
+      color:var(--muted);
+    }
+
+    .drawer-wrap{
+      position:fixed;
+      inset:0;
+      background:rgba(10,18,34,.42);
+      display:none;
+      z-index:60;
+    }
+
+    .drawer-wrap.open{display:block}
+
+    .drawer{
+      position:absolute;
+      top:10px;
+      left:10px;
+      right:10px;
+      bottom:10px;
+      background:#fff;
+      border-radius:30px;
+      box-shadow:0 20px 55px rgba(0,0,0,.18);
+      display:flex;
+      flex-direction:column;
+      overflow:hidden;
+    }
+
+    .drawer-head{
+      padding:16px 22px;
+      border-bottom:1px solid var(--line);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      background:#fbfcfe;
+    }
+
+    .drawer-head h2{
+      margin:0;
+      font-size:22px;
+    }
+
+    .drawer-body{
+      flex:1;
+      overflow:auto;
+      padding:16px 22px 110px;
+      background:#fcfdff;
+    }
+
+    .drawer-footer{
+      position:absolute;
+      left:0;
+      right:0;
+      bottom:0;
+      padding:14px 22px;
+      border-top:1px solid var(--line);
+      background:#fff;
+      display:flex;
+      justify-content:center;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    .card-layout{
+      display:grid;
+      grid-template-columns:340px 300px 1fr;
+      gap:18px;
+      align-items:start;
+    }
+
+    .section-block{
+      background:#fff;
+      border:1px solid var(--line);
+      border-radius:22px;
+      padding:14px 16px;
+      box-shadow:0 8px 20px rgba(31,42,68,.05);
+      margin-bottom:14px;
+    }
+
+    .section-title{
+      margin:0 0 12px;
+      font-size:13px;
+      font-weight:700;
+      color:#8a95ab;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+
+    .section-title::before,
+    .section-title::after{
+      content:"";
+      height:1px;
+      background:var(--line);
+      flex:1;
+    }
+
+    .mini-field{
+      margin-bottom:12px;
+    }
+
+    .mini-field:last-child{margin-bottom:0}
+
+    .mini-label{
+      font-size:12px;
+      font-weight:700;
+      color:var(--muted);
+      margin-bottom:6px;
+      text-transform:uppercase;
+      letter-spacing:.04em;
+    }
+
+    .mini-input,
+    .mini-textarea,
+    .mini-select{
+      width:100%;
+      border:1px solid var(--line);
+      border-radius:14px;
+      background:#fff;
+      color:var(--text);
+      padding:11px 12px;
+      font-size:14px;
+      font-family:inherit;
+    }
+
+    .mini-textarea{
+      min-height:96px;
+      resize:vertical;
+    }
+
+    .mini-input.big{
+      min-height:52px;
       font-size:16px;
       font-weight:700;
-      border-radius:14px;
+      border-radius:16px;
     }
 
-    .short-hint{
-      font-size:12px;
-      color:var(--muted);
-      margin-top:6px;
-      line-height:1.35;
+    .readonly-short{
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      cursor:help;
     }
 
-    .status-visual{
+    .status-grid{
       display:flex;
       flex-wrap:wrap;
-      gap:10px;
+      gap:8px;
     }
 
     .status-chip{
       border:none;
       border-radius:999px;
-      padding:10px 14px;
-      font-size:13px;
+      padding:9px 14px;
+      font-size:12px;
       font-weight:700;
       cursor:pointer;
       transition:.18s ease;
-      background:#eaf0fb;
+      background:#edf2fb;
       color:#334155;
     }
 
@@ -146,82 +437,69 @@
 
     .status-chip.active{
       outline:2px solid #1f2a44;
-      transform:translateY(-1px);
     }
 
-    .status-chip[data-stage="new"],
-    .status-chip[data-stage="day1"],
-    .status-chip[data-stage="day2"],
-    .status-chip[data-stage="day3"],
-    .status-chip[data-stage="day4"],
-    .status-chip[data-stage="day5"],
-    .status-chip[data-stage="day6"],
-    .status-chip[data-stage="day7"]{
-      background:#fff1e7;
-      color:#d86b14;
-    }
+    .status-chip[data-stage="new"]{background:#fff1e7;color:#d86b14}
+    .status-chip[data-stage="shipped"]{background:#ebf4ff;color:#2e6fb8}
+    .status-chip[data-stage^="day"]{background:#fff8df;color:#9a6c00}
+    .status-chip[data-stage="postal_refusal"]{background:#ffecec;color:#c24c4c}
+    .status-chip[data-stage="completed"]{background:#e9fbf2;color:#15895e}
+    .status-chip[data-stage="returned"]{background:#efeaff;color:#6f4acb}
 
-    .status-chip[data-stage="shipped"]{
-      background:#e8f4ff;
-      color:#2465a6;
-    }
-
-    .status-chip[data-stage="completed"]{
-      background:#e8fbf2;
-      color:#15895e;
-    }
-
-    .status-chip[data-stage="cancelled"]{
-      background:#ffecec;
-      color:#c74d4d;
-    }
-
-    .meta-grid{
+    .meta-row{
       display:grid;
       grid-template-columns:1fr 1fr;
-      gap:12px;
-      margin-top:12px;
+      gap:10px;
+      margin-top:10px;
+    }
+
+    .sale-panel{
+      background:#fff;
+      border:1px solid var(--line);
+      border-radius:22px;
+      padding:14px 16px;
+      box-shadow:0 8px 20px rgba(31,42,68,.05);
     }
 
     .items{
       display:flex;
       flex-direction:column;
       gap:10px;
+      margin-top:6px;
     }
 
     .item{
       display:grid;
-      grid-template-columns:68px 1fr auto;
+      grid-template-columns:56px minmax(0,1fr) 60px 48px 88px 28px;
       gap:10px;
-      padding:10px;
-      border-radius:16px;
-      background:#fff;
-      border:1px solid var(--line);
-      align-items:center;
-      box-shadow:0 8px 22px rgba(0,0,0,.04);
+      align-items:start;
+      padding:10px 6px;
+      border-bottom:1px solid var(--line-soft);
     }
+
+    .item:last-child{border-bottom:none}
 
     .item-image-wrap{
       position:relative;
-      width:68px;
-      height:68px;
+      width:56px;
+      height:56px;
     }
 
     .item-image{
-      width:68px;
-      height:68px;
-      border-radius:14px;
+      width:56px;
+      height:56px;
+      border-radius:12px;
       object-fit:cover;
-      background:#f1f3f7;
-      border:1px solid var(--line);
       display:block;
+      border:1px solid var(--line);
+      background:#f4f6fa;
       cursor:zoom-in;
     }
 
     .item-zoom{
       position:absolute;
+      left:66px;
       top:0;
-      left:80px;
       width:220px;
       background:#fff;
       border:1px solid var(--line);
@@ -238,9 +516,8 @@
 
     .item-zoom img{
       width:100%;
-      display:block;
       border-radius:12px;
-      object-fit:cover;
+      display:block;
     }
 
     .item-image-wrap:hover .item-zoom{
@@ -256,42 +533,62 @@
     .item-name{
       font-weight:700;
       line-height:1.32;
-      margin-bottom:4px;
       color:var(--text);
       white-space:nowrap;
       overflow:hidden;
       text-overflow:ellipsis;
       cursor:help;
+      margin-bottom:4px;
     }
 
     .item-sub{
-      font-size:13px;
+      font-size:12px;
       color:var(--muted);
-      line-height:1.4;
+      line-height:1.35;
+    }
+
+    .item-mini{
+      font-size:13px;
+      color:#4b5a78;
+      text-align:right;
+      padding-top:4px;
+      white-space:nowrap;
     }
 
     .item-total{
-      font-weight:700;
-      white-space:nowrap;
       font-size:14px;
-      color:var(--text);
-      align-self:center;
+      font-weight:700;
+      color:#c44949;
+      text-align:right;
+      padding-top:4px;
+      white-space:nowrap;
+    }
+
+    .item-remove{
+      border:none;
+      background:transparent;
+      color:#b7bcc8;
+      font-size:22px;
+      line-height:1;
+      cursor:default;
+      padding:0;
+      margin-top:-2px;
     }
 
     .item-flags{
       display:flex;
       flex-wrap:wrap;
-      gap:6px;
-      margin-bottom:6px;
+      gap:4px;
+      margin-bottom:5px;
     }
 
     .item-flag{
       display:inline-flex;
       align-items:center;
       justify-content:center;
-      padding:5px 9px;
+      padding:4px 8px;
       border-radius:999px;
-      font-size:11px;
+      font-size:10px;
       font-weight:800;
       line-height:1;
     }
@@ -300,24 +597,92 @@
     .item-flag.sale{background:#fff0f0;color:#c64c4c}
     .item-flag.new{background:#edf8ff;color:#23628d}
 
-    .history-line{
-      padding:10px 0;
-      border-bottom:1px dashed var(--line);
-      font-size:14px;
+    .order-total-box{
+      margin-top:18px;
+      display:flex;
+      justify-content:flex-end;
+      align-items:center;
+      gap:14px;
+      font-size:18px;
     }
+
+    .order-total-value{
+      color:#c44949;
+      font-size:32px;
+      font-weight:400;
+    }
+
+    .history-line{
+      padding:8px 0;
+      border-bottom:1px dashed var(--line);
+      font-size:13px;
+      color:#4f5d79;
+    }
+
     .history-line:last-child{border-bottom:none}
 
-    .auth-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
-    .auth-card{width:100%;max-width:460px;background:#fff;border-radius:24px;padding:28px;box-shadow:var(--shadow);border:1px solid var(--line)}
+    .auth-wrap{
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:24px;
+    }
+
+    .auth-card{
+      width:100%;
+      max-width:460px;
+      background:#fff;
+      border-radius:24px;
+      padding:28px;
+      box-shadow:var(--shadow);
+      border:1px solid var(--line);
+    }
+
     .auth-card h2{margin:0 0 8px;font-size:28px}
-    .auth-card input{width:100%;padding:14px;border:1px solid var(--line);border-radius:14px;margin-bottom:12px;font-size:15px}
-    .auth-card button{width:100%;padding:14px;border:none;border-radius:14px;background:var(--accent);color:#fff;font-size:16px;font-weight:700;cursor:pointer}
-    .auth-note{margin-top:14px;font-size:13px;color:var(--muted)}
+
+    .auth-card input{
+      width:100%;
+      padding:14px;
+      border:1px solid var(--line);
+      border-radius:14px;
+      margin-bottom:12px;
+      font-size:15px;
+    }
+
+    .auth-card button{
+      width:100%;
+      padding:14px;
+      border:none;
+      border-radius:14px;
+      background:var(--accent);
+      color:#fff;
+      font-size:16px;
+      font-weight:700;
+      cursor:pointer;
+    }
+
+    .auth-note{
+      margin-top:14px;
+      font-size:13px;
+      color:var(--muted);
+    }
+
+    @media (max-width:1400px){
+      .card-layout{
+        grid-template-columns:320px 280px 1fr;
+      }
+
+      .item{
+        grid-template-columns:56px minmax(0,1fr) 50px 40px 78px 24px;
+      }
+    }
 
     @media (max-width:1280px){
       .stats{grid-template-columns:repeat(2,1fr)}
       .toolbar{grid-template-columns:1fr 1fr}
       .list-head,.order-row{grid-template-columns:110px 1.2fr 1fr 1fr 120px 140px 120px}
+      .card-layout{grid-template-columns:1fr}
     }
 
     @media (max-width:980px){
@@ -326,21 +691,33 @@
       .list-head{display:none}
       .order-row{grid-template-columns:1fr;gap:8px}
       .order-row > div{justify-self:start}
-      .drawer{width:100%}
       .app-header{padding:16px;align-items:flex-start}
       .header-actions{justify-content:flex-start}
-      .drawer-grid{grid-template-columns:1fr}
-      .meta-grid{grid-template-columns:1fr}
-      .item{
-        grid-template-columns:64px 1fr;
+      .drawer{
+        top:0;
+        left:0;
+        right:0;
+        bottom:0;
+        border-radius:0;
       }
-      .item-total{
+      .meta-row{grid-template-columns:1fr}
+      .item{
+        grid-template-columns:56px 1fr;
+      }
+      .item-mini,.item-total,.item-remove{
         grid-column:2;
+        text-align:left;
       }
       .item-zoom{
         left:0;
-        top:78px;
+        top:66px;
         width:200px;
+      }
+      .order-total-box{
+        justify-content:flex-start;
+      }
+      .order-total-value{
+        font-size:26px;
       }
     }
   </style>
@@ -424,103 +801,111 @@
       </div>
 
       <div class="drawer-body">
-        <div class="drawer-grid">
+        <div class="card-layout">
           <div>
-            <div class="panel">
-              <h3>Клієнт</h3>
+            <div class="section-block">
+              <div class="section-title">Контакт</div>
 
-              <div class="customer-stack">
-                <div class="field field-rect">
-                  <label>ФІО</label>
-                  <input id="dName" autocomplete="off">
-                </div>
+              <div class="mini-field">
+                <div class="mini-label">ФІО</div>
+                <input id="dName" class="mini-input big" autocomplete="off">
+              </div>
 
-                <div class="field">
-                  <label>Телефон</label>
-                  <input id="dPhone" autocomplete="off">
-                </div>
+              <div class="mini-field">
+                <div class="mini-label">Телефон</div>
+                <input id="dPhone" class="mini-input" autocomplete="off">
+              </div>
 
-                <div class="field">
-                  <label>Пошта + відділення</label>
-                  <input id="dEmailBranch" autocomplete="off" title="">
-                  <div class="short-hint">Показано коротко. Наведи курсор, щоб побачити повне значення.</div>
-                </div>
+              <div class="mini-field">
+                <div class="mini-label">Пошта + відділення</div>
+                <input id="dEmailBranch" class="mini-input readonly-short" autocomplete="off" title="">
+              </div>
 
-                <div class="field">
-                  <label>Коментар</label>
-                  <textarea id="dOperatorComment" placeholder="Результат дзвінка, уточнення, домовленості"></textarea>
-                </div>
+              <div class="mini-field">
+                <div class="mini-label">Коментар</div>
+                <textarea id="dOperatorComment" class="mini-textarea" placeholder="Коментар до замовлення"></textarea>
               </div>
             </div>
 
-            <div class="panel">
-              <h3>Доставка</h3>
-              <div class="field">
-                <label>Місто</label>
-                <input id="dCity" autocomplete="off">
-              </div>
-              <div class="field">
-                <label>Тип доставки</label>
-                <select id="dDelivery">
-                  <option value="Нова пошта">Нова пошта</option>
-                  <option value="Укрпошта">Укрпошта</option>
-                  <option value="Інше">Інше</option>
-                </select>
-              </div>
-              <div class="field">
-                <label>Повна адреса / відділення / індекс</label>
-                <textarea id="dAddress" autocomplete="off"></textarea>
-              </div>
-            </div>
+            <div class="section-block">
+              <div class="section-title">Додатково</div>
 
-            <div class="panel">
-              <h3>Службово</h3>
-              <div class="field">
-                <label>Коментар адміністратора</label>
-                <textarea id="dManagerComment" placeholder="Службова нотатка, внутрішня позначка"></textarea>
+              <div class="mini-field">
+                <div class="mini-label">Коментар адміністратора</div>
+                <textarea id="dManagerComment" class="mini-textarea" placeholder="Внутрішня примітка"></textarea>
+              </div>
+
+              <div class="mini-field">
+                <div class="mini-label">Історія</div>
+                <div id="dHistory"></div>
               </div>
             </div>
           </div>
 
           <div>
-            <div class="panel">
-              <h3>Етап і статус</h3>
+            <div class="section-block">
+              <div class="section-title">Доставка</div>
 
-              <div class="field">
-                <label>Етап</label>
-                <select id="dStage"></select>
+              <div class="mini-field">
+                <div class="mini-label">Місто</div>
+                <input id="dCity" class="mini-input" autocomplete="off">
               </div>
 
-              <div class="field">
-                <label>Статус</label>
-                <div id="statusVisual" class="status-visual"></div>
+              <div class="mini-field">
+                <div class="mini-label">Тип доставки</div>
+                <select id="dDelivery" class="mini-select">
+                  <option value="Нова пошта">Нова пошта</option>
+                  <option value="Укрпошта">Укрпошта</option>
+                  <option value="Інше">Інше</option>
+                </select>
               </div>
 
-              <div class="meta-grid">
-                <div class="field">
-                  <label>Дата створення</label>
-                  <input id="dCreated" readonly>
-                </div>
-                <div class="field">
-                  <label>Оновлено</label>
-                  <input id="dUpdated" readonly>
-                </div>
-              </div>
-
-              <div class="field">
-                <label>Сума</label>
-                <input id="dTotal" type="number" min="0" step="0.01">
+              <div class="mini-field">
+                <div class="mini-label">Повна адреса / відділення / індекс</div>
+                <textarea id="dAddress" class="mini-textarea" autocomplete="off"></textarea>
               </div>
             </div>
 
-            <div class="panel">
-              <h3>Товари</h3>
+            <div class="section-block">
+              <div class="section-title">Статус</div>
+
+              <div class="mini-field">
+                <div class="mini-label">Етап</div>
+                <select id="dStage" class="mini-select"></select>
+              </div>
+
+              <div class="mini-field">
+                <div class="mini-label">Швидкий статус</div>
+                <div id="statusVisual" class="status-grid"></div>
+              </div>
+
+              <div class="meta-row">
+                <div class="mini-field">
+                  <div class="mini-label">Дата створення</div>
+                  <input id="dCreated" class="mini-input" readonly>
+                </div>
+                <div class="mini-field">
+                  <div class="mini-label">Оновлено</div>
+                  <input id="dUpdated" class="mini-input" readonly>
+                </div>
+              </div>
+
+              <div class="mini-field">
+                <div class="mini-label">Сума</div>
+                <input id="dTotal" class="mini-input" type="number" min="0" step="0.01">
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <div class="sale-panel">
+              <div class="section-title">Продаж</div>
               <div id="dItems" class="items"></div>
-            </div>
 
-            <div class="panel">
-              <h3>Історія</h3>
-              <div id="dHistory"></div>
+              <div class="order-total-box">
+                <div>Сума замовлення:</div>
+                <div id="drawerOrderTotal" class="order-total-value">0.00</div>
+              </div>
             </div>
           </div>
         </div>
@@ -550,6 +935,7 @@
 
     const STAGES = {
       new: { title: "Нові", status: "Новий", day: 0 },
+      shipped: { title: "Відправлено", status: "Відправлено", day: 0 },
       day1: { title: "День 1", status: "День 1", day: 1 },
       day2: { title: "День 2", status: "День 2", day: 2 },
       day3: { title: "День 3", status: "День 3", day: 3 },
@@ -557,12 +943,25 @@
       day5: { title: "День 5", status: "День 5", day: 5 },
       day6: { title: "День 6", status: "День 6", day: 6 },
       day7: { title: "День 7", status: "День 7", day: 7 },
-      shipped: { title: "Відправлено", status: "Відправлено", day: 0 },
+      postal_refusal: { title: "Відмова на пошті", status: "Відмова на пошті", day: 0 },
       completed: { title: "Завершено", status: "Завершено", day: 0 },
-      cancelled: { title: "Скасовано", status: "Скасовано", day: 0 }
+      returned: { title: "Повернення", status: "Повернення", day: 0 }
     };
 
-    const STAGE_ORDER = ["new","day1","day2","day3","day4","day5","day6","day7","shipped","completed","cancelled"];
+    const STAGE_ORDER = [
+      "new",
+      "shipped",
+      "day1",
+      "day2",
+      "day3",
+      "day4",
+      "day5",
+      "day6",
+      "day7",
+      "postal_refusal",
+      "completed",
+      "returned"
+    ];
 
     let currentUser = null;
     let currentProfile = null;
@@ -574,6 +973,11 @@
     function formatMoney(value){
       const num = Number(value || 0);
       return num.toLocaleString("uk-UA", { minimumFractionDigits: 0, maximumFractionDigits: 2 }) + " грн";
+    }
+
+    function formatMoneyPlain(value){
+      const num = Number(value || 0);
+      return num.toLocaleString("uk-UA", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     }
 
     function formatDate(value){
@@ -597,6 +1001,7 @@
 
       const status = String(order.status || "").toLowerCase();
 
+      if (status.includes("відправ")) return "shipped";
       if (status.includes("день 1")) return "day1";
       if (status.includes("день 2")) return "day2";
       if (status.includes("день 3")) return "day3";
@@ -604,9 +1009,10 @@
       if (status.includes("день 5")) return "day5";
       if (status.includes("день 6")) return "day6";
       if (status.includes("день 7")) return "day7";
-      if (status.includes("відправ")) return "shipped";
+      if (status.includes("відмова на пошті")) return "postal_refusal";
+      if (status.includes("відмова")) return "postal_refusal";
       if (status.includes("заверш")) return "completed";
-      if (status.includes("скас") || status.includes("відм")) return "cancelled";
+      if (status.includes("повер")) return "returned";
 
       return "new";
     }
@@ -658,8 +1064,8 @@
     function getShortAddress(address){
       const value = String(address || "").trim();
       if (!value) return "—";
-      if (value.length <= 36) return value;
-      return value.slice(0, 36) + "...";
+      if (value.length <= 42) return value;
+      return value.slice(0, 42) + "...";
     }
 
     function getEmailBranchText(order){
@@ -688,9 +1094,7 @@
 
     function syncNamePartsFromFullName(fullName){
       const clean = String(fullName || "").trim();
-      if (!clean) {
-        return { firstName: "", lastName: "" };
-      }
+      if (!clean) return { firstName: "", lastName: "" };
 
       const parts = clean.split(/\s+/).filter(Boolean);
       const firstName = parts.shift() || "";
@@ -706,9 +1110,7 @@
       });
 
       const stageSelect = document.getElementById("dStage");
-      if (stageSelect) {
-        stageSelect.value = selectedVisualStatusStage;
-      }
+      if (stageSelect) stageSelect.value = selectedVisualStatusStage;
     }
 
     function renderStatusVisual(){
@@ -870,7 +1272,9 @@
       };
 
       document.getElementById("statToday").textContent = list.filter(sameDay).length;
-      document.getElementById("statActive").textContent = list.filter(order => ["new","day1","day2","day3","day4","day5","day6","day7"].includes(order.status_group)).length;
+      document.getElementById("statActive").textContent = list.filter(order =>
+        ["new","shipped","day1","day2","day3","day4","day5","day6","day7"].includes(order.status_group)
+      ).length;
       document.getElementById("statRevenue").textContent = formatMoney(list.reduce((sum, order) => sum + Number(order.total || 0), 0));
       document.getElementById("statShipped").textContent = list.filter(order => ["shipped","completed"].includes(order.status_group)).length;
     }
@@ -944,6 +1348,7 @@
       document.getElementById("dCreated").value = formatDate(selectedOrder.created_at);
       document.getElementById("dUpdated").value = formatDate(selectedOrder.updated_at || selectedOrder.created_at);
       document.getElementById("dTotal").value = Number(selectedOrder.total || 0);
+      document.getElementById("drawerOrderTotal").textContent = formatMoneyPlain(selectedOrder.total || 0);
 
       const emailBranchInput = document.getElementById("dEmailBranch");
       emailBranchInput.value = getEmailBranchText(selectedOrder);
@@ -977,8 +1382,8 @@
         const image = escapeHtml(getSafeItemImage(item));
         const name = escapeHtml(item.name || "Товар");
         const qty = Number(item.qty || 1);
-        const priceText = formatMoney(item.price || 0);
-        const totalText = formatMoney(Number(item.price || 0) * qty);
+        const price = Number(item.price || 0);
+        const totalText = formatMoneyPlain(price * qty);
 
         return `
           <div class="item">
@@ -992,10 +1397,13 @@
             <div class="item-main">
               ${renderItemFlags(item)}
               <div class="item-name" title="${name}">${name}</div>
-              <div class="item-sub">Кількість: ${qty} • Ціна: ${priceText}</div>
+              <div class="item-sub">Ціна: ${formatMoneyPlain(price)}</div>
             </div>
 
+            <div class="item-mini">1</div>
+            <div class="item-mini">${qty}</div>
             <div class="item-total">${totalText}</div>
+            <button class="item-remove" type="button">×</button>
           </div>
         `;
       }).join("");
