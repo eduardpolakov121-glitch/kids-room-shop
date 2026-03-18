@@ -194,7 +194,7 @@
     .list-head,
     .order-row{
       display:grid;
-      grid-template-columns:130px 1.2fr 1fr 1.2fr 150px 160px 130px;
+      grid-template-columns:110px 1.1fr .9fr 1.15fr .9fr 130px 150px 120px;
       gap:12px;
       align-items:center;
     }
@@ -216,10 +216,18 @@
       cursor:pointer;
       transition:.15s;
       background:#fff;
+      position:relative;
     }
 
     .order-row:last-child{border-bottom:none}
     .order-row:hover{background:#fff9f4}
+
+    .order-row.status-new{border-left:4px solid #ffb16a}
+    .order-row.status-shipped{border-left:4px solid #67a6ef}
+    .order-row.status-day{border-left:4px solid #e3bf52}
+    .order-row.status-postal-refusal{border-left:4px solid #e07a7a}
+    .order-row.status-completed{border-left:4px solid #45bd87}
+    .order-row.status-returned{border-left:4px solid #8e72f5}
 
     .order-id{font-weight:700}
 
@@ -243,6 +251,41 @@
       white-space:nowrap;
       overflow:hidden;
       text-overflow:ellipsis;
+    }
+
+    .order-phone-wrap{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      min-width:0;
+    }
+
+    .order-comment{
+      font-size:13px;
+      color:#5f6f8c;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+
+    .copy-btn{
+      border:none;
+      background:#eef3fb;
+      color:#3b4a66;
+      border-radius:10px;
+      min-width:34px;
+      height:34px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      cursor:pointer;
+      font-size:14px;
+      font-weight:700;
+      flex-shrink:0;
+    }
+
+    .copy-btn:hover{
+      background:#dde7f7;
     }
 
     .stage-pill{
@@ -403,13 +446,6 @@
       border-radius:16px;
     }
 
-    .readonly-short{
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-      cursor:help;
-    }
-
     .status-grid{
       display:flex;
       flex-wrap:wrap;
@@ -449,6 +485,16 @@
       grid-template-columns:1fr 1fr;
       gap:10px;
       margin-top:10px;
+    }
+
+    .input-with-copy{
+      display:flex;
+      gap:8px;
+      align-items:center;
+    }
+
+    .input-with-copy .mini-input{
+      flex:1;
     }
 
     .sale-panel{
@@ -637,6 +683,29 @@
 
     .history-line:last-child{border-bottom:none}
 
+    .toast{
+      position:fixed;
+      right:18px;
+      bottom:18px;
+      background:#243041;
+      color:#fff;
+      padding:12px 16px;
+      border-radius:12px;
+      box-shadow:0 10px 24px rgba(0,0,0,.18);
+      opacity:0;
+      pointer-events:none;
+      transform:translateY(8px);
+      transition:.22s ease;
+      z-index:100;
+      font-size:14px;
+      font-weight:700;
+    }
+
+    .toast.show{
+      opacity:1;
+      transform:translateY(0);
+    }
+
     .auth-wrap{
       min-height:100vh;
       display:flex;
@@ -684,6 +753,13 @@
       color:var(--muted);
     }
 
+    @media (max-width:1450px){
+      .list-head,
+      .order-row{
+        grid-template-columns:100px 1fr .9fr 1fr .9fr 120px 140px 110px;
+      }
+    }
+
     @media (max-width:1400px){
       .card-layout{
         grid-template-columns:320px 300px 1fr;
@@ -696,7 +772,9 @@
     @media (max-width:1280px){
       .stats{grid-template-columns:repeat(2,1fr)}
       .toolbar{grid-template-columns:1fr 1fr}
-      .list-head,.order-row{grid-template-columns:110px 1.2fr 1fr 1fr 120px 140px 120px}
+      .list-head,.order-row{
+        grid-template-columns:100px 1fr .9fr 1fr .9fr 120px 120px 100px;
+      }
       .card-layout{grid-template-columns:1fr}
     }
 
@@ -774,7 +852,7 @@
       </section>
 
       <section class="toolbar">
-        <input id="searchInput" placeholder="Пошук: ім'я, телефон, місто" oninput="applyFilters()" autocomplete="off" spellcheck="false">
+        <input id="searchInput" placeholder="Пошук: ім'я, телефон, місто, ТТН" oninput="applyFilters()" autocomplete="off" spellcheck="false">
         <select id="deliveryFilter" onchange="applyFilters()">
           <option value="all">Вся доставка</option>
           <option value="Нова пошта">Нова пошта</option>
@@ -796,6 +874,7 @@
           <div>ID</div>
           <div>Клієнт</div>
           <div>Телефон</div>
+          <div>Коментар</div>
           <div>Доставка</div>
           <div>Етап</div>
           <div>Створено</div>
@@ -829,12 +908,10 @@
 
               <div class="mini-field">
                 <div class="mini-label">Телефон</div>
-                <input id="dPhone" class="mini-input" autocomplete="off">
-              </div>
-
-              <div class="mini-field">
-                <div class="mini-label">Відділення</div>
-                <input id="dBranchShort" class="mini-input readonly-short" autocomplete="off" title="">
+                <div class="input-with-copy">
+                  <input id="dPhone" class="mini-input" autocomplete="off">
+                  <button class="copy-btn" type="button" onclick="copyFieldValue('dPhone', 'Телефон скопійовано')">⧉</button>
+                </div>
               </div>
 
               <div class="mini-field">
@@ -878,7 +955,10 @@
 
               <div class="mini-field">
                 <div class="mini-label">ТТН</div>
-                <input id="dTtn" class="mini-input" autocomplete="off">
+                <div class="input-with-copy">
+                  <input id="dTtn" class="mini-input" autocomplete="off">
+                  <button class="copy-btn" type="button" onclick="copyFieldValue('dTtn', 'ТТН скопійовано')">⧉</button>
+                </div>
               </div>
 
               <div class="mini-field">
@@ -949,6 +1029,8 @@
     </div>
   </div>
 
+  <div id="toast" class="toast">Скопійовано</div>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="products.js"></script>
   <script>
@@ -1000,6 +1082,7 @@
     let selectedOrder = null;
     let activeStage = "new";
     let selectedVisualStatusStage = "new";
+    let toastTimeout = null;
 
     function formatMoney(value){
       const num = Number(value || 0);
@@ -1048,6 +1131,16 @@
       return "new";
     }
 
+    function getRowStatusClass(stage){
+      if (stage === "new") return "status-new";
+      if (stage === "shipped") return "status-shipped";
+      if (String(stage).startsWith("day")) return "status-day";
+      if (stage === "postal_refusal") return "status-postal-refusal";
+      if (stage === "completed") return "status-completed";
+      if (stage === "returned") return "status-returned";
+      return "";
+    }
+
     function authError(text){
       document.getElementById("authError").textContent = text || "";
     }
@@ -1083,13 +1176,6 @@
       return `<div class="item-flags">${parts.join("")}</div>`;
     }
 
-    function getShortAddress(address){
-      const value = String(address || "").trim();
-      if (!value) return "—";
-      if (value.length <= 42) return value;
-      return value.slice(0, 42) + "...";
-    }
-
     function syncNamePartsFromFullName(fullName){
       const clean = String(fullName || "").trim();
       if (!clean) return { firstName: "", lastName: "" };
@@ -1108,6 +1194,39 @@
         order?.np_ttn ||
         ""
       ).trim();
+    }
+
+    function getOperatorComment(order){
+      return String(order?.operator_comment || "").trim();
+    }
+
+    function showToast(text){
+      const toast = document.getElementById("toast");
+      toast.textContent = text || "Скопійовано";
+      toast.classList.add("show");
+
+      clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => {
+        toast.classList.remove("show");
+      }, 1500);
+    }
+
+    async function copyText(value, successText){
+      const text = String(value || "").trim();
+      if (!text) return;
+
+      try {
+        await navigator.clipboard.writeText(text);
+        showToast(successText || "Скопійовано");
+      } catch {
+        showToast("Не вдалося скопіювати");
+      }
+    }
+
+    function copyFieldValue(fieldId, successText){
+      const field = document.getElementById(fieldId);
+      if (!field) return;
+      copyText(field.value, successText);
     }
 
     function setSelectedStatus(stage){
@@ -1251,7 +1370,8 @@
             order.address,
             order.ttn,
             order.tracking_number,
-            order.np_ttn
+            order.np_ttn,
+            order.operator_comment
           ].join(" ").toLowerCase();
 
           return haystack.includes(search);
@@ -1263,7 +1383,7 @@
       } else if (sort === "expensive") {
         list.sort((a,b) => Number(b.total || 0) - Number(a.total || 0));
       } else if (sort === "cheap") {
-        list.sort((a,b) => Number(b.total || 0) - Number(a.total || 0));
+        list.sort((a,b) => Number(a.total || 0) - Number(b.total || 0));
       } else {
         list.sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
       }
@@ -1315,13 +1435,21 @@
       }
 
       root.innerHTML = list.map(order => `
-        <div class="order-row" onclick="openOrder('${escapeHtml(order.id)}')">
+        <div class="order-row ${getRowStatusClass(order.status_group)}" onclick="openOrder('${escapeHtml(order.id)}')">
           <div class="order-id">#${escapeHtml(shortId(order.id))}</div>
+
           <div class="order-main">
             <div class="order-name">${escapeHtml(getOrderName(order))}</div>
             <div class="order-sub">${escapeHtml(order.city || "-")}</div>
           </div>
-          <div>${escapeHtml(order.phone || "-")}</div>
+
+          <div class="order-phone-wrap">
+            <div class="order-sub" style="color:var(--text)">${escapeHtml(order.phone || "-")}</div>
+            ${order.phone ? `<button class="copy-btn" type="button" onclick="event.stopPropagation();copyText('${escapeHtml(String(order.phone)).replace(/&#039;/g, "\\'")}', 'Телефон скопійовано')">⧉</button>` : ""}
+          </div>
+
+          <div class="order-comment" title="${escapeHtml(getOperatorComment(order) || "—")}">${escapeHtml(getOperatorComment(order) || "—")}</div>
+
           <div>${escapeHtml(order.delivery || "-")}</div>
           <div class="stage-pill">${escapeHtml(STAGES[order.status_group]?.title || "-")}</div>
           <div>${escapeHtml(formatDate(order.created_at))}</div>
@@ -1360,8 +1488,6 @@
       document.getElementById("dUpdated").value = formatDate(selectedOrder.updated_at || selectedOrder.created_at);
       document.getElementById("dTotal").value = Number(selectedOrder.total || 0);
       document.getElementById("drawerOrderTotal").textContent = formatMoneyPlain(selectedOrder.total || 0);
-      document.getElementById("dBranchShort").value = getShortAddress(selectedOrder.address || "");
-      document.getElementById("dBranchShort").title = String(selectedOrder.address || "").trim() || "—";
       document.getElementById("dTtn").value = getOrderTtn(selectedOrder);
 
       selectedVisualStatusStage = selectedOrder.status_group || "new";
@@ -1427,6 +1553,7 @@
         `Поточний етап: ${STAGES[order.status_group || "new"]?.title || "-"}`,
         `Статус: ${order.status || STAGES[order.status_group || "new"]?.status || "-"}`,
         `ТТН: ${getOrderTtn(order) || "-"}`,
+        `Коментар оператора: ${getOperatorComment(order) || "-"}`,
         `Джерело: ${order.source || "website"}`
       ];
 
