@@ -57,8 +57,8 @@ function buildDefaultProducts() {
 
     return [
         ...make("toy", [
-            { name: "Плюшевий ведмедик", price: 350, old: 450, description: "М'яка іграшка для обіймів та затишних ігор.", is_hit: true, is_sale: true },
-            { name: "Іграшка 2", price: 390, old: 490, description: "Яскрава дитяча іграшка для щоденних веселих ігор.", is_new: true },
+            { name: "Плюшевий ведмедик", price: 350, old: 450, description: "М'яка іграшка для обіймів та затишних ігор.", is_hit: true, is_sale: true, tags: ["м'яка іграшка", "подарунок"] },
+            { name: "Іграшка 2", price: 390, old: 490, description: "Яскрава дитяча іграшка для щоденних веселих ігор.", is_new: true, tags: ["розвага"] },
             { name: "Іграшка 3", price: 420, old: 520, description: "Безпечна іграшка для розвитку фантазії дитини." },
             { name: "Іграшка 4", price: 460, old: 560, description: "Міцна та приємна на дотик іграшка для малюків." },
             { name: "Іграшка 5", price: 510, old: 620, description: "Іграшка для веселого дозвілля вдома та в дорозі." },
@@ -69,7 +69,7 @@ function buildDefaultProducts() {
             { name: "Іграшка 10", price: 740, old: 860, description: "Популярна іграшка для домашнього дозвілля." }
         ]),
         ...make("stroller", [
-            { name: "Коляска 1", price: 3500, old: 4200, description: "Легка прогулянкова коляска для щоденних прогулянок.", is_hit: true },
+            { name: "Коляска 1", price: 3500, old: 4200, description: "Легка прогулянкова коляска для щоденних прогулянок.", is_hit: true, tags: ["прогулянка", "зручно"] },
             { name: "Коляска 2", price: 3900, old: 4600, description: "Зручна дитяча коляска з м'яким ходом.", is_sale: true },
             { name: "Коляска 3", price: 4300, old: 5000, description: "Практична модель для міста та подорожей.", is_new: true },
             { name: "Коляска 4", price: 4700, old: 5500, description: "Стабільна коляска для комфортних прогулянок." },

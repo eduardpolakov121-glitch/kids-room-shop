@@ -32,6 +32,10 @@ function escapeCartHtml(value) {
         .replaceAll("'", "&#39;");
 }
 
+function formatCartMoney(value) {
+    return Number(value || 0).toLocaleString("uk-UA") + " грн";
+}
+
 function getCheckoutSuccessOrderNumber(payload) {
     const rawId = Array.isArray(payload) ? payload[0]?.id : payload?.id;
     const rawString = String(rawId || "").trim();
@@ -95,14 +99,25 @@ function animateCartButton() {
 }
 
 function findProductImageById(id) {
-    const cardImg = document.querySelector(`#prod-${CSS.escape(String(id))} img`);
+    const escapedId = typeof CSS !== "undefined" && CSS.escape ? CSS.escape(String(id)) : String(id);
+    const cardImg = document.querySelector(`#prod-${escapedId} img`);
     if (cardImg) return cardImg;
-
-    const homeImg = document.querySelector(`#home-hits-grid img, #home-sales-grid img, #home-new-grid img`);
-    if (homeImg) return homeImg;
 
     const productPageImg = document.querySelector("#product-main-image");
     if (productPageImg) return productPageImg;
+
+    const showcaseImages = document.querySelectorAll("#home-hits-grid img, #home-sales-grid img, #home-new-grid img");
+    if (showcaseImages.length) {
+        const match = Array.from(showcaseImages).find(img => {
+            const alt = String(img.alt || "").trim();
+            const product = Array.isArray(window.products)
+                ? window.products.find(item => String(item.id) === String(id))
+                : null;
+            return product && alt === product.name;
+        });
+        if (match) return match;
+        return showcaseImages[0];
+    }
 
     return null;
 }
@@ -194,11 +209,17 @@ function addToCart(id) {
 
     if (!product) return;
 
+    if (String(product.stock_status || "in_stock") === "out_of_stock") {
+        showToast("Товару немає в наявності");
+        return;
+    }
+
     const item = cart.find(p => String(p.id) === String(id));
 
     if (item) {
         item.qty += qty;
         item.img = getCartItemImage(product);
+        item.stock_status = product.stock_status || "in_stock";
     } else {
         cart.push({
             ...product,
@@ -282,8 +303,8 @@ function renderCart() {
                 >
                 <div class="cart-item-info">
                     <div class="cart-item-name">${escapeCartHtml(p.name)}</div>
-                    <div class="cart-item-price">${Number(p.price || 0)} грн</div>
-                    <div class="cart-item-subtotal">Сума: ${itemSum} грн</div>
+                    <div class="cart-item-price">${formatCartMoney(p.price || 0)}</div>
+                    <div class="cart-item-subtotal">Сума: ${formatCartMoney(itemSum)}</div>
                 </div>
             </div>
 
@@ -303,7 +324,7 @@ function renderCart() {
     });
 
     count.innerText = qty;
-    total.innerText = "Разом: " + sum + " грн";
+    total.innerText = "Разом: " + formatCartMoney(sum);
 
     emitCartUpdated();
 }
@@ -556,7 +577,8 @@ async function submitCheckout() {
         operator_comment: "",
         day_bucket: 0,
         source: "website",
-        manager_comment: ""
+        manager_comment: "",
+        ttn: ""
     };
 
     try {

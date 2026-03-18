@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Kids Room — Сторінка товару</title>
+  <meta name="description" content="Сторінка товару Kids Room — ціна, фото, опис, схожі товари, швидке додавання в кошик та оформлення замовлення.">
   <link rel="stylesheet" href="style.css">
   <style>
     :root{
@@ -366,7 +367,7 @@
       color:#4d596b;
       font-size:17px;
       line-height:1.75;
-      margin:0 0 22px;
+      margin:0 0 18px;
     }
 
     .product-tags{
@@ -392,7 +393,7 @@
       display:grid;
       grid-template-columns:repeat(2,minmax(0,1fr));
       gap:12px;
-      margin:0 0 22px;
+      margin:0 0 18px;
       padding:0;
       list-style:none;
     }
@@ -412,6 +413,35 @@
       color:var(--kr-text);
       margin-bottom:4px;
       font-size:14px;
+    }
+
+    .product-trust-row{
+      display:grid;
+      grid-template-columns:repeat(3,minmax(0,1fr));
+      gap:12px;
+      margin:0 0 20px;
+    }
+
+    .product-trust-card{
+      background:#fff;
+      border:1px solid #ece7df;
+      border-radius:18px;
+      padding:14px;
+      box-shadow:0 8px 18px rgba(0,0,0,0.04);
+    }
+
+    .product-trust-card strong{
+      display:block;
+      color:#243041;
+      margin-bottom:6px;
+      font-size:14px;
+    }
+
+    .product-trust-card span{
+      display:block;
+      color:#6f7b8c;
+      line-height:1.55;
+      font-size:13px;
     }
 
     .product-buy-box{
@@ -822,7 +852,8 @@
       .product-related-side{
         padding:18px;
       }
-      .product-feature-list{
+      .product-feature-list,
+      .product-trust-row{
         grid-template-columns:1fr;
       }
       .product-buy-top{
@@ -1043,14 +1074,6 @@
 
       const countEl = document.getElementById('product-cart-count');
       if (countEl) countEl.textContent = count;
-    }
-
-    function getStoreState() {
-      try {
-        return JSON.parse(sessionStorage.getItem(STORE_STATE_KEY) || "null");
-      } catch {
-        return null;
-      }
     }
 
     function goBack(){
@@ -1343,6 +1366,21 @@
                 <li><strong>Категорія</strong>${escapeHtml(categoryName)}</li>
                 <li><strong>Наявність</strong>${escapeHtml(stockLabel)}</li>
               </ul>
+
+              <div class="product-trust-row">
+                <div class="product-trust-card">
+                  <strong>🚚 Доставка</strong>
+                  <span>Нова пошта та Укрпошта по Україні.</span>
+                </div>
+                <div class="product-trust-card">
+                  <strong>💬 Підтвердження</strong>
+                  <span>Менеджер зв’яжеться після оформлення.</span>
+                </div>
+                <div class="product-trust-card">
+                  <strong>🧾 Умови</strong>
+                  <span>Окремо доступні сторінки оплати, доставки та повернення.</span>
+                </div>
+              </div>
 
               <div class="product-buy-box">
                 <div class="product-buy-top">
