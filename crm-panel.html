@@ -65,53 +65,226 @@
 
     .drawer-wrap{position:fixed;inset:0;background:rgba(10,18,34,.42);display:none;z-index:60}
     .drawer-wrap.open{display:block}
-    .drawer{position:absolute;top:0;right:0;height:100%;width:min(920px,100%);background:#fff;box-shadow:-12px 0 40px rgba(0,0,0,.18);display:flex;flex-direction:column}
+    .drawer{position:absolute;top:0;right:0;height:100%;width:min(980px,100%);background:#fff;box-shadow:-12px 0 40px rgba(0,0,0,.18);display:flex;flex-direction:column}
     .drawer-head{padding:18px 20px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:12px}
     .drawer-head h2{margin:0;font-size:22px}
     .drawer-body{padding:18px 20px 108px;overflow:auto}
     .drawer-footer{position:absolute;left:0;right:0;bottom:0;padding:16px 20px;border-top:1px solid var(--line);background:#fff;display:flex;gap:10px;flex-wrap:wrap}
 
-    .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-    .panel{background:#f8faff;border:1px solid var(--line);border-radius:18px;padding:16px;margin-bottom:14px}
-    .panel h3{margin:0 0 12px;font-size:17px}
-    .field{margin-bottom:12px}
-    .field label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
-    .field input,.field select,.field textarea{width:100%;padding:12px 13px;border:1px solid var(--line);border-radius:12px;background:#fff;font-size:14px}
-    .field textarea{min-height:92px;resize:vertical}
-    .field.inline-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .drawer-grid{
+      display:grid;
+      grid-template-columns:1.18fr .92fr;
+      gap:16px;
+      align-items:start;
+    }
 
-    .items{display:flex;flex-direction:column;gap:12px}
-    .item{
+    .panel{
+      background:#f8faff;
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:16px;
+      margin-bottom:14px;
+    }
+
+    .panel h3{margin:0 0 12px;font-size:17px}
+
+    .field{margin-bottom:12px}
+    .field:last-child{margin-bottom:0}
+    .field label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.03em;font-weight:700}
+    .field input,.field select,.field textarea{
+      width:100%;
+      padding:12px 13px;
+      border:1px solid var(--line);
+      border-radius:12px;
+      background:#fff;
+      font-size:14px;
+    }
+    .field textarea{min-height:92px;resize:vertical}
+
+    .customer-stack{
       display:flex;
-      justify-content:space-between;
+      flex-direction:column;
       gap:12px;
-      padding:14px;
+    }
+
+    .field-rect input{
+      min-height:50px;
+      font-size:16px;
+      font-weight:700;
+      border-radius:14px;
+    }
+
+    .short-hint{
+      font-size:12px;
+      color:var(--muted);
+      margin-top:6px;
+      line-height:1.35;
+    }
+
+    .status-visual{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+    }
+
+    .status-chip{
+      border:none;
+      border-radius:999px;
+      padding:10px 14px;
+      font-size:13px;
+      font-weight:700;
+      cursor:pointer;
+      transition:.18s ease;
+      background:#eaf0fb;
+      color:#334155;
+    }
+
+    .status-chip:hover{
+      transform:translateY(-1px);
+      box-shadow:0 8px 18px rgba(31,42,68,.08);
+    }
+
+    .status-chip.active{
+      outline:2px solid #1f2a44;
+      transform:translateY(-1px);
+    }
+
+    .status-chip[data-stage="new"],
+    .status-chip[data-stage="day1"],
+    .status-chip[data-stage="day2"],
+    .status-chip[data-stage="day3"],
+    .status-chip[data-stage="day4"],
+    .status-chip[data-stage="day5"],
+    .status-chip[data-stage="day6"],
+    .status-chip[data-stage="day7"]{
+      background:#fff1e7;
+      color:#d86b14;
+    }
+
+    .status-chip[data-stage="shipped"]{
+      background:#e8f4ff;
+      color:#2465a6;
+    }
+
+    .status-chip[data-stage="completed"]{
+      background:#e8fbf2;
+      color:#15895e;
+    }
+
+    .status-chip[data-stage="cancelled"]{
+      background:#ffecec;
+      color:#c74d4d;
+    }
+
+    .meta-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:12px;
+      margin-top:12px;
+    }
+
+    .items{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+
+    .item{
+      display:grid;
+      grid-template-columns:68px 1fr auto;
+      gap:10px;
+      padding:10px;
       border-radius:16px;
       background:#fff;
       border:1px solid var(--line);
-      align-items:flex-start;
+      align-items:center;
       box-shadow:0 8px 22px rgba(0,0,0,.04);
     }
-    .item-left{display:flex;gap:12px;align-items:flex-start;flex:1;min-width:0}
+
+    .item-image-wrap{
+      position:relative;
+      width:68px;
+      height:68px;
+    }
+
     .item-image{
-      width:64px;
-      height:64px;
+      width:68px;
+      height:68px;
       border-radius:14px;
       object-fit:cover;
       background:#f1f3f7;
-      flex-shrink:0;
       border:1px solid var(--line);
+      display:block;
+      cursor:zoom-in;
     }
-    .item-main{min-width:0;flex:1}
-    .item-name{font-weight:700;line-height:1.35;margin-bottom:4px;color:var(--text)}
-    .item-sub{font-size:13px;color:var(--muted);line-height:1.45}
-    .item-total{font-weight:700;white-space:nowrap;font-size:15px;color:var(--text)}
+
+    .item-zoom{
+      position:absolute;
+      top:0;
+      left:80px;
+      width:220px;
+      background:#fff;
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:8px;
+      box-shadow:0 14px 32px rgba(0,0,0,.16);
+      opacity:0;
+      visibility:hidden;
+      transform:translateY(4px);
+      transition:.18s ease;
+      z-index:30;
+      pointer-events:none;
+    }
+
+    .item-zoom img{
+      width:100%;
+      display:block;
+      border-radius:12px;
+      object-fit:cover;
+    }
+
+    .item-image-wrap:hover .item-zoom{
+      opacity:1;
+      visibility:visible;
+      transform:translateY(0);
+    }
+
+    .item-main{
+      min-width:0;
+    }
+
+    .item-name{
+      font-weight:700;
+      line-height:1.32;
+      margin-bottom:4px;
+      color:var(--text);
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      cursor:help;
+    }
+
+    .item-sub{
+      font-size:13px;
+      color:var(--muted);
+      line-height:1.4;
+    }
+
+    .item-total{
+      font-weight:700;
+      white-space:nowrap;
+      font-size:14px;
+      color:var(--text);
+      align-self:center;
+    }
+
     .item-flags{
       display:flex;
       flex-wrap:wrap;
       gap:6px;
       margin-bottom:6px;
     }
+
     .item-flag{
       display:inline-flex;
       align-items:center;
@@ -122,11 +295,16 @@
       font-weight:800;
       line-height:1;
     }
+
     .item-flag.hit{background:#fff1e6;color:#ca6200}
     .item-flag.sale{background:#fff0f0;color:#c64c4c}
     .item-flag.new{background:#edf8ff;color:#23628d}
 
-    .history-line{padding:10px 0;border-bottom:1px dashed var(--line);font-size:14px}
+    .history-line{
+      padding:10px 0;
+      border-bottom:1px dashed var(--line);
+      font-size:14px;
+    }
     .history-line:last-child{border-bottom:none}
 
     .auth-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
@@ -144,13 +322,26 @@
 
     @media (max-width:980px){
       .layout{padding:16px}
-      .stats,.toolbar,.grid-2,.field.inline-2{grid-template-columns:1fr}
+      .stats,.toolbar{grid-template-columns:1fr}
       .list-head{display:none}
       .order-row{grid-template-columns:1fr;gap:8px}
       .order-row > div{justify-self:start}
       .drawer{width:100%}
       .app-header{padding:16px;align-items:flex-start}
       .header-actions{justify-content:flex-start}
+      .drawer-grid{grid-template-columns:1fr}
+      .meta-grid{grid-template-columns:1fr}
+      .item{
+        grid-template-columns:64px 1fr;
+      }
+      .item-total{
+        grid-column:2;
+      }
+      .item-zoom{
+        left:0;
+        top:78px;
+        width:200px;
+      }
     }
   </style>
 </head>
@@ -231,57 +422,95 @@
         </div>
         <button class="btn secondary" onclick="forceCloseDrawer()">Закрити</button>
       </div>
+
       <div class="drawer-body">
-        <div class="grid-2">
+        <div class="drawer-grid">
           <div>
             <div class="panel">
               <h3>Клієнт</h3>
-              <div class="field inline-2">
-                <div>
-                  <label>Ім'я</label>
-                  <input id="dFirstName" autocomplete="off">
+
+              <div class="customer-stack">
+                <div class="field field-rect">
+                  <label>ФІО</label>
+                  <input id="dName" autocomplete="off">
                 </div>
-                <div>
-                  <label>Прізвище</label>
-                  <input id="dLastName" autocomplete="off">
+
+                <div class="field">
+                  <label>Телефон</label>
+                  <input id="dPhone" autocomplete="off">
+                </div>
+
+                <div class="field">
+                  <label>Пошта + відділення</label>
+                  <input id="dEmailBranch" autocomplete="off" title="">
+                  <div class="short-hint">Показано коротко. Наведи курсор, щоб побачити повне значення.</div>
+                </div>
+
+                <div class="field">
+                  <label>Коментар</label>
+                  <textarea id="dOperatorComment" placeholder="Результат дзвінка, уточнення, домовленості"></textarea>
                 </div>
               </div>
-              <div class="field"><label>Повне ім'я</label><input id="dName" autocomplete="off"></div>
-              <div class="field"><label>Телефон</label><input id="dPhone" autocomplete="off"></div>
-              <div class="field"><label>Місто</label><input id="dCity" autocomplete="off"></div>
-              <div class="field"><label>Тип доставки</label>
+            </div>
+
+            <div class="panel">
+              <h3>Доставка</h3>
+              <div class="field">
+                <label>Місто</label>
+                <input id="dCity" autocomplete="off">
+              </div>
+              <div class="field">
+                <label>Тип доставки</label>
                 <select id="dDelivery">
                   <option value="Нова пошта">Нова пошта</option>
                   <option value="Укрпошта">Укрпошта</option>
                   <option value="Інше">Інше</option>
                 </select>
               </div>
-              <div class="field"><label>Адреса / відділення / індекс</label><textarea id="dAddress" autocomplete="off"></textarea></div>
+              <div class="field">
+                <label>Повна адреса / відділення / індекс</label>
+                <textarea id="dAddress" autocomplete="off"></textarea>
+              </div>
             </div>
 
             <div class="panel">
-              <h3>Коментарі</h3>
-              <div class="field"><label>Коментар оператора</label><textarea id="dOperatorComment" placeholder="Результат дзвінка, уточнення, домовленості"></textarea></div>
-              <div class="field"><label>Коментар адміністратора</label><textarea id="dManagerComment" placeholder="Службова нотатка, внутрішня позначка"></textarea></div>
+              <h3>Службово</h3>
+              <div class="field">
+                <label>Коментар адміністратора</label>
+                <textarea id="dManagerComment" placeholder="Службова нотатка, внутрішня позначка"></textarea>
+              </div>
             </div>
           </div>
 
           <div>
             <div class="panel">
               <h3>Етап і статус</h3>
-              <div class="field"><label>Вкладка / етап</label><select id="dStage"></select></div>
-              <div class="field"><label>Підпис статусу</label><input id="dStatus" autocomplete="off"></div>
-              <div class="field inline-2">
-                <div>
+
+              <div class="field">
+                <label>Етап</label>
+                <select id="dStage"></select>
+              </div>
+
+              <div class="field">
+                <label>Статус</label>
+                <div id="statusVisual" class="status-visual"></div>
+              </div>
+
+              <div class="meta-grid">
+                <div class="field">
                   <label>Дата створення</label>
                   <input id="dCreated" readonly>
                 </div>
-                <div>
+                <div class="field">
                   <label>Оновлено</label>
                   <input id="dUpdated" readonly>
                 </div>
               </div>
-              <div class="field"><label>Сума</label><input id="dTotal" type="number" min="0" step="0.01"></div>
+
+              <div class="field">
+                <label>Сума</label>
+                <input id="dTotal" type="number" min="0" step="0.01">
+              </div>
             </div>
 
             <div class="panel">
@@ -296,6 +525,7 @@
           </div>
         </div>
       </div>
+
       <div class="drawer-footer">
         <button id="saveOrderBtn" class="btn success" onclick="saveDrawerOrder()">Зберегти</button>
         <button id="deleteOrderBtn" class="btn danger" onclick="deleteCurrentOrder()">Видалити</button>
@@ -339,6 +569,7 @@
     let allOrders = [];
     let selectedOrder = null;
     let activeStage = "new";
+    let selectedVisualStatusStage = "new";
 
     function formatMoney(value){
       const num = Number(value || 0);
@@ -415,6 +646,85 @@
       return `<div class="item-flags">${parts.join("")}</div>`;
     }
 
+    function getOrderEmail(order){
+      return String(
+        order?.email ||
+        order?.customer_email ||
+        order?.client_email ||
+        ""
+      ).trim();
+    }
+
+    function getShortAddress(address){
+      const value = String(address || "").trim();
+      if (!value) return "—";
+      if (value.length <= 36) return value;
+      return value.slice(0, 36) + "...";
+    }
+
+    function getEmailBranchText(order){
+      const email = getOrderEmail(order);
+      const address = String(order?.address || "").trim();
+      const shortAddress = getShortAddress(address);
+
+      if (email && shortAddress && shortAddress !== "—") {
+        return `${email} · ${shortAddress}`;
+      }
+
+      if (email) return email;
+      if (shortAddress && shortAddress !== "—") return shortAddress;
+      return "—";
+    }
+
+    function getEmailBranchFull(order){
+      const email = getOrderEmail(order);
+      const address = String(order?.address || "").trim();
+
+      if (email && address) return `${email} | ${address}`;
+      if (email) return email;
+      if (address) return address;
+      return "—";
+    }
+
+    function syncNamePartsFromFullName(fullName){
+      const clean = String(fullName || "").trim();
+      if (!clean) {
+        return { firstName: "", lastName: "" };
+      }
+
+      const parts = clean.split(/\s+/).filter(Boolean);
+      const firstName = parts.shift() || "";
+      const lastName = parts.join(" ");
+      return { firstName, lastName };
+    }
+
+    function setSelectedStatus(stage){
+      selectedVisualStatusStage = STAGES[stage] ? stage : "new";
+
+      document.querySelectorAll(".status-chip").forEach(btn => {
+        btn.classList.toggle("active", btn.dataset.stage === selectedVisualStatusStage);
+      });
+
+      const stageSelect = document.getElementById("dStage");
+      if (stageSelect) {
+        stageSelect.value = selectedVisualStatusStage;
+      }
+    }
+
+    function renderStatusVisual(){
+      const root = document.getElementById("statusVisual");
+      root.innerHTML = STAGE_ORDER.map(stage => `
+        <button
+          type="button"
+          class="status-chip ${selectedVisualStatusStage === stage ? "active" : ""}"
+          data-stage="${stage}"
+          onclick="setSelectedStatus('${stage}')"
+        >
+          ${escapeHtml(STAGES[stage].title)}
+        </button>
+      `).join("");
+    }
+
     async function loginCRM(){
       authError("");
       const email = document.getElementById("loginEmail").value.trim();
@@ -473,12 +783,16 @@
       document.getElementById("deleteOrderBtn").style.display = currentProfile.role === "admin" ? "inline-flex" : "none";
 
       renderStageSelect();
+      renderStatusVisual();
       await refreshOrders();
     }
 
     function renderStageSelect(){
       const select = document.getElementById("dStage");
       select.innerHTML = STAGE_ORDER.map(key => `<option value="${key}">${STAGES[key].title}</option>`).join("");
+      select.onchange = function(){
+        setSelectedStatus(this.value);
+      };
     }
 
     async function refreshOrders(){
@@ -523,7 +837,8 @@
             order.customer_first_name,
             order.customer_last_name,
             order.phone,
-            order.city
+            order.city,
+            order.address
           ].join(" ").toLowerCase();
 
           return haystack.includes(search);
@@ -618,25 +933,30 @@
 
       document.getElementById("drawerTitle").textContent = getOrderName(selectedOrder);
       document.getElementById("drawerSub").textContent = `Замовлення #${shortId(selectedOrder.id)} • ${formatDate(selectedOrder.created_at)}`;
-      document.getElementById("dFirstName").value = selectedOrder.customer_first_name || "";
-      document.getElementById("dLastName").value = selectedOrder.customer_last_name || "";
-      document.getElementById("dName").value = selectedOrder.name || "";
+
+      document.getElementById("dName").value = getOrderName(selectedOrder);
       document.getElementById("dPhone").value = selectedOrder.phone || "";
       document.getElementById("dCity").value = selectedOrder.city || "";
       document.getElementById("dDelivery").value = selectedOrder.delivery || "Нова пошта";
       document.getElementById("dAddress").value = selectedOrder.address || "";
       document.getElementById("dOperatorComment").value = selectedOrder.operator_comment || "";
       document.getElementById("dManagerComment").value = selectedOrder.manager_comment || "";
-      document.getElementById("dStage").value = selectedOrder.status_group || "new";
-      document.getElementById("dStatus").value = selectedOrder.status || STAGES[selectedOrder.status_group || "new"].status;
       document.getElementById("dCreated").value = formatDate(selectedOrder.created_at);
       document.getElementById("dUpdated").value = formatDate(selectedOrder.updated_at || selectedOrder.created_at);
       document.getElementById("dTotal").value = Number(selectedOrder.total || 0);
 
+      const emailBranchInput = document.getElementById("dEmailBranch");
+      emailBranchInput.value = getEmailBranchText(selectedOrder);
+      emailBranchInput.title = getEmailBranchFull(selectedOrder);
+
+      selectedVisualStatusStage = selectedOrder.status_group || "new";
+      document.getElementById("dStage").value = selectedVisualStatusStage;
+      renderStatusVisual();
+      setSelectedStatus(selectedVisualStatusStage);
+
       const onlyOperator = currentProfile.role === "operator";
       document.getElementById("dManagerComment").readOnly = onlyOperator;
       document.getElementById("dStage").disabled = onlyOperator;
-      document.getElementById("dStatus").readOnly = onlyOperator;
       document.getElementById("dTotal").readOnly = onlyOperator;
 
       renderItems(selectedOrder.items || []);
@@ -653,19 +973,32 @@
         return;
       }
 
-      root.innerHTML = items.map(item => `
-        <div class="item">
-          <div class="item-left">
-            <img class="item-image" src="${escapeHtml(getSafeItemImage(item))}" alt="${escapeHtml(item.name || "Товар")}" onerror="this.onerror=null;this.src='product-placeholder.svg'">
+      root.innerHTML = items.map(item => {
+        const image = escapeHtml(getSafeItemImage(item));
+        const name = escapeHtml(item.name || "Товар");
+        const qty = Number(item.qty || 1);
+        const priceText = formatMoney(item.price || 0);
+        const totalText = formatMoney(Number(item.price || 0) * qty);
+
+        return `
+          <div class="item">
+            <div class="item-image-wrap">
+              <img class="item-image" src="${image}" alt="${name}" onerror="this.onerror=null;this.src='product-placeholder.svg'">
+              <div class="item-zoom">
+                <img src="${image}" alt="${name}" onerror="this.onerror=null;this.src='product-placeholder.svg'">
+              </div>
+            </div>
+
             <div class="item-main">
               ${renderItemFlags(item)}
-              <div class="item-name">${escapeHtml(item.name || "Товар")}</div>
-              <div class="item-sub">Кількість: ${Number(item.qty || 1)} • Ціна: ${formatMoney(item.price || 0)}</div>
+              <div class="item-name" title="${name}">${name}</div>
+              <div class="item-sub">Кількість: ${qty} • Ціна: ${priceText}</div>
             </div>
+
+            <div class="item-total">${totalText}</div>
           </div>
-          <div class="item-total">${formatMoney((Number(item.price || 0) * Number(item.qty || 1)))}</div>
-        </div>
-      `).join("");
+        `;
+      }).join("");
     }
 
     function renderHistory(order){
@@ -673,7 +1006,7 @@
         `Створено: ${formatDate(order.created_at)}`,
         `Оновлено: ${formatDate(order.updated_at || order.created_at)}`,
         `Поточний етап: ${STAGES[order.status_group || "new"]?.title || "-"}`,
-        `Статус: ${order.status || "-"}`,
+        `Статус: ${order.status || STAGES[order.status_group || "new"]?.status || "-"}`,
         `Джерело: ${order.source || "website"}`
       ];
 
@@ -683,11 +1016,14 @@
     async function saveDrawerOrder(){
       if (!selectedOrder) return;
 
-      const stage = document.getElementById("dStage").value;
+      const fullName = document.getElementById("dName").value.trim();
+      const stage = document.getElementById("dStage").value || selectedVisualStatusStage || "new";
+      const nameParts = syncNamePartsFromFullName(fullName);
+
       const payload = {
-        customer_first_name: document.getElementById("dFirstName").value.trim(),
-        customer_last_name: document.getElementById("dLastName").value.trim(),
-        name: document.getElementById("dName").value.trim(),
+        customer_first_name: nameParts.firstName,
+        customer_last_name: nameParts.lastName,
+        name: fullName,
         phone: document.getElementById("dPhone").value.trim(),
         city: document.getElementById("dCity").value.trim(),
         delivery: document.getElementById("dDelivery").value.trim(),
@@ -698,8 +1034,8 @@
 
       if (currentProfile.role === "admin") {
         payload.status_group = stage;
-        payload.status = document.getElementById("dStatus").value.trim() || STAGES[stage].status;
-        payload.day_bucket = STAGES[stage].day;
+        payload.status = STAGES[stage]?.status || "Новий";
+        payload.day_bucket = STAGES[stage]?.day ?? 0;
         payload.manager_comment = document.getElementById("dManagerComment").value.trim();
         payload.total = Number(document.getElementById("dTotal").value || 0);
 
