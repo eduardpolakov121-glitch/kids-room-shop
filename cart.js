@@ -850,9 +850,31 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     const openCartAfterReturn = localStorage.getItem("kids_room_open_cart_after_return");
+    const openCheckoutAfterReturn = localStorage.getItem("kids_room_open_checkout_after_return");
+
     if (openCartAfterReturn === "true") {
         localStorage.removeItem("kids_room_open_cart_after_return");
-        setTimeout(() => openCart(), 120);
+
+        setTimeout(() => {
+            openCart();
+
+            if (openCheckoutAfterReturn === "true") {
+                localStorage.removeItem("kids_room_open_checkout_after_return");
+
+                setTimeout(() => {
+                    checkout();
+                }, 250);
+            }
+        }, 120);
+    } else if (openCheckoutAfterReturn === "true") {
+        localStorage.removeItem("kids_room_open_checkout_after_return");
+
+        setTimeout(() => {
+            openCart();
+            setTimeout(() => {
+                checkout();
+            }, 250);
+        }, 120);
     }
 });
 

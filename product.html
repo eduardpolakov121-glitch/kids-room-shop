@@ -85,7 +85,8 @@
 
     .product-mini-btn,
     .product-primary-btn,
-    .product-secondary-btn{
+    .product-secondary-btn,
+    .product-buy-now-btn{
       border:none;
       border-radius:14px;
       cursor:pointer;
@@ -95,7 +96,8 @@
 
     .product-mini-btn:hover,
     .product-primary-btn:hover,
-    .product-secondary-btn:hover{
+    .product-secondary-btn:hover,
+    .product-buy-now-btn:hover{
       transform:translateY(-1px);
     }
 
@@ -331,12 +333,21 @@
       letter-spacing:-0.03em;
     }
 
+    .product-price-box{
+      background:#fff;
+      border:1px solid #ece7df;
+      border-radius:24px;
+      padding:18px;
+      margin-bottom:18px;
+      box-shadow:0 10px 24px rgba(0,0,0,0.05);
+    }
+
     .product-price-row{
       display:flex;
       align-items:flex-end;
       gap:14px;
       flex-wrap:wrap;
-      margin-bottom:18px;
+      margin-bottom:10px;
     }
 
     .product-price-current{
@@ -361,6 +372,13 @@
       font-weight:800;
       font-size:14px;
       margin-bottom:6px;
+    }
+
+    .product-price-note{
+      margin:0;
+      color:#6f7b8c;
+      line-height:1.55;
+      font-size:14px;
     }
 
     .product-desc{
@@ -413,6 +431,49 @@
       color:var(--kr-text);
       margin-bottom:4px;
       font-size:14px;
+    }
+
+    .product-benefit-section{
+      margin:0 0 20px;
+      background:#fff;
+      border:1px solid #ece7df;
+      border-radius:24px;
+      padding:18px;
+      box-shadow:0 10px 24px rgba(0,0,0,0.04);
+    }
+
+    .product-benefit-section h2{
+      margin:0 0 12px;
+      color:#243041;
+      font-size:22px;
+      line-height:1.15;
+    }
+
+    .product-benefit-grid{
+      display:grid;
+      grid-template-columns:repeat(3,minmax(0,1fr));
+      gap:12px;
+    }
+
+    .product-benefit-card{
+      background:#fffaf4;
+      border:1px solid #f2e6d8;
+      border-radius:18px;
+      padding:14px;
+    }
+
+    .product-benefit-card strong{
+      display:block;
+      color:#243041;
+      margin-bottom:6px;
+      font-size:14px;
+    }
+
+    .product-benefit-card span{
+      display:block;
+      color:#6f7b8c;
+      line-height:1.55;
+      font-size:13px;
     }
 
     .product-trust-row{
@@ -535,9 +596,10 @@
     }
 
     .product-actions{
-      display:flex;
+      display:grid;
+      grid-template-columns:1.2fr 1fr;
       gap:12px;
-      flex-wrap:wrap;
+      margin-bottom:12px;
     }
 
     .product-primary-btn{
@@ -549,7 +611,18 @@
       font-size:16px;
     }
 
-    .product-primary-btn[disabled]{
+    .product-buy-now-btn{
+      min-height:58px;
+      padding:14px 24px;
+      background:linear-gradient(135deg,#243041 0%,#33465f 100%);
+      color:#fff;
+      box-shadow:0 16px 28px rgba(36,48,65,0.18);
+      font-size:16px;
+      grid-column:1/-1;
+    }
+
+    .product-primary-btn[disabled],
+    .product-buy-now-btn[disabled]{
       cursor:not-allowed;
       opacity:.7;
       box-shadow:none;
@@ -570,6 +643,46 @@
       font-size:14px;
       color:var(--kr-muted);
       line-height:1.6;
+    }
+
+    .product-order-steps{
+      margin-top:16px;
+      background:#f7fbff;
+      border:1px solid #dceeff;
+      border-radius:18px;
+      padding:14px;
+    }
+
+    .product-order-steps h3{
+      margin:0 0 10px;
+      color:#243041;
+      font-size:18px;
+    }
+
+    .product-order-step{
+      display:flex;
+      gap:10px;
+      color:#4b5a78;
+      line-height:1.55;
+      font-size:14px;
+      margin-bottom:8px;
+    }
+
+    .product-order-step:last-child{
+      margin-bottom:0;
+    }
+
+    .product-order-step b{
+      min-width:26px;
+      height:26px;
+      border-radius:999px;
+      background:#ff6600;
+      color:#fff;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      font-size:12px;
+      flex-shrink:0;
     }
 
     .product-reviews{
@@ -853,7 +966,8 @@
         padding:18px;
       }
       .product-feature-list,
-      .product-trust-row{
+      .product-trust-row,
+      .product-benefit-grid{
         grid-template-columns:1fr;
       }
       .product-buy-top{
@@ -861,10 +975,11 @@
         align-items:flex-start;
       }
       .product-actions{
-        flex-direction:column;
+        grid-template-columns:1fr;
       }
       .product-primary-btn,
-      .product-secondary-btn{
+      .product-secondary-btn,
+      .product-buy-now-btn{
         width:100%;
       }
     }
@@ -1083,6 +1198,12 @@
 
     function goHomeToCart(){
       localStorage.setItem("kids_room_open_cart_after_return", "true");
+      window.location.href = "index.html";
+    }
+
+    function goHomeToCheckout(){
+      localStorage.setItem("kids_room_open_cart_after_return", "true");
+      localStorage.setItem("kids_room_open_checkout_after_return", "true");
       window.location.href = "index.html";
     }
 
@@ -1348,10 +1469,13 @@
 
               <h1 class="product-title">${escapeHtml(product.name)}</h1>
 
-              <div class="product-price-row">
-                <div class="product-price-current">${Number(product.price || 0)} грн</div>
-                ${Number(product.old || 0) > Number(product.price || 0) ? `<div class="product-price-old">${Number(product.old || 0)} грн</div>` : ''}
-                ${discount ? `<div class="product-discount">-${discount}%</div>` : ''}
+              <div class="product-price-box">
+                <div class="product-price-row">
+                  <div class="product-price-current">${Number(product.price || 0)} грн</div>
+                  ${Number(product.old || 0) > Number(product.price || 0) ? `<div class="product-price-old">${Number(product.old || 0)} грн</div>` : ''}
+                  ${discount ? `<div class="product-discount">-${discount}%</div>` : ''}
+                </div>
+                <p class="product-price-note">Оформіть заявку на сайті — менеджер підтвердить наявність, суму та зручну доставку.</p>
               </div>
 
               <p class="product-desc">${escapeHtml(description)}</p>
@@ -1367,6 +1491,24 @@
                 <li><strong>Наявність</strong>${escapeHtml(stockLabel)}</li>
               </ul>
 
+              <section class="product-benefit-section">
+                <h2>Чому варто обрати цей товар</h2>
+                <div class="product-benefit-grid">
+                  <div class="product-benefit-card">
+                    <strong>✅ Для щоденного використання</strong>
+                    <span>Підійде для дому, прогулянок або догляду залежно від категорії товару.</span>
+                  </div>
+                  <div class="product-benefit-card">
+                    <strong>💬 Допомога з вибором</strong>
+                    <span>Менеджер може уточнити деталі перед відправкою замовлення.</span>
+                  </div>
+                  <div class="product-benefit-card">
+                    <strong>🚚 Зручна доставка</strong>
+                    <span>Оформлення через Нову пошту або Укрпошту по Україні.</span>
+                  </div>
+                </div>
+              </section>
+
               <div class="product-trust-row">
                 <div class="product-trust-card">
                   <strong>🚚 Доставка</strong>
@@ -1377,8 +1519,8 @@
                   <span>Менеджер зв’яжеться після оформлення.</span>
                 </div>
                 <div class="product-trust-card">
-                  <strong>🧾 Умови</strong>
-                  <span>Окремо доступні сторінки оплати, доставки та повернення.</span>
+                  <strong>🧾 Без оплати зараз</strong>
+                  <span>На сайті ви залишаєте заявку, оплату погоджує менеджер.</span>
                 </div>
               </div>
 
@@ -1397,10 +1539,19 @@
 
                 <div class="product-actions">
                   <button class="product-primary-btn" type="button" ${isOutOfStock ? "disabled" : ""} onclick="handleProductAddToCart('${escapeHtml(product.id)}')">${isOutOfStock ? "⛔ Немає в наявності" : "🛒 Додати в кошик"}</button>
-                  <button class="product-secondary-btn" type="button" onclick="goBack()">← Повернутись до товарів</button>
+                  <button class="product-secondary-btn" type="button" onclick="goBack()">← До товарів</button>
+                  <button class="product-buy-now-btn" type="button" ${isOutOfStock ? "disabled" : ""} onclick="handleProductBuyNow('${escapeHtml(product.id)}')">${isOutOfStock ? "⛔ Немає в наявності" : "⚡ Купити зараз"}</button>
                 </div>
 
-                <div class="product-note">Після натискання товар одразу додається в кошик. Менеджер підтвердить замовлення після оформлення.</div>
+                <div class="product-note">Кнопка “Купити зараз” додасть товар у кошик і одразу відкриє оформлення замовлення.</div>
+
+                <div class="product-order-steps">
+                  <h3>Як отримати товар</h3>
+                  <div class="product-order-step"><b>1</b><span>Додайте товар у кошик або натисніть “Купити зараз”.</span></div>
+                  <div class="product-order-step"><b>2</b><span>Заповніть ім’я, телефон і дані доставки.</span></div>
+                  <div class="product-order-step"><b>3</b><span>Менеджер підтвердить замовлення, наявність і суму.</span></div>
+                  <div class="product-order-step"><b>4</b><span>Після відправки ви отримаєте дані доставки.</span></div>
+                </div>
               </div>
 
               ${reviewsHtml}
@@ -1420,6 +1571,21 @@
       }
 
       setTimeout(updateProductCartCount, 120);
+    }
+
+    function handleProductBuyNow(id){
+      animateToCartFromProduct();
+
+      if (typeof addToCart === 'function') {
+        addToCart(id);
+      }
+
+      setTimeout(() => {
+        updateProductCartCount();
+        localStorage.setItem("kids_room_open_cart_after_return", "true");
+        localStorage.setItem("kids_room_open_checkout_after_return", "true");
+        window.location.href = "index.html";
+      }, 450);
     }
 
     renderProductPage();
@@ -1444,9 +1610,11 @@
     window.minus = minus;
     window.goBack = goBack;
     window.goHomeToCart = goHomeToCart;
+    window.goHomeToCheckout = goHomeToCheckout;
     window.openRelatedProduct = openRelatedProduct;
     window.addRelatedToCart = addRelatedToCart;
     window.handleProductAddToCart = handleProductAddToCart;
+    window.handleProductBuyNow = handleProductBuyNow;
     window.setMainGalleryImage = setMainGalleryImage;
   </script>
 </body>
