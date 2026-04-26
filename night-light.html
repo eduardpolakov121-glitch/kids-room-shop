@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Дитячий нічник-проектор Космонавт | Kids Room</title>
+  <meta
+    name="description"
+    content="Дитячий нічник-проектор Космонавт створює атмосферу зоряного неба вдома. Пульт, USB, упаковка, приємне світло без подразнення очей. Швидка доставка по Україні."
+  />
+
+  <link rel="stylesheet" href="night-light.css" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+
+<body>
+  <div class="page-bg"></div>
+
+  <header class="topbar">
+    <div class="container topbar__inner">
+      <a href="index.html" class="logo">Kids Room</a>
+
+      <div class="topbar__right">
+        <div class="topbar-stock">По акції: 17 шт</div>
+        <a href="#order" class="topbar__btn">Замовити</a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="container hero__grid">
+        <div class="hero__content">
+          <div class="hero-badge">ХІТ ДЛЯ ДИТЯЧОЇ КІМНАТИ</div>
+
+          <h1>
+            Зоряне небо у кімнаті дитини
+            <span>вже сьогодні</span>
+          </h1>
+
+          <p class="hero__text">
+            Дитячий нічник-проектор <strong>“Космонавт”</strong> перетворює звичайну кімнату
+            на яскравий міні-планетарій, створює затишну атмосферу перед сном
+            і стає подарунком, який дитина запам’ятає.
+          </p>
+
+          <div class="hero__chips">
+            <span>🌌 Ефект зоряного неба</span>
+            <span>🎮 Пульт у комплекті</span>
+            <span>🔌 USB кабель</span>
+            <span>🎁 Упаковка для подарунка</span>
+          </div>
+
+          <div class="urgency-box">
+            <div class="urgency-stock">
+              <span class="pulse-dot"></span>
+              Залишилось по акції: <strong id="stockCount">17 шт</strong>
+            </div>
+
+            <div class="timer-box">
+              <div class="timer-title">Акція закінчиться через:</div>
+              <div class="timer" id="saleTimer">
+                <div>
+                  <span id="timerHours">02</span>
+                  <small>год</small>
+                </div>
+                <div>
+                  <span id="timerMinutes">00</span>
+                  <small>хв</small>
+                </div>
+                <div>
+                  <span id="timerSeconds">00</span>
+                  <small>сек</small>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="price-box">
+            <div class="price-box__left">
+              <div class="old-price">799 грн</div>
+              <div class="new-price">599 грн</div>
+            </div>
+
+            <div class="price-box__right">
+              <div class="sale-tag">ЕКОНОМІЯ 200 ГРН</div>
+              <div class="sale-note">Ціна діє для перших замовлень</div>
+            </div>
+          </div>
+
+          <div class="hero__actions">
+            <a href="#order" class="btn btn--primary">Замовити за 599 грн</a>
+            <a href="#gallery" class="btn btn--ghost">Дивитись фото</a>
+          </div>
+
+          <div class="hero__trust">
+            <div>✅ Оплата при отриманні</div>
+            <div>🚚 Нова пошта / Укрпошта</div>
+            <div>📞 Менеджер уточнить деталі</div>
+          </div>
+        </div>
+
+        <div class="hero__visual">
+          <div class="hero-card">
+            <div class="image-label">Готовий подарунок для дитини</div>
+
+            <img
+              src="night-light-1.png"
+              alt="Дитячий нічник-проектор Космонавт"
+              class="hero-main-image"
+            />
+
+            <div class="hero-mini-gallery">
+              <img src="night-light-2.png" alt="Комплектація нічника Космонавт" />
+              <img src="night-light-3.png" alt="Нічник Космонавт з пультом" />
+              <img src="night-light-4.png" alt="Режими проектора Космонавт" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="benefits">
+      <div class="container">
+        <div class="section-label">Переваги</div>
+        <h2 class="section-title">Чому цей нічник хочеться увімкнути одразу</h2>
+
+        <div class="benefits__grid">
+          <div class="benefit-card">
+            <div class="benefit-icon">🌌</div>
+            <h3>Атмосфера зоряного неба</h3>
+            <p>
+              Проектор створює яскраву космічну проекцію на стелі та стінах,
+              перетворюючи кімнату на маленький планетарій.
+            </p>
+          </div>
+
+          <div class="benefit-card">
+            <div class="benefit-icon">😴</div>
+            <h3>Приємне світло</h3>
+            <p>
+              М’яке світло не подразнює очі та допомагає створити спокійну
+              атмосферу перед сном.
+            </p>
+          </div>
+
+          <div class="benefit-card">
+            <div class="benefit-icon">🎮</div>
+            <h3>Зручний пульт</h3>
+            <p>
+              Керуйте режимами, не встаючи з ліжка: зручно для батьків
+              і цікаво для дитини.
+            </p>
+          </div>
+
+          <div class="benefit-card">
+            <div class="benefit-icon">🎁</div>
+            <h3>Готовий подарунок</h3>
+            <p>
+              У комплекті є упаковка, тому нічник можна подарувати на день народження,
+              свято або просто як приємний сюрприз.
+            </p>
+          </div>
+
+          <div class="benefit-card">
+            <div class="benefit-icon">🤍</div>
+            <h3>Стильний білий дизайн</h3>
+            <p>
+              Сучасний мінімалістичний вигляд підходить для дитячої кімнати
+              та будь-якого інтер’єру.
+            </p>
+          </div>
+
+          <div class="benefit-card">
+            <div class="benefit-icon">🔌</div>
+            <h3>Повна комплектація</h3>
+            <p>
+              Ви отримуєте проектор Космонавт, USB-кабель, пульт керування
+              та упаковку.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="gallery-section" id="gallery">
+      <div class="container">
+        <div class="section-label">Фото товару</div>
+        <h2 class="section-title">Подивіться, як виглядає нічник-проектор “Космонавт”</h2>
+
+        <div class="gallery-grid">
+          <div class="gallery-card gallery-card--large">
+            <img src="night-light-1.png" alt="Нічник Космонавт у дитячій кімнаті" />
+          </div>
+
+          <div class="gallery-card">
+            <img src="night-light-2.png" alt="Нічник Космонавт комплект" />
+          </div>
+
+          <div class="gallery-card">
+            <img src="night-light-3.png" alt="Нічник Космонавт з пультом" />
+          </div>
+
+          <div class="gallery-card">
+            <img src="night-light-4.png" alt="Режими нічника Космонавт" />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="why-section">
+      <div class="container why__grid">
+        <div class="why__content">
+          <div class="section-label">Для кого</div>
+          <h2 class="section-title">Цей нічник добре підходить, якщо...</h2>
+
+          <ul class="story-list">
+            <li>дитина боїться засинати у темряві;</li>
+            <li>хочеться зробити кімнату більш затишною;</li>
+            <li>потрібен незвичайний подарунок;</li>
+            <li>дитині подобається космос, зорі та яскраве світло;</li>
+            <li>ви шукаєте корисну річ, а не просто чергову іграшку.</li>
+          </ul>
+        </div>
+
+        <div class="why__card">
+          <h3>Що входить у комплект:</h3>
+
+          <div class="pack-list">
+            <div>✅ Проектор зоряного неба “Космонавт”</div>
+            <div>✅ Кабель USB</div>
+            <div>✅ Пульт керування</div>
+            <div>✅ Упаковка</div>
+          </div>
+
+          <div class="mini-offer">
+            <div class="mini-offer__stock">
+              Залишилось по акції: <strong>17 шт</strong>
+            </div>
+            <div class="mini-offer__old">799 грн</div>
+            <div class="mini-offer__new">599 грн</div>
+            <a href="#order" class="btn btn--primary btn--full">Залишити заявку</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="reviews">
+      <div class="container">
+        <div class="section-label">Враження</div>
+        <h2 class="section-title">Чому батькам подобається такий формат подарунка</h2>
+
+        <div class="reviews__grid">
+          <div class="review-card">
+            <p>
+              “Дитина була в захваті. Увечері в кімнаті дуже красиво,
+              тепер просить вмикати космос перед сном.”
+            </p>
+            <span>— мама дитини 5 років</span>
+          </div>
+
+          <div class="review-card">
+            <p>
+              “Брали на подарунок. Добре, що є коробка, пульт і USB.
+              Виглядає набагато цікавіше, ніж звичайний нічник.”
+            </p>
+            <span>— покупець, Київ</span>
+          </div>
+
+          <div class="review-card">
+            <p>
+              “Світло приємне, не різке. Для дитячої кімнати дуже класна річ,
+              особливо ввечері.”
+            </p>
+            <span>— покупець, Дніпро</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="final-offer" id="order">
+      <div class="container final-offer__box">
+        <div class="final-offer__content">
+          <div class="section-label">Замовлення</div>
+
+          <h2>Залиште заявку — оператор оформить доставку</h2>
+
+          <p>
+            Вам потрібно вказати тільки <strong>ПІБ та номер телефону</strong>.
+            Менеджер зв’яжеться з вами, підтвердить замовлення,
+            уточнить місто, відділення та внесе всі деталі в CRM.
+          </p>
+
+          <div class="form-urgency">
+            <div>
+              <span class="pulse-dot"></span>
+              Залишилось по акції: <strong>17 шт</strong>
+            </div>
+
+            <div>
+              До кінця акції:
+              <strong id="saleTimerSmall">02:00:00</strong>
+            </div>
+          </div>
+
+          <div class="offer-row">
+            <div>
+              <div class="old-price">799 грн</div>
+              <div class="new-price">599 грн</div>
+            </div>
+            <div class="economy-badge">Економія 200 грн</div>
+          </div>
+        </div>
+
+        <form class="order-form" id="nightLightOrderForm">
+          <input type="hidden" name="productName" value="Дитячий нічник-проектор Космонавт" />
+          <input type="hidden" name="productPrice" value="599" />
+          <input type="hidden" name="source" value="landing-night-projector" />
+
+          <label>
+            ПІБ
+            <input
+              type="text"
+              name="fullName"
+              placeholder="Ваше прізвище, ім’я та по батькові"
+              required
+            />
+          </label>
+
+          <label>
+            Номер телефону
+            <input
+              type="tel"
+              name="phone"
+              placeholder="+380..."
+              required
+            />
+          </label>
+
+          <button type="submit" class="btn btn--primary btn--full">
+            Замовити за 599 грн
+          </button>
+
+          <p class="form-status" id="formStatus"></p>
+
+          <div class="form-note">
+            Натискаючи кнопку, ви залишаєте заявку. Оператор зв’яжеться з вами
+            для підтвердження та оформлення доставки.
+          </div>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <a href="#order" class="mobile-sticky-btn">
+    Замовити за 599 грн
+  </a>
+
+  <footer class="footer">
+    <div class="container footer__inner">
+      <div>© Kids Room</div>
+      <a href="index.html">Повернутися в магазин</a>
+    </div>
+  </footer>
+
+  <script src="night-light.js"></script>
+</body>
+</html>
