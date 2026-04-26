@@ -53,12 +53,9 @@ function splitFullName(fullName) {
   const cleaned = String(fullName || '').trim().replace(/\s+/g, ' ');
   const parts = cleaned.split(' ');
 
-  const firstName = parts[0] || '';
-  const lastName = parts.slice(1).join(' ') || '';
-
   return {
-    firstName,
-    lastName,
+    firstName: parts[0] || '',
+    lastName: parts.slice(1).join(' ') || '',
     fullName: cleaned
   };
 }
@@ -88,18 +85,12 @@ function buildOrderPayload(data) {
     source: PRODUCT.source
   };
 
-  const items = [item];
   const total = PRODUCT.price * PRODUCT.quantity;
 
   return {
     first_name: nameData.firstName,
     last_name: nameData.lastName,
-    client_name: nameData.fullName,
-    customer_name: nameData.fullName,
-
     phone: phone,
-    client_phone: phone,
-    customer_phone: phone,
 
     delivery_service: '',
     delivery_type: '',
@@ -108,8 +99,9 @@ function buildOrderPayload(data) {
     department: '',
     address: '',
 
-    items: items,
-    products: items,
+    items: [item],
+    products: [item],
+
     product_name: PRODUCT.name,
     product_price: PRODUCT.price,
     quantity: PRODUCT.quantity,
@@ -122,9 +114,9 @@ function buildOrderPayload(data) {
     status: 'new',
     source: PRODUCT.source,
 
-    client_note: 'Заявка з лендингу нічника. Деталі доставки, місто та відділення заповнює оператор під час дзвінка.',
-    comment: 'Заявка з лендингу нічника. Деталі доставки, місто та відділення заповнює оператор під час дзвінка.',
-    notes: 'Заявка з лендингу нічника. Деталі доставки, місто та відділення заповнює оператор під час дзвінка.',
+    client_note: `Заявка з лендингу нічника. ПІБ клієнта: ${nameData.fullName}. Деталі доставки, місто та відділення заповнює оператор під час дзвінка.`,
+    comment: `Заявка з лендингу нічника. ПІБ клієнта: ${nameData.fullName}. Деталі доставки, місто та відділення заповнює оператор під час дзвінка.`,
+    notes: `Заявка з лендингу нічника. ПІБ клієнта: ${nameData.fullName}. Деталі доставки, місто та відділення заповнює оператор під час дзвінка.`,
 
     ttn: '',
     created_at: new Date().toISOString(),
@@ -142,19 +134,23 @@ function buildFallbackPayload(data) {
   return {
     first_name: nameData.firstName,
     last_name: nameData.lastName,
-    client_name: nameData.fullName,
     phone: phone,
 
-    product_name: PRODUCT.name,
-    product_price: PRODUCT.price,
-    quantity: 1,
+    items: [
+      {
+        id: 'night-projector-cosmonaut',
+        name: PRODUCT.name,
+        price: PRODUCT.price,
+        quantity: PRODUCT.quantity
+      }
+    ],
 
     total: PRODUCT.price,
     total_items: 1,
     status: 'new',
     source: PRODUCT.source,
 
-    client_note: 'Заявка з лендингу нічника. Деталі доставки заповнює оператор.',
+    client_note: `Заявка з лендингу нічника. ПІБ клієнта: ${nameData.fullName}. Деталі доставки заповнює оператор.`,
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString()
   };
