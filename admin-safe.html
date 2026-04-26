@@ -228,10 +228,55 @@
       grid-column:1/-1;
     }
 
-    .flags{
+    .admin-section-title{
+      grid-column:1/-1;
+      margin:8px 0 0;
+      padding:12px 14px;
+      border-radius:16px;
+      background:#fff8ef;
+      border:1px solid #ffe0c2;
+      color:#9a4d09;
+      font-size:14px;
+      font-weight:800;
+    }
+
+    .sales-help-box{
+      grid-column:1/-1;
+      background:#f7fbff;
+      border:1px solid #dceeff;
+      color:#415066;
+      border-radius:16px;
+      padding:12px 14px;
+      font-size:14px;
+      line-height:1.6;
+    }
+
+    .quick-template-row{
       display:flex;
-      gap:14px;
       flex-wrap:wrap;
+      gap:8px;
+      margin-top:8px;
+    }
+
+    .template-chip{
+      border:none;
+      border-radius:999px;
+      padding:8px 11px;
+      background:#eef2f7;
+      color:#243041;
+      font-size:12px;
+      font-weight:800;
+      cursor:pointer;
+    }
+
+    .template-chip:hover{
+      background:#dde7f3;
+    }
+
+    .flags{
+      display:grid;
+      grid-template-columns:repeat(3,minmax(0,1fr));
+      gap:10px;
       padding:8px 0 2px;
     }
 
@@ -241,6 +286,10 @@
       gap:8px;
       font-size:14px;
       color:var(--text);
+      background:#fff;
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:11px 12px;
     }
 
     .flag-item input{
@@ -571,6 +620,10 @@
       .stats-grid{
         grid-template-columns:1fr;
       }
+
+      .flags{
+        grid-template-columns:1fr;
+      }
     }
   </style>
 </head>
@@ -652,6 +705,8 @@
             <h2 id="formTitle">Додати товар</h2>
 
             <div class="form-grid">
+              <div class="admin-section-title">Основна інформація</div>
+
               <div class="field full">
                 <label class="label" for="productId">ID товару</label>
                 <input id="productId" type="text" placeholder="Наприклад: toy-101 або prod_..." />
@@ -672,8 +727,10 @@
                 <select id="productStock"></select>
               </div>
 
+              <div class="admin-section-title">Ціна та продажні мітки</div>
+
               <div class="field">
-                <label class="label" for="productPrice">Ціна</label>
+                <label class="label" for="productPrice">Поточна ціна</label>
                 <input id="productPrice" type="number" min="0" step="1" placeholder="0" />
               </div>
 
@@ -683,8 +740,49 @@
               </div>
 
               <div class="field full">
+                <div class="flags">
+                  <label class="flag-item">
+                    <input id="productHit" type="checkbox" />
+                    <span>🔥 Хіт продажу</span>
+                  </label>
+
+                  <label class="flag-item">
+                    <input id="productSale" type="checkbox" />
+                    <span>🏷️ Акція</span>
+                  </label>
+
+                  <label class="flag-item">
+                    <input id="productNew" type="checkbox" />
+                    <span>✨ Новинка</span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="sales-help-box">
+                Для акції став “Акція”, у “Стара ціна” вкажи цену выше текущей. На сайте автоматически появится старая цена и скидка.
+              </div>
+
+              <div class="admin-section-title">Продающий контент</div>
+
+              <div class="field full">
+                <label class="label" for="productShortBenefit">Коротка вигода</label>
+                <input id="productShortBenefit" type="text" placeholder="Наприклад: Зручний товар для щоденного використання" />
+              </div>
+
+              <div class="field full">
                 <label class="label" for="productDesc">Опис</label>
                 <textarea id="productDesc" placeholder="Опис товару"></textarea>
+                <div class="quick-template-row">
+                  <button class="template-chip" type="button" onclick="applyDescriptionTemplate('daily')">Для щоденного використання</button>
+                  <button class="template-chip" type="button" onclick="applyDescriptionTemplate('gift')">Для подарунка</button>
+                  <button class="template-chip" type="button" onclick="applyDescriptionTemplate('comfort')">Комфорт і практичність</button>
+                </div>
+              </div>
+
+              <div class="field full">
+                <label class="label" for="productBenefits">Переваги товару</label>
+                <textarea id="productBenefits" placeholder="Кожна перевага з нового рядка. Наприклад: Легко використовувати&#10;Підходить для щоденного догляду&#10;Зручний формат для дому"></textarea>
+                <div class="muted" style="margin-top:6px;">Ці переваги збережуться в товарі та можуть використовуватись на сторінці товару.</div>
               </div>
 
               <div class="field full">
@@ -692,6 +790,8 @@
                 <input id="productTags" type="text" placeholder="Наприклад: мʼяка іграшка, подарунок, топ" />
                 <div class="muted" style="margin-top:6px;">Теги вказуй через кому.</div>
               </div>
+
+              <div class="admin-section-title">Фото товару</div>
 
               <div class="field full">
                 <label class="label" for="productFile">Головне зображення</label>
@@ -703,25 +803,6 @@
                 <label class="label" for="productGalleryFiles">Галерея товару</label>
                 <input id="productGalleryFiles" type="file" accept="image/*" multiple />
                 <div class="muted" style="margin-top:6px;">Можна вибрати кілька фото одразу. Перше фото буде головним, якщо головне не завантажене окремо.</div>
-              </div>
-
-              <div class="field full">
-                <div class="flags">
-                  <label class="flag-item">
-                    <input id="productHit" type="checkbox" />
-                    <span>Хіт</span>
-                  </label>
-
-                  <label class="flag-item">
-                    <input id="productSale" type="checkbox" />
-                    <span>Акція</span>
-                  </label>
-
-                  <label class="flag-item">
-                    <input id="productNew" type="checkbox" />
-                    <span>Новинка</span>
-                  </label>
-                </div>
               </div>
 
               <div class="field full">
@@ -739,6 +820,8 @@
                 <label class="label">Попередній перегляд галереї</label>
                 <div id="galleryPreview" class="gallery-preview"></div>
               </div>
+
+              <div class="admin-section-title">Відгуки</div>
 
               <div class="field full">
                 <label class="label" for="productReviews">Відгуки</label>
@@ -789,7 +872,9 @@
     const productStockInput = document.getElementById("productStock");
     const productPriceInput = document.getElementById("productPrice");
     const productOldPriceInput = document.getElementById("productOldPrice");
+    const productShortBenefitInput = document.getElementById("productShortBenefit");
     const productDescInput = document.getElementById("productDesc");
+    const productBenefitsInput = document.getElementById("productBenefits");
     const productTagsInput = document.getElementById("productTags");
     const productFileInput = document.getElementById("productFile");
     const productGalleryFilesInput = document.getElementById("productGalleryFiles");
@@ -883,7 +968,12 @@
     }
 
     function fillStockFilter() {
-      const statuses = Array.isArray(window.STOCK_STATUSES) ? window.STOCK_STATUSES : [];
+      const statuses = Array.isArray(window.STOCK_STATUSES) ? window.STOCK_STATUSES : [
+        { id: "in_stock", name: "Є в наявності" },
+        { id: "low_stock", name: "Закінчується" },
+        { id: "out_of_stock", name: "Немає в наявності" }
+      ];
+
       stockFilterInput.innerHTML = `<option value="all">Уся наявність</option>` + statuses.map(status => {
         return `<option value="${escapeHtml(status.id)}">${escapeHtml(status.name)}</option>`;
       }).join("");
@@ -926,7 +1016,9 @@
       productStockInput.value = "in_stock";
       productPriceInput.value = "";
       productOldPriceInput.value = "";
+      productShortBenefitInput.value = "";
       productDescInput.value = "";
+      productBenefitsInput.value = "";
       productTagsInput.value = "";
       productFileInput.value = "";
       productGalleryFilesInput.value = "";
@@ -972,6 +1064,18 @@
         .filter(Boolean);
     }
 
+    function parseBenefits(raw) {
+      return String(raw || "")
+        .split("\n")
+        .map(item => item.trim())
+        .filter(Boolean);
+    }
+
+    function serializeBenefits(benefits) {
+      if (!Array.isArray(benefits) || !benefits.length) return "";
+      return benefits.join("\n");
+    }
+
     function serializeReviews(reviews) {
       if (!Array.isArray(reviews) || !reviews.length) return "";
       return reviews.map(item => {
@@ -1001,6 +1105,26 @@
         .filter(item => item.text);
     }
 
+    function applyDescriptionTemplate(type) {
+      const name = productNameInput.value.trim() || "Цей товар";
+
+      const templates = {
+        daily: `${name} — практичний товар для щоденного використання. Він допоможе зробити догляд, гру або побут дитини зручнішим, а оформлення замовлення займе лише кілька хвилин.`,
+        gift: `${name} — гарний варіант для подарунка дитині. Товар легко додати в кошик, а менеджер підтвердить наявність і допоможе з доставкою.`,
+        comfort: `${name} створений для комфорту та практичного використання. Підійде для дому, прогулянок або щоденних потреб дитини залежно від категорії товару.`
+      };
+
+      productDescInput.value = templates[type] || templates.daily;
+
+      if (!productShortBenefitInput.value.trim()) {
+        productShortBenefitInput.value = "Зручний товар для щоденного використання";
+      }
+
+      if (!productBenefitsInput.value.trim()) {
+        productBenefitsInput.value = "Підходить для щоденного використання\nЗручне оформлення замовлення\nДоставка Новою поштою або Укрпоштою";
+      }
+    }
+
     function getFilteredProducts() {
       const list = Array.isArray(window.products) ? [...window.products] : [];
       const search = String(productSearchInput.value || "").trim().toLowerCase();
@@ -1015,6 +1139,8 @@
           product.id,
           product.name,
           product.description,
+          product.short_benefit,
+          Array.isArray(product.benefits) ? product.benefits.join(" ") : "",
           Array.isArray(product.tags) ? product.tags.join(" ") : "",
           typeof getCategoryName === "function" ? getCategoryName(product.category) : product.category
         ].join(" ").toLowerCase();
@@ -1038,6 +1164,7 @@
         const img = typeof getSafeProductImage === "function" ? getSafeProductImage(product) : (product.img || "product-placeholder.svg");
         const tags = Array.isArray(product.tags) ? product.tags : [];
         const galleryCount = Array.isArray(product.gallery) ? product.gallery.length : 0;
+        const benefits = Array.isArray(product.benefits) ? product.benefits : [];
         const safeId = String(product.id).replace(/'/g, "\\'");
 
         return `
@@ -1051,6 +1178,8 @@
                 Ціна: ${Number(product.price || 0)} грн${product.old ? ` • Стара: ${Number(product.old)} грн` : ""}<br>
                 Наявність: ${escapeHtml(typeof getStockStatusName === "function" ? getStockStatusName(product.stock_status) : "Є в наявності")}<br>
                 Галерея: ${galleryCount} фото${tags.length ? `<br>Теги: ${escapeHtml(tags.join(", "))}` : ""}<br>
+                ${product.short_benefit ? `Вигода: ${escapeHtml(product.short_benefit)}<br>` : ""}
+                ${benefits.length ? `Переваги: ${escapeHtml(benefits.slice(0, 3).join("; "))}<br>` : ""}
                 ${product.description ? escapeHtml(product.description) : "Без опису"}
               </div>
               ${renderProductBadges(product)}
@@ -1077,7 +1206,9 @@
       productStockInput.value = product.stock_status || "in_stock";
       productPriceInput.value = product.price || 0;
       productOldPriceInput.value = product.old || 0;
+      productShortBenefitInput.value = product.short_benefit || "";
       productDescInput.value = product.description || "";
+      productBenefitsInput.value = serializeBenefits(product.benefits || []);
       productTagsInput.value = Array.isArray(product.tags) ? product.tags.join(", ") : "";
       productReviewsInput.value = serializeReviews(product.reviews || []);
       productFileInput.value = "";
@@ -1194,7 +1325,9 @@
       const stock_status = productStockInput.value;
       const price = parseInt(productPriceInput.value, 10);
       const old = parseInt(productOldPriceInput.value, 10);
+      const shortBenefit = productShortBenefitInput.value.trim();
       const description = productDescInput.value.trim();
+      const benefits = parseBenefits(productBenefitsInput.value);
       const tags = parseTags(productTagsInput.value);
       const reviews = parseReviews(productReviewsInput.value);
       const file = productFileInput.files[0];
@@ -1205,8 +1338,23 @@
         return;
       }
 
+      if (name.length < 3) {
+        showNotice(formNotice, "Назва товару занадто коротка.", "error");
+        return;
+      }
+
       if (!Number.isFinite(price) || price <= 0) {
-        showNotice(formNotice, "Вкажи коректну ціну.", "error");
+        showNotice(formNotice, "Вкажи коректну поточну ціну.", "error");
+        return;
+      }
+
+      if (productSaleInput.checked && (!Number.isFinite(old) || old <= price)) {
+        showNotice(formNotice, "Для акції стара ціна має бути більшою за поточну.", "error");
+        return;
+      }
+
+      if (!description) {
+        showNotice(formNotice, "Додай опис товару. Опис допомагає продавати.", "error");
         return;
       }
 
@@ -1247,7 +1395,15 @@
         }
 
         const finalId = id || `prod_${Date.now()}`;
-        const finalOld = Number.isFinite(old) && old > 0 ? old : price;
+        let finalOld = Number.isFinite(old) && old > 0 ? old : price;
+
+        if (productSaleInput.checked && finalOld <= price) {
+          finalOld = price;
+        }
+
+        if (!productSaleInput.checked && (!Number.isFinite(old) || old <= 0)) {
+          finalOld = price;
+        }
 
         const product = normalizeProduct({
           id: finalId,
@@ -1255,8 +1411,10 @@
           category,
           stock_status,
           price,
-          old: finalOld < price ? price : finalOld,
+          old: finalOld,
+          short_benefit: shortBenefit,
           description,
+          benefits,
           tags,
           reviews,
           img: sanitizeProductImage(finalImage || PRODUCT_PLACEHOLDER),
@@ -1265,6 +1423,9 @@
           is_sale: productSaleInput.checked,
           is_new: productNewInput.checked
         }, finalId);
+
+        product.short_benefit = shortBenefit;
+        product.benefits = benefits;
 
         await saveSingleProductToSupabase(product);
 
@@ -1435,6 +1596,7 @@
 
     window.editProduct = editProduct;
     window.removeProduct = removeProduct;
+    window.applyDescriptionTemplate = applyDescriptionTemplate;
   </script>
 </body>
 </html>

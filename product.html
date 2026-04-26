@@ -326,11 +326,23 @@
     }
 
     .product-title{
-      margin:0 0 16px;
+      margin:0 0 14px;
       color:var(--kr-text);
       font-size:clamp(32px,4vw,48px);
       line-height:1.08;
       letter-spacing:-0.03em;
+    }
+
+    .product-short-benefit{
+      margin:0 0 18px;
+      padding:14px 16px;
+      background:#fff8ef;
+      border:1px solid #ffe0c2;
+      border-radius:18px;
+      color:#9a4d09;
+      font-size:16px;
+      line-height:1.6;
+      font-weight:800;
     }
 
     .product-price-box{
@@ -1338,7 +1350,7 @@
 
                 <div class="product-related-body">
                   <h3 class="product-related-name">${escapeHtml(item.name)}</h3>
-                  <p class="product-related-desc">${escapeHtml(item.description || 'Якісний дитячий товар для щоденного використання.').slice(0, 82)}${(item.description || '').length > 82 ? '…' : ''}</p>
+                  <p class="product-related-desc">${escapeHtml(item.short_benefit || item.description || 'Якісний дитячий товар для щоденного використання.').slice(0, 82)}${(item.short_benefit || item.description || '').length > 82 ? '…' : ''}</p>
 
                   <div class="product-related-price">
                     <span class="current">${Number(item.price || 0)} грн</span>
@@ -1390,6 +1402,34 @@
       `;
     }
 
+    function buildBenefitsSection(product, categoryName) {
+      const customBenefits = Array.isArray(product?.benefits)
+        ? product.benefits.map(item => String(item || "").trim()).filter(Boolean)
+        : [];
+
+      const fallbackBenefits = [
+        "Підійде для дому, прогулянок або догляду залежно від категорії товару.",
+        "Менеджер може уточнити деталі перед відправкою замовлення.",
+        "Оформлення через Нову пошту або Укрпошту по Україні."
+      ];
+
+      const benefits = customBenefits.length ? customBenefits : fallbackBenefits;
+
+      return `
+        <section class="product-benefit-section">
+          <h2>Чому варто обрати цей товар</h2>
+          <div class="product-benefit-grid">
+            ${benefits.slice(0, 6).map((benefit, index) => `
+              <div class="product-benefit-card">
+                <strong>${index === 0 ? "✅ Перевага" : index === 1 ? "💬 Деталь" : index === 2 ? "🚚 Зручність" : "⭐ Плюс"}</strong>
+                <span>${escapeHtml(benefit)}</span>
+              </div>
+            `).join("")}
+          </div>
+        </section>
+      `;
+    }
+
     function renderProductPage(){
       const container = document.getElementById('product-page');
       const crumb = document.getElementById('breadcrumb-name');
@@ -1422,9 +1462,11 @@
 
       const discount = getDiscountPercent(product.old, product.price);
       const description = product.description || 'Якісний дитячий товар для щоденного використання.';
+      const shortBenefit = String(product.short_benefit || "").trim();
       const flagsHtml = buildProductFlags(product);
       const relatedHtml = buildRelatedSection(product);
       const reviewsHtml = buildReviewsSection(product);
+      const benefitsHtml = buildBenefitsSection(product, categoryName);
       const stockClass = getStockClass(product.stock_status);
       const stockLabel = getStockLabel(product.stock_status);
       const isOutOfStock = String(product.stock_status || "in_stock") === "out_of_stock";
@@ -1469,6 +1511,8 @@
 
               <h1 class="product-title">${escapeHtml(product.name)}</h1>
 
+              ${shortBenefit ? `<div class="product-short-benefit">⭐ ${escapeHtml(shortBenefit)}</div>` : ``}
+
               <div class="product-price-box">
                 <div class="product-price-row">
                   <div class="product-price-current">${Number(product.price || 0)} грн</div>
@@ -1491,23 +1535,7 @@
                 <li><strong>Наявність</strong>${escapeHtml(stockLabel)}</li>
               </ul>
 
-              <section class="product-benefit-section">
-                <h2>Чому варто обрати цей товар</h2>
-                <div class="product-benefit-grid">
-                  <div class="product-benefit-card">
-                    <strong>✅ Для щоденного використання</strong>
-                    <span>Підійде для дому, прогулянок або догляду залежно від категорії товару.</span>
-                  </div>
-                  <div class="product-benefit-card">
-                    <strong>💬 Допомога з вибором</strong>
-                    <span>Менеджер може уточнити деталі перед відправкою замовлення.</span>
-                  </div>
-                  <div class="product-benefit-card">
-                    <strong>🚚 Зручна доставка</strong>
-                    <span>Оформлення через Нову пошту або Укрпошту по Україні.</span>
-                  </div>
-                </div>
-              </section>
+              ${benefitsHtml}
 
               <div class="product-trust-row">
                 <div class="product-trust-card">
