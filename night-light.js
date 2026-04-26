@@ -90,7 +90,13 @@ function buildOrderPayload(data) {
   return {
     first_name: nameData.firstName,
     last_name: nameData.lastName,
+    full_name: nameData.fullName,
+    client_name: nameData.fullName,
+    customer_name: nameData.fullName,
+
     phone: phone,
+    client_phone: phone,
+    customer_phone: phone,
 
     delivery_service: '',
     delivery_type: '',
@@ -134,7 +140,13 @@ function buildFallbackPayload(data) {
   return {
     first_name: nameData.firstName,
     last_name: nameData.lastName,
+    full_name: nameData.fullName,
+    client_name: nameData.fullName,
+    customer_name: nameData.fullName,
+
     phone: phone,
+    client_phone: phone,
+    customer_phone: phone,
 
     items: [
       {
@@ -144,6 +156,10 @@ function buildFallbackPayload(data) {
         quantity: PRODUCT.quantity
       }
     ],
+
+    product_name: PRODUCT.name,
+    product_price: PRODUCT.price,
+    quantity: 1,
 
     total: PRODUCT.price,
     total_items: 1,
