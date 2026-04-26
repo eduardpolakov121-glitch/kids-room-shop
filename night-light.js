@@ -22,7 +22,9 @@ function setStatus(message, type = '') {
 }
 
 function normalizePhone(phone) {
-  return String(phone || '').replace(/[^\d+]/g, '').trim();
+  return String(phone || '')
+    .replace(/[^\d+]/g, '')
+    .trim();
 }
 
 function isValidUkrainianPhone(phone) {
@@ -50,7 +52,10 @@ function formatPhone(phone) {
 }
 
 function splitFullName(fullName) {
-  const cleaned = String(fullName || '').trim().replace(/\s+/g, ' ');
+  const cleaned = String(fullName || '')
+    .trim()
+    .replace(/\s+/g, ' ');
+
   const parts = cleaned.split(' ');
 
   return {
@@ -68,31 +73,37 @@ function getSupabaseClient() {
   return window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 }
 
-function buildOrderPayload(data) {
-  const fullNameInput = data.get('fullName').trim();
-  const phoneInput = data.get('phone').trim();
-
-  const phone = formatPhone(phoneInput);
-  const nameData = splitFullName(fullNameInput);
-
-  const item = {
+function buildProductItem() {
+  return {
     id: 'night-projector-cosmonaut',
     name: PRODUCT.name,
+    title: PRODUCT.name,
+    product_name: PRODUCT.name,
     price: PRODUCT.price,
     old_price: PRODUCT.oldPrice,
     quantity: PRODUCT.quantity,
     total: PRODUCT.price * PRODUCT.quantity,
     source: PRODUCT.source
   };
+}
 
+function buildOrderPayload(data) {
+  const fullNameInput = data.get('fullName').trim();
+  const phoneInput = data.get('phone').trim();
+
+  const phone = formatPhone(phoneInput);
+  const nameData = splitFullName(fullNameInput);
+  const item = buildProductItem();
   const total = PRODUCT.price * PRODUCT.quantity;
 
   return {
-    first_name: nameData.firstName,
-    last_name: nameData.lastName,
+    name: nameData.fullName,
     full_name: nameData.fullName,
     client_name: nameData.fullName,
     customer_name: nameData.fullName,
+    contact_name: nameData.fullName,
+    first_name: nameData.firstName,
+    last_name: nameData.lastName,
 
     phone: phone,
     client_phone: phone,
@@ -120,9 +131,9 @@ function buildOrderPayload(data) {
     status: 'new',
     source: PRODUCT.source,
 
-    client_note: `Заявка з лендингу нічника. ПІБ клієнта: ${nameData.fullName}. Деталі доставки, місто та відділення заповнює оператор під час дзвінка.`,
-    comment: `Заявка з лендингу нічника. ПІБ клієнта: ${nameData.fullName}. Деталі доставки, місто та відділення заповнює оператор під час дзвінка.`,
-    notes: `Заявка з лендингу нічника. ПІБ клієнта: ${nameData.fullName}. Деталі доставки, місто та відділення заповнює оператор під час дзвінка.`,
+    client_note: `Заявка з лендингу нічника. ПІБ клієнта: ${nameData.fullName}. Телефон: ${phone}. Деталі доставки, місто та відділення заповнює оператор під час дзвінка.`,
+    comment: `Заявка з лендингу нічника. ПІБ клієнта: ${nameData.fullName}. Телефон: ${phone}. Деталі доставки, місто та відділення заповнює оператор під час дзвінка.`,
+    notes: `Заявка з лендингу нічника. ПІБ клієнта: ${nameData.fullName}. Телефон: ${phone}. Деталі доставки, місто та відділення заповнює оператор під час дзвінка.`,
 
     ttn: '',
     created_at: new Date().toISOString(),
@@ -130,32 +141,29 @@ function buildOrderPayload(data) {
   };
 }
 
-function buildFallbackPayload(data) {
+function buildSafePayload(data) {
   const fullNameInput = data.get('fullName').trim();
   const phoneInput = data.get('phone').trim();
 
   const phone = formatPhone(phoneInput);
   const nameData = splitFullName(fullNameInput);
+  const item = buildProductItem();
 
   return {
-    first_name: nameData.firstName,
-    last_name: nameData.lastName,
+    name: nameData.fullName,
     full_name: nameData.fullName,
     client_name: nameData.fullName,
     customer_name: nameData.fullName,
+    contact_name: nameData.fullName,
+    first_name: nameData.firstName,
+    last_name: nameData.lastName,
 
     phone: phone,
     client_phone: phone,
     customer_phone: phone,
 
-    items: [
-      {
-        id: 'night-projector-cosmonaut',
-        name: PRODUCT.name,
-        price: PRODUCT.price,
-        quantity: PRODUCT.quantity
-      }
-    ],
+    items: [item],
+    products: [item],
 
     product_name: PRODUCT.name,
     product_price: PRODUCT.price,
@@ -166,13 +174,38 @@ function buildFallbackPayload(data) {
     status: 'new',
     source: PRODUCT.source,
 
-    client_note: `Заявка з лендингу нічника. ПІБ клієнта: ${nameData.fullName}. Деталі доставки заповнює оператор.`,
+    client_note: `Заявка з лендингу нічника. ПІБ клієнта: ${nameData.fullName}. Телефон: ${phone}. Деталі доставки заповнює оператор.`,
+    comment: `Заявка з лендингу нічника. ПІБ клієнта: ${nameData.fullName}. Телефон: ${phone}. Деталі доставки заповнює оператор.`,
+    notes: `Заявка з лендингу нічника. ПІБ клієнта: ${nameData.fullName}. Телефон: ${phone}. Деталі доставки заповнює оператор.`,
+
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString()
   };
 }
 
-async function insertOrder(orderPayload, fallbackPayload) {
+function buildMinimalPayload(data) {
+  const fullNameInput = data.get('fullName').trim();
+  const phoneInput = data.get('phone').trim();
+
+  const phone = formatPhone(phoneInput);
+  const nameData = splitFullName(fullNameInput);
+
+  return {
+    name: nameData.fullName,
+    phone: phone,
+    product_name: PRODUCT.name,
+    product_price: PRODUCT.price,
+    quantity: 1,
+    total: PRODUCT.price,
+    status: 'new',
+    source: PRODUCT.source,
+    client_note: `Заявка з лендингу нічника. ПІБ клієнта: ${nameData.fullName}. Телефон: ${phone}. Деталі доставки заповнює оператор.`,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
+  };
+}
+
+async function insertOrder(orderPayload, safePayload, minimalPayload) {
   const supabaseClient = getSupabaseClient();
 
   const firstAttempt = await supabaseClient
@@ -189,7 +222,7 @@ async function insertOrder(orderPayload, fallbackPayload) {
 
   const secondAttempt = await supabaseClient
     .from('orders')
-    .insert([fallbackPayload])
+    .insert([safePayload])
     .select()
     .single();
 
@@ -197,8 +230,20 @@ async function insertOrder(orderPayload, fallbackPayload) {
     return secondAttempt.data;
   }
 
-  console.error('Fallback payload теж не прийнятий Supabase:', secondAttempt.error.message);
-  throw secondAttempt.error;
+  console.warn('Safe payload не прийнятий Supabase:', secondAttempt.error.message);
+
+  const thirdAttempt = await supabaseClient
+    .from('orders')
+    .insert([minimalPayload])
+    .select()
+    .single();
+
+  if (!thirdAttempt.error) {
+    return thirdAttempt.data;
+  }
+
+  console.error('Minimal payload теж не прийнятий Supabase:', thirdAttempt.error.message);
+  throw thirdAttempt.error;
 }
 
 function saveLeadToLocalStorage(orderPayload) {
@@ -279,6 +324,7 @@ if (form) {
     if (isSending) return;
 
     const data = new FormData(form);
+
     const fullName = data.get('fullName').trim();
     const phone = data.get('phone').trim();
     const submitButton = form.querySelector('button[type="submit"]');
@@ -299,7 +345,8 @@ if (form) {
     }
 
     const orderPayload = buildOrderPayload(data);
-    const fallbackPayload = buildFallbackPayload(data);
+    const safePayload = buildSafePayload(data);
+    const minimalPayload = buildMinimalPayload(data);
 
     try {
       isSending = true;
@@ -312,9 +359,11 @@ if (form) {
       setStatus('Відправляємо заявку...', '');
 
       saveLeadToLocalStorage(orderPayload);
-      await insertOrder(orderPayload, fallbackPayload);
+
+      await insertOrder(orderPayload, safePayload, minimalPayload);
 
       setStatus('Дякуємо! Заявку прийнято. Менеджер скоро зв’яжеться з вами.', 'success');
+
       form.reset();
 
       if (submitButton) {
