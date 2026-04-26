@@ -92,6 +92,10 @@ a {
   color: #ffffff;
 }
 
+.logo::before {
+  content: "🚀 ";
+}
+
 .topbar__right {
   display: flex;
   align-items: center;

@@ -247,7 +247,7 @@ async function insertOrder(orderPayload, safePayload, minimalPayload) {
 }
 
 function saveLeadToLocalStorage(orderPayload) {
-  const key = 'kids_room_landing_orders';
+  const key = 'cosmo_light_landing_orders';
 
   try {
     const current = JSON.parse(localStorage.getItem(key) || '[]');
@@ -276,7 +276,7 @@ function startSaleTimer() {
   const timerSeconds = document.getElementById('timerSeconds');
   const saleTimerSmall = document.getElementById('saleTimerSmall');
 
-  const timerKey = 'kids_room_night_light_sale_timer_end';
+  const timerKey = 'cosmo_light_sale_timer_end';
   const now = Date.now();
 
   let endTime = Number(localStorage.getItem(timerKey));
@@ -379,7 +379,7 @@ if (form) {
       console.error(error);
 
       setStatus(
-        'Не вдалося відправити заявку в CRM. Перевір таблицю orders або політики доступу Supabase.',
+        'Не вдалося відправити заявку. Спробуйте ще раз або перевірте номер телефону.',
         'error'
       );
 
