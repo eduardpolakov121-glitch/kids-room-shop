@@ -5,6 +5,7 @@ const NOVA_POSHTA_API_URL = "https://api.novaposhta.ua/v2.0/json/";
 
 let selectedCity = null;
 let lastCheckoutOrderNumber = "";
+let isCheckoutSubmitting = false;
 
 /* =========================
    ДОП. ХЕЛПЕРЫ
@@ -36,6 +37,18 @@ function formatCartMoney(value) {
     return Number(value || 0).toLocaleString("uk-UA") + " грн";
 }
 
+function getCartTotal() {
+    return cart.reduce((sum, product) => {
+        return sum + Number(product.price || 0) * Number(product.qty || 0);
+    }, 0);
+}
+
+function getCartQty() {
+    return cart.reduce((sum, product) => {
+        return sum + Number(product.qty || 0);
+    }, 0);
+}
+
 function getCheckoutSuccessOrderNumber(payload) {
     const rawId = Array.isArray(payload) ? payload[0]?.id : payload?.id;
     const rawString = String(rawId || "").trim();
@@ -49,6 +62,79 @@ function getCheckoutSuccessOrderNumber(payload) {
 
 function emitCartUpdated() {
     window.dispatchEvent(new CustomEvent("cart:updated", { detail: cart }));
+}
+
+function normalizePhone(phone) {
+    return String(phone || "")
+        .replace(/[^\d+]/g, "")
+        .trim();
+}
+
+function isValidUkrainePhone(phone) {
+    const normalized = normalizePhone(phone);
+    const digits = normalized.replace(/\D/g, "");
+
+    if (digits.length === 10 && digits.startsWith("0")) return true;
+    if (digits.length === 12 && digits.startsWith("380")) return true;
+    if (normalized.startsWith("+380") && digits.length === 12) return true;
+
+    return false;
+}
+
+function formatPhoneForOrder(phone) {
+    const normalized = normalizePhone(phone);
+    const digits = normalized.replace(/\D/g, "");
+
+    if (digits.length === 10 && digits.startsWith("0")) {
+        return "+38" + digits;
+    }
+
+    if (digits.length === 12 && digits.startsWith("380")) {
+        return "+" + digits;
+    }
+
+    return normalized;
+}
+
+function setCheckoutLoading(isLoading) {
+    isCheckoutSubmitting = isLoading;
+
+    const submitButton = document.querySelector(".checkout-actions button[onclick='submitCheckout()']");
+    const modal = document.getElementById("checkout-modal");
+
+    if (submitButton) {
+        submitButton.disabled = isLoading;
+        submitButton.style.opacity = isLoading ? "0.7" : "1";
+        submitButton.style.cursor = isLoading ? "not-allowed" : "pointer";
+        submitButton.textContent = isLoading ? "Відправляємо замовлення..." : "Підтвердити замовлення";
+    }
+
+    if (modal) {
+        modal.dataset.loading = isLoading ? "true" : "false";
+    }
+}
+
+function resetCheckoutForm() {
+    const fields = [
+        "order-name",
+        "order-surname",
+        "order-phone",
+        "order-city",
+        "order-city-manual",
+        "order-index"
+    ];
+
+    fields.forEach(id => {
+        const element = document.getElementById(id);
+        if (element) element.value = "";
+    });
+
+    const delivery = document.getElementById("order-delivery");
+    if (delivery) delivery.value = "Нова пошта";
+
+    resetWarehouses("Оберіть відділення");
+    selectedCity = null;
+    handleDeliveryTypeChange();
 }
 
 /* =========================
@@ -115,6 +201,7 @@ function findProductImageById(id) {
                 : null;
             return product && alt === product.name;
         });
+
         if (match) return match;
         return showcaseImages[0];
     }
@@ -185,6 +272,14 @@ function toggleCart() {
     if (overlay) overlay.classList.toggle("active");
 }
 
+function openCart() {
+    const cartEl = document.getElementById("cart");
+    const overlay = document.getElementById("cart-overlay");
+
+    if (cartEl) cartEl.classList.add("open");
+    if (overlay) overlay.classList.add("active");
+}
+
 function closeCart() {
     const cartEl = document.getElementById("cart");
     const overlay = document.getElementById("cart-overlay");
@@ -207,7 +302,10 @@ function addToCart(id) {
         ? window.products.find(p => String(p.id) === String(id))
         : null;
 
-    if (!product) return;
+    if (!product) {
+        showToast("Товар не знайдено");
+        return;
+    }
 
     if (String(product.stock_status || "in_stock") === "out_of_stock") {
         showToast("Товару немає в наявності");
@@ -261,6 +359,7 @@ function removeCartItem(id) {
     cart = cart.filter(p => String(p.id) !== String(id));
     renderCart();
     saveCart();
+    showToast("Товар видалено з кошика");
 }
 
 function renderCart() {
@@ -280,7 +379,7 @@ function renderCart() {
             <div class="cart-empty-state">
                 <div class="cart-empty-icon">🛒</div>
                 <div class="cart-empty-title">Кошик порожній</div>
-                <div class="cart-empty-text">Додай товари, щоб оформити замовлення.</div>
+                <div class="cart-empty-text">Додайте товари, щоб оформити замовлення.</div>
             </div>
         `;
     }
@@ -335,16 +434,28 @@ function renderCart() {
 
 function checkout() {
     if (cart.length === 0) {
-        alert("Кошик порожній");
+        showToast("Кошик порожній. Спочатку додайте товар.");
+        openCart();
         return;
     }
 
     const modal = document.getElementById("checkout-modal");
-    if (modal) modal.classList.add("open");
+
+    if (modal) {
+        modal.classList.add("open");
+    }
+
     handleDeliveryTypeChange();
+
+    const nameInput = document.getElementById("order-name");
+    if (nameInput) {
+        setTimeout(() => nameInput.focus(), 100);
+    }
 }
 
 function closeCheckoutModal() {
+    if (isCheckoutSubmitting) return;
+
     const modal = document.getElementById("checkout-modal");
     if (modal) modal.classList.remove("open");
 }
@@ -379,27 +490,32 @@ function handleDeliveryTypeChange() {
 ========================= */
 
 async function callNP(model, method, props) {
-    const res = await fetch(NOVA_POSHTA_API_URL, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-            apiKey: NOVA_POSHTA_API_KEY,
-            modelName: model,
-            calledMethod: method,
-            methodProperties: props
-        })
-    });
+    try {
+        const res = await fetch(NOVA_POSHTA_API_URL, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                apiKey: NOVA_POSHTA_API_KEY,
+                modelName: model,
+                calledMethod: method,
+                methodProperties: props
+            })
+        });
 
-    const data = await res.json();
+        const data = await res.json();
 
-    if (!data.success) {
-        console.error("Nova Poshta API error:", data);
+        if (!data.success) {
+            console.error("Nova Poshta API error:", data);
+            return [];
+        }
+
+        return data.data || [];
+    } catch (error) {
+        console.error("Nova Poshta network error:", error);
         return [];
     }
-
-    return data.data || [];
 }
 
 async function loadWarehouses(cityRef) {
@@ -517,16 +633,41 @@ async function fillWarehouses(cityRef) {
 ========================= */
 
 async function submitCheckout() {
+    if (isCheckoutSubmitting) return;
+
+    if (!cart.length) {
+        showToast("Кошик порожній. Додайте товар перед оформленням.");
+        closeCheckoutModal();
+        openCart();
+        return;
+    }
+
     const name = document.getElementById("order-name")?.value.trim() || "";
     const surname = document.getElementById("order-surname")?.value.trim() || "";
-    const phone = document.getElementById("order-phone")?.value.trim() || "";
+    const phoneRaw = document.getElementById("order-phone")?.value.trim() || "";
+    const phone = formatPhoneForOrder(phoneRaw);
     const delivery = document.getElementById("order-delivery")?.value || "";
 
     let city = "";
     let address = "";
 
-    if (!name || !surname || !phone) {
-        alert("Заповніть всі поля");
+    if (!name || name.length < 2) {
+        showToast("Вкажіть ім’я клієнта");
+        return;
+    }
+
+    if (!surname || surname.length < 2) {
+        showToast("Вкажіть прізвище клієнта");
+        return;
+    }
+
+    if (!phoneRaw) {
+        showToast("Вкажіть номер телефону");
+        return;
+    }
+
+    if (!isValidUkrainePhone(phoneRaw)) {
+        showToast("Вкажіть коректний телефон: 0XXXXXXXXX або +380XXXXXXXXX");
         return;
     }
 
@@ -535,12 +676,12 @@ async function submitCheckout() {
         address = document.getElementById("order-address")?.value || "";
 
         if (!city || !selectedCity) {
-            alert("Оберіть місто зі списку");
+            showToast("Оберіть місто зі списку Нової пошти");
             return;
         }
 
         if (!address) {
-            alert("Оберіть відділення");
+            showToast("Оберіть відділення Нової пошти");
             return;
         }
     }
@@ -550,17 +691,32 @@ async function submitCheckout() {
         const index = document.getElementById("order-index")?.value.trim() || "";
 
         if (!city) {
-            alert("Вкажіть місто");
+            showToast("Вкажіть місто для Укрпошти");
             return;
         }
 
         if (!index) {
-            alert("Вкажіть поштовий індекс");
+            showToast("Вкажіть поштовий індекс");
+            return;
+        }
+
+        if (!/^\d{5}$/.test(index)) {
+            showToast("Поштовий індекс має містити 5 цифр");
             return;
         }
 
         address = "Індекс: " + index;
     }
+
+    const orderItems = cart.map(item => ({
+        ...item,
+        qty: Number(item.qty || 0),
+        price: Number(item.price || 0),
+        img: getCartItemImage(item)
+    }));
+
+    const total = getCartTotal();
+    const totalItems = getCartQty();
 
     const order = {
         customer_first_name: name,
@@ -570,22 +726,27 @@ async function submitCheckout() {
         city,
         delivery,
         address,
-        items: cart,
-        total: cart.reduce((s, p) => s + Number(p.price || 0) * Number(p.qty || 0), 0),
+        items: orderItems,
+        total,
+        total_items: totalItems,
         status: "Новий",
         status_group: "new",
         operator_comment: "",
         day_bucket: 0,
         source: "website",
         manager_comment: "",
-        ttn: ""
+        ttn: "",
+        client_note: "Клієнт оформив заявку на сайті. Потрібно підтвердити наявність, доставку та суму замовлення.",
+        created_at: new Date().toISOString()
     };
 
     try {
+        setCheckoutLoading(true);
+
         const crmSaver = window.saveOrderCRM;
 
         if (typeof crmSaver !== "function") {
-            throw new Error("Функція saveOrderCRM не завантажилась. Замініть файл crm.js на нову версію і оновіть сайт.");
+            throw new Error("Функція saveOrderCRM не завантажилась. Перевірте файл crm.js і підключення Supabase.");
         }
 
         const savedOrder = await crmSaver(order);
@@ -593,16 +754,7 @@ async function submitCheckout() {
         cart = [];
         saveCart();
         renderCart();
-
-        if (document.getElementById("order-name")) document.getElementById("order-name").value = "";
-        if (document.getElementById("order-surname")) document.getElementById("order-surname").value = "";
-        if (document.getElementById("order-phone")) document.getElementById("order-phone").value = "";
-        if (document.getElementById("order-city")) document.getElementById("order-city").value = "";
-        if (document.getElementById("order-city-manual")) document.getElementById("order-city-manual").value = "";
-        if (document.getElementById("order-index")) document.getElementById("order-index").value = "";
-
-        resetWarehouses("Оберіть відділення");
-        selectedCity = null;
+        resetCheckoutForm();
 
         closeCheckoutModal();
         closeCart();
@@ -611,6 +763,8 @@ async function submitCheckout() {
     } catch (error) {
         console.error(error);
         alert("Помилка CRM: " + error.message);
+    } finally {
+        setCheckoutLoading(false);
     }
 }
 
@@ -619,6 +773,9 @@ async function submitCheckout() {
 ========================= */
 
 function showToast(text) {
+    const oldToast = document.querySelector(".cart-toast");
+    if (oldToast) oldToast.remove();
+
     const t = document.createElement("div");
     t.className = "cart-toast show";
     t.innerText = text;
@@ -628,7 +785,7 @@ function showToast(text) {
     setTimeout(() => {
         t.classList.remove("show");
         setTimeout(() => t.remove(), 250);
-    }, 1800);
+    }, 2200);
 }
 
 /* =========================
@@ -636,9 +793,18 @@ function showToast(text) {
 ========================= */
 
 function clearCart() {
+    if (!cart.length) {
+        showToast("Кошик вже порожній");
+        return;
+    }
+
+    const confirmed = confirm("Очистити кошик повністю?");
+    if (!confirmed) return;
+
     cart = [];
     saveCart();
     renderCart();
+    showToast("Кошик очищено");
 }
 
 function saveCart() {
@@ -676,10 +842,17 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
+    document.addEventListener("keydown", event => {
+        if (event.key === "Escape") {
+            closeCheckoutModal();
+            closeSuccessModal();
+        }
+    });
+
     const openCartAfterReturn = localStorage.getItem("kids_room_open_cart_after_return");
     if (openCartAfterReturn === "true") {
         localStorage.removeItem("kids_room_open_cart_after_return");
-        setTimeout(() => toggleCart(), 120);
+        setTimeout(() => openCart(), 120);
     }
 });
 
@@ -688,6 +861,7 @@ document.addEventListener("DOMContentLoaded", () => {
 ========================= */
 
 window.toggleCart = toggleCart;
+window.openCart = openCart;
 window.closeCart = closeCart;
 window.addToCart = addToCart;
 window.cartPlus = cartPlus;

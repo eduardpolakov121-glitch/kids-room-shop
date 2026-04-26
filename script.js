@@ -110,12 +110,21 @@ function saveStoreState() {
     const search = document.getElementById("search");
     const sortSelect = document.querySelector(".filters select");
 
+    const smartState = {
+        hit: !!document.getElementById("smart-hit")?.checked,
+        sale: !!document.getElementById("smart-sale")?.checked,
+        newest: !!document.getElementById("smart-new")?.checked,
+        available: !!document.getElementById("smart-available")?.checked,
+        favorites: !!document.getElementById("smart-favorites")?.checked
+    };
+
     const state = {
         scrollY: window.scrollY || window.pageYOffset || 0,
         activeCategory,
         activeSort,
         activeSearch: search ? search.value.trim() : activeSearch,
-        sortValue: sortSelect ? sortSelect.value : activeSort
+        sortValue: sortSelect ? sortSelect.value : activeSort,
+        smartState
     };
 
     sessionStorage.setItem(STORE_STATE_KEY, JSON.stringify(state));
@@ -140,6 +149,14 @@ function restoreStoreStateFromSession() {
         const sortSelect = document.querySelector(".filters select");
         if (sortSelect) {
             sortSelect.value = state.sortValue || activeSort || "";
+        }
+
+        if (state.smartState) {
+            if (document.getElementById("smart-hit")) document.getElementById("smart-hit").checked = !!state.smartState.hit;
+            if (document.getElementById("smart-sale")) document.getElementById("smart-sale").checked = !!state.smartState.sale;
+            if (document.getElementById("smart-new")) document.getElementById("smart-new").checked = !!state.smartState.newest;
+            if (document.getElementById("smart-available")) document.getElementById("smart-available").checked = !!state.smartState.available;
+            if (document.getElementById("smart-favorites")) document.getElementById("smart-favorites").checked = !!state.smartState.favorites;
         }
 
         return true;
@@ -179,7 +196,7 @@ function restoreStoreScroll() {
 
 function getSearchFocusElements() {
     return Array.from(document.querySelectorAll(
-        ".hero-selling, .banner, .home-trust-strip, .cta-banner, .site-footer, .social, .section-wrap, .home-dynamic-block"
+        ".hero-selling, .banner, .home-proof-strip, .home-trust-strip, .cta-banner, .site-footer, .social, .section-wrap, .home-dynamic-block"
     ));
 }
 

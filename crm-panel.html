@@ -77,6 +77,11 @@
       font-size:14px;
       font-weight:700;
       cursor:pointer;
+      text-decoration:none;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:7px;
     }
 
     .btn.primary{background:var(--accent);color:#fff}
@@ -84,6 +89,8 @@
     .btn.secondary{background:#eef2fb;color:var(--text)}
     .btn.danger{background:var(--danger);color:#fff}
     .btn.success{background:var(--success);color:#fff}
+    .btn.blue{background:var(--blue);color:#fff}
+    .btn.purple{background:var(--purple);color:#fff}
     .btn:disabled{opacity:.6;cursor:not-allowed}
 
     .role-badge{
@@ -194,7 +201,7 @@
     .list-head,
     .order-row{
       display:grid;
-      grid-template-columns:110px 1.1fr .9fr 1.15fr .9fr 130px 150px 120px;
+      grid-template-columns:110px 1.1fr .95fr 1.15fr .9fr 130px 150px 120px;
       gap:12px;
       align-items:center;
     }
@@ -355,7 +362,7 @@
     .drawer-body{
       flex:1;
       overflow:auto;
-      padding:16px 22px 110px;
+      padding:16px 22px 120px;
       background:#fcfdff;
     }
 
@@ -495,6 +502,67 @@
 
     .input-with-copy .mini-input{
       flex:1;
+    }
+
+    .contact-actions{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:8px;
+      margin-top:10px;
+    }
+
+    .call-script{
+      background:linear-gradient(135deg,#fff7ed,#fff);
+      border:1px solid #ffd9b7;
+      border-radius:20px;
+      padding:14px;
+      color:#334155;
+      line-height:1.6;
+      font-size:14px;
+    }
+
+    .call-script strong{
+      color:#1f2a44;
+    }
+
+    .client-note-box{
+      background:#f7fbff;
+      border:1px solid #dceeff;
+      border-radius:16px;
+      padding:12px 14px;
+      color:#415066;
+      font-size:14px;
+      line-height:1.55;
+      font-weight:700;
+    }
+
+    .mini-kpi-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+    }
+
+    .mini-kpi{
+      background:#f8faff;
+      border:1px solid var(--line-soft);
+      border-radius:16px;
+      padding:12px;
+    }
+
+    .mini-kpi span{
+      display:block;
+      color:var(--muted);
+      font-size:12px;
+      margin-bottom:6px;
+      font-weight:700;
+      text-transform:uppercase;
+      letter-spacing:.04em;
+    }
+
+    .mini-kpi strong{
+      display:block;
+      font-size:18px;
+      color:var(--text);
     }
 
     .sale-panel{
@@ -784,7 +852,7 @@
       .list-head{display:none}
       .order-row{grid-template-columns:1fr;gap:8px}
       .order-row > div{justify-self:start}
-      .app-header{padding:16px;align-items:flex-start}
+      .app-header{padding:16px;align-items:flex-start;flex-direction:column}
       .header-actions{justify-content:flex-start}
       .drawer{
         top:0;
@@ -794,6 +862,8 @@
         border-radius:0;
       }
       .meta-row{grid-template-columns:1fr}
+      .mini-kpi-grid{grid-template-columns:1fr}
+      .contact-actions{grid-template-columns:1fr}
       .item,.sale-head{
         grid-template-columns:56px 1fr;
       }
@@ -848,15 +918,16 @@
         <div class="stat-card"><div class="label">Замовлень сьогодні</div><div class="value" id="statToday">0</div></div>
         <div class="stat-card"><div class="label">У роботі зараз</div><div class="value" id="statActive">0</div></div>
         <div class="stat-card"><div class="label">Виторг по вибірці</div><div class="value" id="statRevenue">0 грн</div></div>
-        <div class="stat-card"><div class="label">Відправлено / завершено</div><div class="value" id="statShipped">0</div></div>
+        <div class="stat-card"><div class="label">Товарів у вибірці</div><div class="value" id="statItems">0</div></div>
       </section>
 
       <section class="toolbar">
-        <input id="searchInput" placeholder="Пошук: ім'я, телефон, місто, ТТН" oninput="applyFilters()" autocomplete="off" spellcheck="false">
+        <input id="searchInput" placeholder="Пошук: ім'я, телефон, місто, ТТН, коментар" oninput="applyFilters()" autocomplete="off" spellcheck="false">
         <select id="deliveryFilter" onchange="applyFilters()">
           <option value="all">Вся доставка</option>
           <option value="Нова пошта">Нова пошта</option>
           <option value="Укрпошта">Укрпошта</option>
+          <option value="Інше">Інше</option>
         </select>
         <select id="sortFilter" onchange="applyFilters()">
           <option value="new">Спочатку новіші</option>
@@ -912,16 +983,32 @@
                   <input id="dPhone" class="mini-input" autocomplete="off">
                   <button class="copy-btn" type="button" onclick="copyFieldValue('dPhone', 'Телефон скопійовано')">⧉</button>
                 </div>
-              </div>
-
-              <div class="mini-field">
-                <div class="mini-label">Коментар</div>
-                <textarea id="dOperatorComment" class="mini-textarea" placeholder="Коментар до замовлення"></textarea>
+                <div class="contact-actions">
+                  <a id="dCallLink" class="btn success" href="#">Подзвонити</a>
+                  <a id="dTelegramLink" class="btn blue" href="#" target="_blank" rel="noopener">Telegram</a>
+                  <a id="dViberLink" class="btn purple" href="#">Viber</a>
+                  <button class="btn secondary" type="button" onclick="copyCallScript()">Скрипт</button>
+                </div>
               </div>
             </div>
 
             <div class="section-block">
-              <div class="section-title">Додатково</div>
+              <div class="section-title">План дзвінка</div>
+              <div id="dCallScript" class="call-script"></div>
+            </div>
+
+            <div class="section-block">
+              <div class="section-title">Коментарі</div>
+
+              <div class="mini-field">
+                <div class="mini-label">Заметка клиента / сайта</div>
+                <div id="dClientNote" class="client-note-box">—</div>
+              </div>
+
+              <div class="mini-field">
+                <div class="mini-label">Коментар оператора</div>
+                <textarea id="dOperatorComment" class="mini-textarea" placeholder="Що сказав клієнт, чи підтвердив, коли передзвонити"></textarea>
+              </div>
 
               <div class="mini-field">
                 <div class="mini-label">Коментар адміністратора</div>
@@ -994,6 +1081,20 @@
               <div class="mini-field">
                 <div class="mini-label">Сума</div>
                 <input id="dTotal" class="mini-input" type="number" min="0" step="0.01">
+              </div>
+            </div>
+
+            <div class="section-block">
+              <div class="section-title">Дані заявки</div>
+              <div class="mini-kpi-grid">
+                <div class="mini-kpi">
+                  <span>Товарів</span>
+                  <strong id="dTotalItems">0</strong>
+                </div>
+                <div class="mini-kpi">
+                  <span>Джерело</span>
+                  <strong id="dSource">website</strong>
+                </div>
               </div>
             </div>
           </div>
@@ -1154,6 +1255,14 @@
         .replace(/'/g, "&#039;");
     }
 
+    function escapeJsString(value){
+      return String(value ?? "")
+        .replace(/\\/g, "\\\\")
+        .replace(/'/g, "\\'")
+        .replace(/\n/g, "\\n")
+        .replace(/\r/g, "");
+    }
+
     function getSafeItemImage(item){
       if (typeof getSafeProductImage === "function") {
         return getSafeProductImage(item);
@@ -1198,6 +1307,75 @@
 
     function getOperatorComment(order){
       return String(order?.operator_comment || "").trim();
+    }
+
+    function getClientNote(order){
+      return String(order?.client_note || "").trim();
+    }
+
+    function getOrderItemsQty(order){
+      if (Number(order?.total_items || 0) > 0) return Number(order.total_items || 0);
+
+      const items = Array.isArray(order?.items) ? order.items : [];
+      return items.reduce((sum, item) => sum + Number(item.qty || 0), 0);
+    }
+
+    function normalizePhoneForLinks(phone){
+      const digits = String(phone || "").replace(/\D/g, "");
+
+      if (digits.length === 10 && digits.startsWith("0")) return "38" + digits;
+      if (digits.length === 12 && digits.startsWith("380")) return digits;
+
+      return digits;
+    }
+
+    function updateContactLinks(phone){
+      const digits = normalizePhoneForLinks(phone);
+      const call = document.getElementById("dCallLink");
+      const tg = document.getElementById("dTelegramLink");
+      const viber = document.getElementById("dViberLink");
+
+      if (!digits) {
+        if (call) call.href = "#";
+        if (tg) tg.href = "#";
+        if (viber) viber.href = "#";
+        return;
+      }
+
+      if (call) call.href = "tel:+" + digits;
+      if (tg) tg.href = "https://t.me/+" + digits;
+      if (viber) viber.href = "viber://chat?number=" + digits;
+    }
+
+    function buildCallScript(order){
+      const name = escapeHtml(getOrderName(order));
+      const total = escapeHtml(formatMoney(order.total || 0));
+      const delivery = escapeHtml(order.delivery || "доставку");
+      const city = escapeHtml(order.city || "місто");
+      const address = escapeHtml(order.address || "адресу/відділення");
+      const items = Array.isArray(order.items) ? order.items : [];
+      const firstItem = items[0]?.name || "товар";
+      const totalItems = getOrderItemsQty(order);
+
+      return `
+        <strong>1. Привітання:</strong><br>
+        Добрий день, ${name}. Це Kids Room, телефонуємо щодо вашого замовлення на сайті.<br><br>
+
+        <strong>2. Підтвердження:</strong><br>
+        У замовленні: ${escapeHtml(firstItem)}${totalItems > 1 ? ` та ще товарів: ${totalItems - 1}` : ""}. Сума: ${total}.<br><br>
+
+        <strong>3. Доставка:</strong><br>
+        Підтвердіть, будь ласка: ${delivery}, ${city}, ${address}.<br><br>
+
+        <strong>4. Закриття:</strong><br>
+        Якщо все правильно — передаємо замовлення в обробку. Після відправки надішлемо ТТН.
+      `;
+    }
+
+    function copyCallScript(){
+      if (!selectedOrder) return;
+      const text = document.getElementById("dCallScript")?.innerText || "";
+      copyText(text, "Скрипт дзвінка скопійовано");
     }
 
     function showToast(text){
@@ -1371,7 +1549,10 @@
             order.ttn,
             order.tracking_number,
             order.np_ttn,
-            order.operator_comment
+            order.operator_comment,
+            order.manager_comment,
+            order.client_note,
+            order.source
           ].join(" ").toLowerCase();
 
           return haystack.includes(search);
@@ -1407,7 +1588,7 @@
         ["new","shipped","day1","day2","day3","day4","day5","day6","day7"].includes(order.status_group)
       ).length;
       document.getElementById("statRevenue").textContent = formatMoney(list.reduce((sum, order) => sum + Number(order.total || 0), 0));
-      document.getElementById("statShipped").textContent = list.filter(order => ["shipped","completed"].includes(order.status_group)).length;
+      document.getElementById("statItems").textContent = list.reduce((sum, order) => sum + getOrderItemsQty(order), 0);
     }
 
     function renderTabs(){
@@ -1434,28 +1615,33 @@
         return;
       }
 
-      root.innerHTML = list.map(order => `
+      root.innerHTML = list.map(order => {
+        const phoneSafe = escapeJsString(order.phone || "");
+        const commentText = getOperatorComment(order) || getClientNote(order) || "—";
+
+        return `
         <div class="order-row ${getRowStatusClass(order.status_group)}" onclick="openOrder('${escapeHtml(order.id)}')">
           <div class="order-id">#${escapeHtml(shortId(order.id))}</div>
 
           <div class="order-main">
             <div class="order-name">${escapeHtml(getOrderName(order))}</div>
-            <div class="order-sub">${escapeHtml(order.city || "-")}</div>
+            <div class="order-sub">${escapeHtml(order.city || "-")} • ${escapeHtml(getOrderItemsQty(order))} товар(ів)</div>
           </div>
 
           <div class="order-phone-wrap">
             <div class="order-sub" style="color:var(--text)">${escapeHtml(order.phone || "-")}</div>
-            ${order.phone ? `<button class="copy-btn" type="button" onclick="event.stopPropagation();copyText('${escapeHtml(String(order.phone)).replace(/&#039;/g, "\\'")}', 'Телефон скопійовано')">⧉</button>` : ""}
+            ${order.phone ? `<button class="copy-btn" type="button" onclick="event.stopPropagation();copyText('${phoneSafe}', 'Телефон скопійовано')">⧉</button>` : ""}
           </div>
 
-          <div class="order-comment" title="${escapeHtml(getOperatorComment(order) || "—")}">${escapeHtml(getOperatorComment(order) || "—")}</div>
+          <div class="order-comment" title="${escapeHtml(commentText)}">${escapeHtml(commentText)}</div>
 
           <div>${escapeHtml(order.delivery || "-")}</div>
           <div class="stage-pill">${escapeHtml(STAGES[order.status_group]?.title || "-")}</div>
           <div>${escapeHtml(formatDate(order.created_at))}</div>
           <div class="sum">${escapeHtml(formatMoney(order.total || 0))}</div>
         </div>
-      `).join("");
+      `;
+      }).join("");
     }
 
     function applyFilters(){
@@ -1489,6 +1675,12 @@
       document.getElementById("dTotal").value = Number(selectedOrder.total || 0);
       document.getElementById("drawerOrderTotal").textContent = formatMoneyPlain(selectedOrder.total || 0);
       document.getElementById("dTtn").value = getOrderTtn(selectedOrder);
+      document.getElementById("dTotalItems").textContent = getOrderItemsQty(selectedOrder);
+      document.getElementById("dSource").textContent = selectedOrder.source || "website";
+      document.getElementById("dClientNote").textContent = getClientNote(selectedOrder) || "—";
+      document.getElementById("dCallScript").innerHTML = buildCallScript(selectedOrder);
+
+      updateContactLinks(selectedOrder.phone || "");
 
       selectedVisualStatusStage = selectedOrder.status_group || "new";
       document.getElementById("dStage").value = selectedVisualStatusStage;
@@ -1554,6 +1746,8 @@
         `Статус: ${order.status || STAGES[order.status_group || "new"]?.status || "-"}`,
         `ТТН: ${getOrderTtn(order) || "-"}`,
         `Коментар оператора: ${getOperatorComment(order) || "-"}`,
+        `Заметка клієнта: ${getClientNote(order) || "-"}`,
+        `Товарів: ${getOrderItemsQty(order)}`,
         `Джерело: ${order.source || "website"}`
       ];
 
@@ -1563,62 +1757,71 @@
     async function saveDrawerOrder(){
       if (!selectedOrder) return;
 
-      const fullName = document.getElementById("dName").value.trim();
-      const stage = document.getElementById("dStage").value || selectedVisualStatusStage || "new";
-      const nameParts = syncNamePartsFromFullName(fullName);
+      const saveBtn = document.getElementById("saveOrderBtn");
+      saveBtn.disabled = true;
+      saveBtn.textContent = "Зберігаємо...";
 
-      const payload = {
-        customer_first_name: nameParts.firstName,
-        customer_last_name: nameParts.lastName,
-        name: fullName,
-        phone: document.getElementById("dPhone").value.trim(),
-        city: document.getElementById("dCity").value.trim(),
-        delivery: document.getElementById("dDelivery").value.trim(),
-        address: document.getElementById("dAddress").value.trim(),
-        operator_comment: document.getElementById("dOperatorComment").value.trim(),
-        updated_at: new Date().toISOString()
-      };
+      try {
+        const fullName = document.getElementById("dName").value.trim();
+        const stage = document.getElementById("dStage").value || selectedVisualStatusStage || "new";
+        const nameParts = syncNamePartsFromFullName(fullName);
 
-      const ttnValue = document.getElementById("dTtn").value.trim();
-      if ("ttn" in selectedOrder) {
-        payload.ttn = ttnValue;
-      } else if ("tracking_number" in selectedOrder) {
-        payload.tracking_number = ttnValue;
-      } else if ("np_ttn" in selectedOrder) {
-        payload.np_ttn = ttnValue;
-      } else {
-        payload.ttn = ttnValue;
-      }
+        const payload = {
+          customer_first_name: nameParts.firstName,
+          customer_last_name: nameParts.lastName,
+          name: fullName,
+          phone: document.getElementById("dPhone").value.trim(),
+          city: document.getElementById("dCity").value.trim(),
+          delivery: document.getElementById("dDelivery").value.trim(),
+          address: document.getElementById("dAddress").value.trim(),
+          operator_comment: document.getElementById("dOperatorComment").value.trim(),
+          updated_at: new Date().toISOString()
+        };
 
-      if (currentProfile.role === "admin") {
-        payload.status_group = stage;
-        payload.status = STAGES[stage]?.status || "Новий";
-        payload.day_bucket = STAGES[stage]?.day ?? 0;
-        payload.manager_comment = document.getElementById("dManagerComment").value.trim();
-        payload.total = Number(document.getElementById("dTotal").value || 0);
-
-        if (selectedOrder.status_group !== stage) {
-          payload.moved_at = new Date().toISOString();
+        const ttnValue = document.getElementById("dTtn").value.trim();
+        if ("ttn" in selectedOrder) {
+          payload.ttn = ttnValue;
+        } else if ("tracking_number" in selectedOrder) {
+          payload.tracking_number = ttnValue;
+        } else if ("np_ttn" in selectedOrder) {
+          payload.np_ttn = ttnValue;
+        } else {
+          payload.ttn = ttnValue;
         }
+
+        if (currentProfile.role === "admin") {
+          payload.status_group = stage;
+          payload.status = STAGES[stage]?.status || "Новий";
+          payload.day_bucket = STAGES[stage]?.day ?? 0;
+          payload.manager_comment = document.getElementById("dManagerComment").value.trim();
+          payload.total = Number(document.getElementById("dTotal").value || 0);
+
+          if (selectedOrder.status_group !== stage) {
+            payload.moved_at = new Date().toISOString();
+          }
+        }
+
+        if (!payload.name) {
+          payload.name = [payload.customer_first_name, payload.customer_last_name].filter(Boolean).join(" ").trim();
+        }
+
+        const { error } = await supabaseClient
+          .from("orders")
+          .update(payload)
+          .eq("id", selectedOrder.id);
+
+        if (error) {
+          alert("Помилка збереження: " + error.message);
+          return;
+        }
+
+        await refreshOrders();
+        forceCloseDrawer();
+        showToast("Замовлення збережено ✅");
+      } finally {
+        saveBtn.disabled = false;
+        saveBtn.textContent = "Зберегти";
       }
-
-      if (!payload.name) {
-        payload.name = [payload.customer_first_name, payload.customer_last_name].filter(Boolean).join(" ").trim();
-      }
-
-      const { error } = await supabaseClient
-        .from("orders")
-        .update(payload)
-        .eq("id", selectedOrder.id);
-
-      if (error) {
-        alert("Помилка збереження: " + error.message);
-        return;
-      }
-
-      await refreshOrders();
-      forceCloseDrawer();
-      alert("Замовлення збережено ✅");
     }
 
     async function deleteCurrentOrder(){
@@ -1638,7 +1841,7 @@
 
       await refreshOrders();
       forceCloseDrawer();
-      alert("Замовлення видалено ✅");
+      showToast("Замовлення видалено ✅");
     }
 
     function closeDrawer(event){
