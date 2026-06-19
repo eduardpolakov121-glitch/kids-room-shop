@@ -578,96 +578,6 @@
     cursor:pointer;
 }
 
-/* ====== SELLING CART UPDATE ====== */
-
-.cart-selling-text{
-    margin:8px 0 14px;
-    color:#5f6c7d;
-    font-size:14px;
-    line-height:1.6;
-    background:#fff8ef;
-    border:1px solid #ffe0c2;
-    border-radius:16px;
-    padding:12px 14px;
-}
-
-.cart-trust-box{
-    display:flex;
-    flex-direction:column;
-    gap:8px;
-    margin:14px 0;
-    padding:13px;
-    background:#f7fbff;
-    border:1px solid #dceeff;
-    border-radius:16px;
-    color:#415066;
-    font-size:14px;
-    line-height:1.45;
-    font-weight:700;
-}
-
-.cart-actions-selling{
-    display:flex;
-    flex-direction:column;
-    gap:10px;
-    margin-top:12px;
-}
-
-.cart-actions-selling button{
-    width:100%;
-    border:none;
-    border-radius:14px;
-    padding:13px 16px;
-    font-weight:800;
-    cursor:pointer;
-    transition:transform .18s ease, box-shadow .18s ease, background .18s ease;
-}
-
-.cart-actions-selling button:hover{
-    transform:translateY(-1px);
-}
-
-.cart-checkout-btn{
-    background:linear-gradient(135deg,#ff6600 0%,#ff8d38 100%);
-    color:#fff;
-    box-shadow:0 12px 24px rgba(255,102,0,0.22);
-    font-size:16px;
-}
-
-.cart-continue-btn{
-    background:#eef2f7;
-    color:#243041;
-}
-
-.cart-clear-btn{
-    background:#fff;
-    color:#9a3b3b;
-    border:1px solid #ffd0d0 !important;
-}
-
-.checkout-selling-text{
-    margin:8px 0 14px;
-    color:#5f6c7d;
-    font-size:14px;
-    line-height:1.6;
-    background:#fff8ef;
-    border:1px solid #ffe0c2;
-    border-radius:16px;
-    padding:12px 14px;
-}
-
-.checkout-trust-note{
-    margin:12px 0 4px;
-    padding:12px 14px;
-    background:#f7fbff;
-    border:1px solid #dceeff;
-    border-radius:14px;
-    color:#415066;
-    font-size:14px;
-    line-height:1.5;
-    font-weight:700;
-}
-
 @media (max-width:1100px){
     .home-proof-strip,
     .benefits-grid,
@@ -1038,36 +948,21 @@
 <div id="cart" class="cart">
     <h2>Кошик</h2>
 
-    <p class="cart-selling-text">
-        Ваше замовлення майже готове. Перевірте товари та натисніть “Оформити замовлення” —
-        ми швидко зв’яжемося з вами для підтвердження наявності й доставки.
-    </p>
-
     <div id="cart-items"></div>
 
     <h3 id="total"></h3>
 
-    <div class="cart-trust-box">
-        <div>✅ Підтвердження замовлення менеджером</div>
-        <div>🚚 Доставка Новою поштою або Укрпоштою</div>
-        <div>💬 Можна уточнити деталі перед відправкою</div>
-    </div>
+    <button onclick="clearCart()">Очистити</button>
+    <button onclick="checkout()">Оформити</button>
 
-    <div class="cart-actions-selling">
-        <button class="cart-checkout-btn" onclick="checkout()">Оформити замовлення</button>
-        <button class="cart-continue-btn" onclick="closeCart()">👉 Продовжити покупки</button>
-        <button class="cart-clear-btn" onclick="clearCart()">Очистити кошик</button>
-    </div>
+    <br><br>
+
+    <button onclick="closeCart()">👉 Продовжити пошук</button>
 </div>
 
 <div id="checkout-modal" class="checkout-modal">
     <div class="checkout-box">
         <h2>Оформлення замовлення</h2>
-
-        <p class="checkout-selling-text">
-            Заповніть контактні дані — менеджер підтвердить замовлення, наявність товару
-            та зручний спосіб доставки.
-        </p>
 
         <input type="text" id="order-name" placeholder="Ім'я">
         <input type="text" id="order-surname" placeholder="Прізвище">
@@ -1094,12 +989,8 @@
             <input type="text" id="order-index" placeholder="Поштовий індекс">
         </div>
 
-        <div class="checkout-trust-note">
-            ✅ Ви не сплачуєте зараз на сайті. Заявка буде передана менеджеру для підтвердження.
-        </div>
-
         <div class="checkout-actions">
-            <button onclick="submitCheckout()">Підтвердити замовлення</button>
+            <button onclick="submitCheckout()">Підтвердити</button>
             <button class="secondary-btn" onclick="closeCheckoutModal()">Скасувати</button>
         </div>
     </div>

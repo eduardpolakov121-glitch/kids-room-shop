@@ -1,95 +1,28 @@
 const SUPABASE_URL = "https://xhhzxiithajxgngmbzzd.supabase.co";
 const SUPABASE_KEY = "sb_publishable_cRp6r2C_3nszludByS9V9Q_sl1QlHg5";
 
-/* =========================
-   CRM HELPERS
-========================= */
-
-function safeString(value, fallback = "") {
-    return String(value ?? fallback).trim();
-}
-
-function safeNumber(value, fallback = 0) {
-    const number = Number(value);
-    return Number.isFinite(number) ? number : fallback;
-}
-
-function safeArray(value) {
-    return Array.isArray(value) ? value : [];
-}
-
-function calculateOrderTotal(items) {
-    return safeArray(items).reduce((sum, item) => {
-        return sum + safeNumber(item.price) * safeNumber(item.qty);
-    }, 0);
-}
-
-function calculateOrderQty(items) {
-    return safeArray(items).reduce((sum, item) => {
-        return sum + safeNumber(item.qty);
-    }, 0);
-}
-
-function normalizeOrderItems(items) {
-    return safeArray(items).map(item => {
-        return {
-            id: safeString(item.id),
-            name: safeString(item.name, "Товар"),
-            price: safeNumber(item.price),
-            qty: safeNumber(item.qty, 1),
-            img: safeString(item.img || item.image || ""),
-            category: safeString(item.category || ""),
-            description: safeString(item.description || ""),
-            old: safeNumber(item.old || 0),
-            stock_status: safeString(item.stock_status || "in_stock")
-        };
-    });
-}
-
-/* =========================
-   NORMALIZE ORDER
-========================= */
-
 function normalizeOrderForCRM(order) {
     const safeOrder = order || {};
-    const items = normalizeOrderItems(safeOrder.items);
-
-    const calculatedTotal = calculateOrderTotal(items);
-    const calculatedQty = calculateOrderQty(items);
-
-    const firstName = safeString(safeOrder.customer_first_name);
-    const lastName = safeString(safeOrder.customer_last_name);
-    const fullName = safeString(safeOrder.name || `${firstName} ${lastName}`);
 
     return {
-        customer_first_name: firstName,
-        customer_last_name: lastName,
-        name: fullName,
-        phone: safeString(safeOrder.phone),
-        city: safeString(safeOrder.city),
-        delivery: safeString(safeOrder.delivery),
-        address: safeString(safeOrder.address),
-
-        items: items,
-        total: safeNumber(safeOrder.total, calculatedTotal),
-        total_items: safeNumber(safeOrder.total_items, calculatedQty),
-
-        status: safeString(safeOrder.status || "Новий"),
-        status_group: safeString(safeOrder.status_group || "new"),
-        operator_comment: safeString(safeOrder.operator_comment),
-        manager_comment: safeString(safeOrder.manager_comment),
-        client_note: safeString(safeOrder.client_note),
-        day_bucket: safeNumber(safeOrder.day_bucket, 0),
-        source: safeString(safeOrder.source || "website"),
-        ttn: safeString(safeOrder.ttn),
-
-        created_at: safeOrder.created_at || new Date().toISOString()
+        ...safeOrder,
+        customer_first_name: String(safeOrder.customer_first_name || "").trim(),
+        customer_last_name: String(safeOrder.customer_last_name || "").trim(),
+        name: String(safeOrder.name || "").trim(),
+        phone: String(safeOrder.phone || "").trim(),
+        city: String(safeOrder.city || "").trim(),
+        delivery: String(safeOrder.delivery || "").trim(),
+        address: String(safeOrder.address || "").trim(),
+        items: Array.isArray(safeOrder.items) ? safeOrder.items : [],
+        total: Number.isFinite(Number(safeOrder.total)) ? Number(safeOrder.total) : 0,
+        status: String(safeOrder.status || "Новий").trim(),
+        status_group: String(safeOrder.status_group || "new").trim(),
+        operator_comment: String(safeOrder.operator_comment || "").trim(),
+        manager_comment: String(safeOrder.manager_comment || "").trim(),
+        day_bucket: Number.isFinite(Number(safeOrder.day_bucket)) ? Number(safeOrder.day_bucket) : 0,
+        source: String(safeOrder.source || "website").trim()
     };
 }
-
-/* =========================
-   SUPABASE REST REQUEST
-========================= */
 
 async function crmRequest(path, options = {}) {
     const response = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
@@ -119,10 +52,6 @@ async function crmRequest(path, options = {}) {
     }
 }
 
-/* =========================
-   CREATE ORDER
-========================= */
-
 async function saveOrderCRM(order) {
     const payload = normalizeOrderForCRM(order);
 
@@ -134,10 +63,6 @@ async function saveOrderCRM(order) {
         body: payload
     });
 }
-
-/* =========================
-   GET ORDERS
-========================= */
 
 async function getOrdersCRM() {
     const result = await crmRequest("orders?select=*&order=created_at.desc", {
@@ -157,23 +82,19 @@ async function getOrderByIdCRM(id) {
     return Array.isArray(result) && result.length ? result[0] : null;
 }
 
-/* =========================
-   UPDATE STATUS
-========================= */
-
 async function updateOrderStatusCRM(id, status, statusGroup = null, dayBucket = null) {
     if (!id) throw new Error("Не передано ID замовлення");
 
     const patch = {
-        status: safeString(status || "Новий")
+        status: String(status || "Новий").trim()
     };
 
     if (statusGroup !== null) {
-        patch.status_group = safeString(statusGroup || "new");
+        patch.status_group = String(statusGroup || "").trim();
     }
 
     if (dayBucket !== null) {
-        patch.day_bucket = safeNumber(dayBucket, 0);
+        patch.day_bucket = Number.isFinite(Number(dayBucket)) ? Number(dayBucket) : 0;
     }
 
     return await crmRequest(`orders?id=eq.${encodeURIComponent(id)}`, {
@@ -184,20 +105,16 @@ async function updateOrderStatusCRM(id, status, statusGroup = null, dayBucket = 
         body: patch
     });
 }
-
-/* =========================
-   UPDATE COMMENTS
-========================= */
 
 async function updateOrderCommentCRM(id, operatorComment, managerComment = null) {
     if (!id) throw new Error("Не передано ID замовлення");
 
     const patch = {
-        operator_comment: safeString(operatorComment)
+        operator_comment: String(operatorComment || "").trim()
     };
 
     if (managerComment !== null) {
-        patch.manager_comment = safeString(managerComment);
+        patch.manager_comment = String(managerComment || "").trim();
     }
 
     return await crmRequest(`orders?id=eq.${encodeURIComponent(id)}`, {
@@ -208,48 +125,27 @@ async function updateOrderCommentCRM(id, operatorComment, managerComment = null)
         body: patch
     });
 }
-
-/* =========================
-   UPDATE ANY ORDER FIELDS
-========================= */
 
 async function updateOrderCRM(id, fields = {}) {
     if (!id) throw new Error("Не передано ID замовлення");
 
     const patch = {};
 
-    if ("status" in fields) patch.status = safeString(fields.status || "Новий");
-    if ("status_group" in fields) patch.status_group = safeString(fields.status_group || "new");
-    if ("operator_comment" in fields) patch.operator_comment = safeString(fields.operator_comment);
-    if ("manager_comment" in fields) patch.manager_comment = safeString(fields.manager_comment);
-    if ("client_note" in fields) patch.client_note = safeString(fields.client_note);
-    if ("day_bucket" in fields) patch.day_bucket = safeNumber(fields.day_bucket, 0);
-    if ("phone" in fields) patch.phone = safeString(fields.phone);
-    if ("city" in fields) patch.city = safeString(fields.city);
-    if ("delivery" in fields) patch.delivery = safeString(fields.delivery);
-    if ("address" in fields) patch.address = safeString(fields.address);
-    if ("name" in fields) patch.name = safeString(fields.name);
-    if ("customer_first_name" in fields) patch.customer_first_name = safeString(fields.customer_first_name);
-    if ("customer_last_name" in fields) patch.customer_last_name = safeString(fields.customer_last_name);
-    if ("source" in fields) patch.source = safeString(fields.source || "website");
-    if ("ttn" in fields) patch.ttn = safeString(fields.ttn);
-    if ("created_at" in fields) patch.created_at = fields.created_at || new Date().toISOString();
-
-    if ("items" in fields) {
-        patch.items = normalizeOrderItems(fields.items);
-    }
-
-    if ("total" in fields) {
-        patch.total = safeNumber(fields.total, 0);
-    } else if ("items" in fields) {
-        patch.total = calculateOrderTotal(patch.items);
-    }
-
-    if ("total_items" in fields) {
-        patch.total_items = safeNumber(fields.total_items, 0);
-    } else if ("items" in fields) {
-        patch.total_items = calculateOrderQty(patch.items);
-    }
+    if ("status" in fields) patch.status = String(fields.status || "Новий").trim();
+    if ("status_group" in fields) patch.status_group = String(fields.status_group || "new").trim();
+    if ("operator_comment" in fields) patch.operator_comment = String(fields.operator_comment || "").trim();
+    if ("manager_comment" in fields) patch.manager_comment = String(fields.manager_comment || "").trim();
+    if ("day_bucket" in fields) patch.day_bucket = Number.isFinite(Number(fields.day_bucket)) ? Number(fields.day_bucket) : 0;
+    if ("phone" in fields) patch.phone = String(fields.phone || "").trim();
+    if ("city" in fields) patch.city = String(fields.city || "").trim();
+    if ("delivery" in fields) patch.delivery = String(fields.delivery || "").trim();
+    if ("address" in fields) patch.address = String(fields.address || "").trim();
+    if ("name" in fields) patch.name = String(fields.name || "").trim();
+    if ("customer_first_name" in fields) patch.customer_first_name = String(fields.customer_first_name || "").trim();
+    if ("customer_last_name" in fields) patch.customer_last_name = String(fields.customer_last_name || "").trim();
+    if ("source" in fields) patch.source = String(fields.source || "website").trim();
+    if ("total" in fields) patch.total = Number.isFinite(Number(fields.total)) ? Number(fields.total) : 0;
+    if ("items" in fields) patch.items = Array.isArray(fields.items) ? fields.items : [];
 
     return await crmRequest(`orders?id=eq.${encodeURIComponent(id)}`, {
         method: "PATCH",
@@ -259,10 +155,6 @@ async function updateOrderCRM(id, fields = {}) {
         body: patch
     });
 }
-
-/* =========================
-   DELETE ORDER
-========================= */
 
 async function deleteOrderCRM(id) {
     if (!id) throw new Error("Не передано ID замовлення");
@@ -273,10 +165,6 @@ async function deleteOrderCRM(id) {
 
     return true;
 }
-
-/* =========================
-   EXPORTS
-========================= */
 
 window.normalizeOrderForCRM = normalizeOrderForCRM;
 window.saveOrderCRM = saveOrderCRM;

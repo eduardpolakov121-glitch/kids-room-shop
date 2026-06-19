@@ -1,0 +1,33 @@
+1️⃣ Адрес сайта
+
+Твой основной сайт сейчас:
+
+https://kids-room-shop.vercel.app 
+
+2️⃣ Адрес CRM
+
+CRM для операторов:
+
+https://kids-room-shop.vercel.app/crm-panel.html
+
+Вход:
+
+админ
+
+eduardpolakov121@gmail.com
+пароль 5265
+
+оператор
+
+operator@gmail.com
+
+3️⃣ Адрес админки товаров
+
+Админка управления товарами:
+
+https://kids-room-shop.vercel.app/admin-safe.html
+
+Логин:
+
+admin
+5265
