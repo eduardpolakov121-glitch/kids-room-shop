@@ -1,1362 +1,226 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="uk">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Kids Room — дитячі товари для дому, прогулянок і щоденного комфорту</title>
-<meta name="description" content="Kids Room — інтернет-магазин дитячих товарів: іграшки, коляски, автокрісла, одяг, меблі, товари для немовлят. Зручне замовлення, доставка по Україні.">
-<link rel="stylesheet" href="style.css">
-<style>
-.hero-selling{
-    margin:16px 20px 16px;
-    background:
-        radial-gradient(circle at top right, rgba(255,211,111,.35), transparent 28%),
-        radial-gradient(circle at bottom left, rgba(177,218,255,.35), transparent 26%),
-        linear-gradient(135deg,#fff4e8 0%,#fffdf9 52%,#eef6fb 100%);
-    border:1px solid #ece7df;
-    border-radius:28px;
-    box-shadow:0 16px 38px rgba(0,0,0,0.07);
-    overflow:hidden;
-    position:relative;
-}
-.hero-selling-inner{
-    position:relative;
-    z-index:1;
-    padding:28px 30px;
-}
-.hero-selling-copy{
-    max-width:950px;
-}
-.hero-selling-copy h1{
-    margin:0 0 12px;
-    font-size:clamp(30px,4vw,54px);
-    line-height:1.01;
-    letter-spacing:-.03em;
-    color:#243041;
-}
-.hero-selling-copy p{
-    margin:0 0 16px;
-    color:#5f6c7d;
-    line-height:1.7;
-    font-size:16px;
-    max-width:840px;
-}
-.hero-selling-badges{
-    display:flex;
-    flex-wrap:wrap;
-    gap:10px;
-    margin-bottom:18px;
-}
-.hero-selling-badge{
-    display:inline-flex;
-    align-items:center;
-    gap:8px;
-    padding:9px 13px;
-    border-radius:999px;
-    background:#fff8ef;
-    border:1px solid #ffe0c2;
-    color:#a45b16;
-    font-size:14px;
-    font-weight:700;
-}
-.hero-selling-actions{
-    display:flex;
-    flex-wrap:wrap;
-    gap:12px;
-}
-.hero-selling-btn,
-.hero-selling-btn-secondary{
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
-    min-height:52px;
-    padding:12px 22px;
-    border-radius:15px;
-    text-decoration:none;
-    font-weight:800;
-    transition:transform .18s ease, box-shadow .18s ease, background .18s ease;
-}
-.hero-selling-btn:hover,
-.hero-selling-btn-secondary:hover{
-    transform:translateY(-1px);
-}
-.hero-selling-btn{
-    background:linear-gradient(135deg,#ff6b00 0%,#ff8d38 100%);
-    color:#fff;
-    box-shadow:0 12px 24px rgba(255,107,0,0.22);
-}
-.hero-selling-btn-secondary{
-    background:#fff;
-    color:#243041;
-    border:1px solid #ece7df;
-    box-shadow:0 8px 20px rgba(0,0,0,0.05);
-}
-
-.home-proof-strip{
-    margin:0 20px 16px;
-    display:grid;
-    grid-template-columns:repeat(4,minmax(0,1fr));
-    gap:14px;
-}
-.home-proof-card{
-    background:#fffdf9;
-    border:1px solid #ece7df;
-    border-radius:18px;
-    box-shadow:0 10px 24px rgba(0,0,0,0.05);
-    padding:16px;
-}
-.home-proof-card h3{
-    margin:0 0 8px;
-    color:#243041;
-    font-size:17px;
-}
-.home-proof-card p{
-    margin:0;
-    color:#6f7b8c;
-    line-height:1.6;
-    font-size:14px;
-}
-
-.section-wrap{
-    margin:0 20px 16px;
-}
-.section-title-row{
-    display:flex;
-    align-items:flex-end;
-    justify-content:space-between;
-    gap:14px;
-    margin-bottom:12px;
-    flex-wrap:wrap;
-}
-.section-title-row h2{
-    margin:0;
-    color:#243041;
-    font-size:28px;
-    line-height:1.08;
-}
-.section-title-row p{
-    margin:0;
-    color:#6f7b8c;
-    line-height:1.55;
-    font-size:15px;
-}
-
-.benefits-grid{
-    display:grid;
-    grid-template-columns:repeat(4,minmax(0,1fr));
-    gap:14px;
-}
-.benefit-card{
-    background:#fffdf9;
-    border:1px solid #ece7df;
-    border-radius:20px;
-    box-shadow:0 10px 24px rgba(0,0,0,0.05);
-    padding:18px;
-}
-.benefit-card h3{
-    margin:0 0 8px;
-    color:#243041;
-    font-size:17px;
-}
-.benefit-card p{
-    margin:0;
-    color:#6f7b8c;
-    line-height:1.65;
-    font-size:14px;
-}
-
-.home-categories-grid{
-    display:grid;
-    grid-template-columns:repeat(4,minmax(0,1fr));
-    gap:14px;
-}
-.home-category-card{
-    background:linear-gradient(180deg,#fffdf9 0%,#fff7ef 100%);
-    border:1px solid #ece7df;
-    border-radius:20px;
-    box-shadow:0 10px 24px rgba(0,0,0,0.05);
-    padding:18px;
-    text-decoration:none;
-    color:#243041;
-    transition:transform .18s ease, box-shadow .18s ease;
-}
-.home-category-card:hover{
-    transform:translateY(-3px);
-    box-shadow:0 14px 28px rgba(0,0,0,0.08);
-}
-.home-category-card .icon{
-    font-size:30px;
-    margin-bottom:8px;
-    display:block;
-}
-.home-category-card strong{
-    display:block;
-    margin-bottom:6px;
-    font-size:17px;
-}
-.home-category-card span{
-    color:#6f7b8c;
-    line-height:1.55;
-    font-size:14px;
-}
-
-.product-showcase-grid{
-    display:block;
-}
-
-.home-slider{
-    position:relative;
-}
-
-.home-slider-track{
-    display:grid;
-    grid-auto-flow:column;
-    grid-auto-columns:calc(25% - 12px);
-    gap:16px;
-    overflow-x:auto;
-    scroll-behavior:smooth;
-    scrollbar-width:none;
-    padding-bottom:4px;
-}
-
-.home-slider-track::-webkit-scrollbar{
-    display:none;
-}
-
-.home-slider-arrow{
-    position:absolute;
-    top:50%;
-    transform:translateY(-50%);
-    width:46px;
-    height:46px;
-    border:none;
-    border-radius:50%;
-    background:#fff;
-    color:#243041;
-    box-shadow:0 10px 24px rgba(0,0,0,0.12);
-    cursor:pointer;
-    z-index:3;
-    font-size:24px;
-    font-weight:900;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-}
-
-.home-slider-arrow.left{ left:-10px; }
-.home-slider-arrow.right{ right:-10px; }
-
-.home-slider-arrow:hover{
-    transform:translateY(-50%) scale(1.03);
-}
-.home-slider-arrow.hidden{
-    opacity:.35;
-}
-
-.product-showcase-card{
-    background:#fffdf9;
-    border:1px solid #ece7df;
-    border-radius:20px;
-    box-shadow:0 10px 24px rgba(0,0,0,0.05);
-    overflow:hidden;
-    display:flex;
-    flex-direction:column;
-    min-height:100%;
-}
-.product-showcase-image{
-    background:#f6ece0;
-    height:210px;
-    overflow:hidden;
-}
-.product-showcase-image img{
-    width:100%;
-    height:100%;
-    object-fit:cover;
-    display:block;
-}
-.product-showcase-body{
-    padding:16px;
-    display:flex;
-    flex-direction:column;
-    gap:10px;
-    flex:1;
-}
-.product-showcase-top{
-    display:flex;
-    flex-wrap:wrap;
-    gap:8px;
-}
-.product-chip{
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
-    padding:7px 10px;
-    border-radius:999px;
-    font-size:12px;
-    font-weight:800;
-}
-.product-chip.hit{ background:#fff1e6; color:#ca6200; }
-.product-chip.new{ background:#edf8ff; color:#23628d; }
-.product-chip.sale{ background:#fff0f0; color:#c64c4c; }
-.product-chip.secondary{ background:#f2f4f7; color:#506077; }
-
-.product-showcase-card h3{
-    margin:0;
-    font-size:18px;
-    line-height:1.32;
-    color:#243041;
-}
-.product-showcase-card p{
-    margin:0;
-    color:#6f7b8c;
-    line-height:1.6;
-    font-size:14px;
-}
-.product-showcase-price{
-    margin-top:auto;
-    display:flex;
-    align-items:flex-end;
-    gap:10px;
-    flex-wrap:wrap;
-}
-.product-showcase-price .current{
-    color:#ff6600;
-    font-size:22px;
-    font-weight:800;
-}
-.product-showcase-price .old{
-    color:#8b95a3;
-    text-decoration:line-through;
-    font-size:15px;
-}
-.product-showcase-actions{
-    display:flex;
-    gap:10px;
-    flex-wrap:wrap;
-}
-.product-showcase-actions button{
-    flex:1;
-    min-width:120px;
-    border:none;
-    border-radius:12px;
-    padding:11px 14px;
-    cursor:pointer;
-    font-weight:800;
-}
-.product-showcase-actions .primary{
-    background:#ff6600;
-    color:#fff;
-}
-.product-showcase-actions .secondary{
-    background:#f1f3f6;
-    color:#243041;
-}
-
-.showcase-empty{
-    grid-column:1/-1;
-    background:#fffdf9;
-    border:1px solid #ece7df;
-    border-radius:20px;
-    box-shadow:0 10px 24px rgba(0,0,0,0.05);
-    padding:22px;
-    text-align:center;
-    color:#6f7b8c;
-    line-height:1.6;
-}
-
-.how-order-grid{
-    display:grid;
-    grid-template-columns:repeat(4,minmax(0,1fr));
-    gap:14px;
-}
-.how-order-card{
-    background:#fffdf9;
-    border:1px solid #ece7df;
-    border-radius:20px;
-    box-shadow:0 10px 24px rgba(0,0,0,0.05);
-    padding:18px;
-}
-.how-order-step{
-    width:40px;
-    height:40px;
-    border-radius:50%;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    background:#ff6600;
-    color:#fff;
-    font-weight:800;
-    margin-bottom:10px;
-}
-.how-order-card h3{
-    margin:0 0 8px;
-    color:#243041;
-    font-size:17px;
-}
-.how-order-card p{
-    margin:0;
-    color:#6f7b8c;
-    line-height:1.65;
-    font-size:14px;
-}
-
-.cta-banner{
-    margin:0 20px 16px;
-    background:linear-gradient(135deg,#243041 0%,#33465f 100%);
-    border-radius:24px;
-    box-shadow:0 16px 32px rgba(36,48,65,0.2);
-    padding:24px;
-    color:#fff;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:18px;
-    flex-wrap:wrap;
-}
-.cta-banner h2{
-    margin:0 0 8px;
-    font-size:28px;
-}
-.cta-banner p{
-    margin:0;
-    color:rgba(255,255,255,0.82);
-    line-height:1.65;
-    max-width:760px;
-}
-.cta-banner a{
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
-    min-height:50px;
-    padding:12px 20px;
-    background:#ff6600;
-    color:#fff;
-    text-decoration:none;
-    border-radius:15px;
-    font-weight:800;
-    box-shadow:0 12px 24px rgba(255,107,0,0.2);
-}
-
-.home-trust-strip{
-    margin:0 20px 8px;
-    display:grid;
-    grid-template-columns:repeat(3,minmax(0,1fr));
-    gap:14px;
-}
-.home-trust-card{
-    background:#fffdf9;
-    border:1px solid #ece7df;
-    border-radius:18px;
-    box-shadow:0 10px 24px rgba(0,0,0,0.05);
-    padding:16px;
-}
-.home-trust-card h3{
-    margin:0 0 8px;
-    color:#243041;
-    font-size:17px;
-}
-.home-trust-card p{
-    margin:0;
-    color:#6f7b8c;
-    line-height:1.55;
-    font-size:14px;
-}
-
-.home-faq-grid{
-    display:grid;
-    grid-template-columns:repeat(2,minmax(0,1fr));
-    gap:14px;
-}
-.home-faq-card{
-    background:#fffdf9;
-    border:1px solid #ece7df;
-    border-radius:18px;
-    box-shadow:0 10px 24px rgba(0,0,0,0.05);
-    padding:18px;
-}
-.home-faq-card h3{
-    margin:0 0 8px;
-    color:#243041;
-    font-size:18px;
-}
-.home-faq-card p{
-    margin:0;
-    color:#6f7b8c;
-    line-height:1.65;
-    font-size:14px;
-}
-
-.site-footer{
-    margin:16px 20px 24px;
-    background:#fffdf9;
-    border:1px solid #ece7df;
-    border-radius:22px;
-    box-shadow:0 12px 28px rgba(0,0,0,0.05);
-    padding:22px;
-}
-.site-footer-grid{
-    display:grid;
-    grid-template-columns:1.2fr 1fr 1fr;
-    gap:20px;
-}
-.site-footer h3{
-    margin:0 0 12px;
-    color:#243041;
-    font-size:19px;
-}
-.site-footer p{
-    margin:0;
-    color:#6f7b8c;
-    line-height:1.65;
-}
-.site-footer-links{
-    display:flex;
-    flex-direction:column;
-    gap:10px;
-}
-.site-footer-links a{
-    color:#243041;
-    text-decoration:none;
-    font-weight:700;
-}
-.site-footer-links a:hover{
-    color:#ff6600;
-}
-.site-footer-note{
-    margin-top:16px;
-    padding-top:14px;
-    border-top:1px solid #ece7df;
-    color:#6f7b8c;
-    font-size:14px;
-    line-height:1.6;
-}
-
-.quick-view-modal{
-    position:fixed;
-    inset:0;
-    display:none;
-    align-items:center;
-    justify-content:center;
-    background:rgba(17,24,39,0.54);
-    z-index:9000;
-    padding:20px;
-    box-sizing:border-box;
-}
-.quick-view-modal.open{
-    display:flex;
-}
-.quick-view-box{
-    width:100%;
-    max-width:980px;
-    max-height:90vh;
-    overflow:auto;
-    background:#fffdf9;
-    border-radius:24px;
-    border:1px solid #ece7df;
-    box-shadow:0 22px 60px rgba(0,0,0,0.24);
-    padding:20px;
-}
-.quick-view-top{
-    display:flex;
-    justify-content:space-between;
-    gap:12px;
-    align-items:center;
-    margin-bottom:14px;
-}
-.quick-view-top h2{
-    margin:0;
-    color:#243041;
-}
-.quick-view-close{
-    border:none;
-    width:42px;
-    height:42px;
-    border-radius:14px;
-    background:#eef2f7;
-    color:#243041;
-    font-size:18px;
-    cursor:pointer;
-}
-
-@media (max-width:1100px){
-    .home-proof-strip,
-    .benefits-grid,
-    .home-categories-grid,
-    .how-order-grid{
-        grid-template-columns:repeat(2,minmax(0,1fr));
-    }
-    .site-footer-grid{
-        grid-template-columns:1fr 1fr;
-    }
-    .home-slider-track{
-        grid-auto-columns:calc(50% - 8px);
-    }
-}
-
-@media (max-width:900px){
-    .home-trust-strip,
-    .home-faq-grid,
-    .site-footer-grid{
-        grid-template-columns:1fr;
-    }
-    .section-wrap,
-    .cta-banner,
-    .hero-selling{
-        margin-left:16px;
-        margin-right:16px;
-    }
-    .home-proof-strip{
-        margin:0 16px 16px;
-    }
-    .home-trust-strip{
-        margin:0 16px 8px;
-    }
-    .site-footer{
-        margin:16px 16px 24px;
-        padding:18px;
-    }
-}
-
-@media (max-width:680px){
-    .home-proof-strip,
-    .benefits-grid,
-    .home-categories-grid,
-    .how-order-grid{
-        grid-template-columns:1fr;
-    }
-    .hero-selling-inner{
-        padding:18px;
-    }
-    .section-title-row h2,
-    .cta-banner h2{
-        font-size:24px;
-    }
-    .hero-selling-copy p{
-        font-size:15px;
-    }
-    .home-slider-track{
-        grid-auto-columns:85%;
-    }
-    .home-slider-arrow{
-        width:40px;
-        height:40px;
-        font-size:20px;
-    }
-    .home-slider-arrow.left{ left:-4px; }
-    .home-slider-arrow.right{ right:-4px; }
-}
-
-@media (max-width:420px){
-    .section-wrap,
-    .cta-banner,
-    .hero-selling{
-        margin-left:10px;
-        margin-right:10px;
-    }
-    .home-proof-strip{
-        margin:0 10px 16px;
-        gap:10px;
-    }
-    .home-trust-strip{
-        margin:0 10px 8px;
-        gap:10px;
-    }
-    .home-trust-card{
-        padding:14px;
-        border-radius:16px;
-    }
-    .site-footer{
-        margin:12px 10px 20px;
-        padding:16px;
-        border-radius:18px;
-    }
-    .quick-view-box{
-        padding:14px;
-        border-radius:18px;
-    }
-}
-</style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0a0b0d" />
+  <title>Power Bank 100000 mAh з ліхтарем JS-658 — TREBA Market</title>
+  <meta name="description" content="Power Bank 100000 mAh JS-658 з LED-ліхтарем, 4 USB-виходами, швидкою зарядкою та зручною ручкою. Доставка по Україні, оплата при отриманні." />
+  <link rel="preload" as="image" href="assets/gen-front.webp" />
+  <link rel="stylesheet" href="styles.css" />
 </head>
-
 <body>
-
-<div id="cart-overlay" class="cart-overlay" onclick="closeCart()"></div>
-
-<header>
-    <div class="logo">Kids Room</div>
-    <input id="search" placeholder="🔍 Пошук товару">
-    <button class="catalog-toggle" id="catalog-toggle" type="button" onclick="toggleCatalogMenu()" aria-label="Відкрити каталог">
-        ⋮
-    </button>
-    <div class="cart-button" onclick="toggleCart()">
-        🛒 <span id="cart-count">0</span>
+  <header class="topbar">
+    <div class="container topbar__inner">
+      <a class="brand" href="#top" aria-label="TREBA Market">TREBA<span>Market</span></a>
+      <a class="topbar__cta" href="#order">Замовити</a>
     </div>
-</header>
+  </header>
 
-<div class="banner">
-    <img src="banner.jpg" alt="Kids Room banner">
-</div>
+  <main id="top">
+    <section class="hero section-dark">
+      <div class="hero__glow hero__glow--one"></div>
+      <div class="hero__glow hero__glow--two"></div>
+      <div class="container hero__grid">
+        <div class="hero__content">
+          <div class="eyebrow">⚡ Енергія та світло завжди поруч</div>
+          <h1>Power Bank <span>100000 mAh</span> з яскравим LED-ліхтарем</h1>
+          <p class="hero__lead">Заряджайте до 4 пристроїв одночасно та використовуйте як настільну лампу вдома, у дорозі чи під час відключень світла.</p>
 
-<section class="hero-selling">
-    <div class="hero-selling-inner">
-        <div class="hero-selling-copy">
-            <h1>Дитячі товари для затишної кімнати, прогулянок і щасливого щодення</h1>
-            <p>
-                Іграшки, коляски, автокрісла, одяг, меблі та інші дитячі товари — в одному магазині з простим оформленням замовлення,
-                швидким зв’язком і доставкою по Україні.
-            </p>
-
-            <div class="hero-selling-badges">
-                <span class="hero-selling-badge">🧸 Великий вибір</span>
-                <span class="hero-selling-badge">🚚 Доставка по Україні</span>
-                <span class="hero-selling-badge">💬 Швидкий зв’язок</span>
-                <span class="hero-selling-badge">🛡️ Зрозумілі умови покупки</span>
+          <div class="offer-row">
+            <div class="sale-badge"><strong>-64%</strong><small>АКЦІЯ</small></div>
+            <div class="price-card">
+              <span class="price-old">3999 грн</span>
+              <span class="price-new">1449 грн</span>
             </div>
+            <div class="stock-badge"><span class="stock-badge__icon">▣</span><span>Залишилось<br><strong>лише 8 шт</strong></span></div>
+          </div>
 
-            <div class="hero-selling-actions">
-                <a class="hero-selling-btn" href="#products">Перейти до товарів</a>
-                <a class="hero-selling-btn-secondary" href="delivery-payment.html">Доставка і оплата</a>
+          <div class="countdown" aria-label="Таймер акції">
+            <div class="countdown__title">До завершення акції сьогодні</div>
+            <div class="countdown__digits">
+              <div><b id="hours">00</b><span>годин</span></div>
+              <em>:</em>
+              <div><b id="minutes">00</b><span>хвилин</span></div>
+              <em>:</em>
+              <div><b id="seconds">00</b><span>секунд</span></div>
             </div>
-        </div>
-    </div>
-</section>
+          </div>
 
-<section class="home-proof-strip">
-    <div class="home-proof-card">
-        <h3>✅ Зручне замовлення</h3>
-        <p>Кілька кліків до кошика, просте оформлення і швидке підтвердження менеджером.</p>
-    </div>
-    <div class="home-proof-card">
-        <h3>🚚 Відправка по Україні</h3>
-        <p>Нова пошта та Укрпошта вже інтегровані в оформлення замовлення на сайті.</p>
-    </div>
-    <div class="home-proof-card">
-        <h3>💬 Швидкий контакт</h3>
-        <p>Покупець може одразу написати у Viber, Telegram або Instagram.</p>
-    </div>
-    <div class="home-proof-card">
-        <h3>🧾 Сторінки довіри</h3>
-        <p>Окремо винесені розділи: про нас, доставка і оплата, обмін та повернення, контакти.</p>
-    </div>
-</section>
+          <a class="btn btn--primary btn--large pulse" href="#order">Замовити зараз <span>→</span></a>
 
-<section class="section-wrap">
-    <div class="section-title-row">
-        <h2>Хіти продажу</h2>
-        <p>Товари, які ти позначиш як хіти, будуть показуватись тут.</p>
-    </div>
-    <div class="product-showcase-grid" id="home-hits-grid"></div>
-</section>
-
-<section class="section-wrap">
-    <div class="section-title-row">
-        <h2>Акції</h2>
-        <p>Товари з позначкою акції потрапляють у цей блок на головній.</p>
-    </div>
-    <div class="product-showcase-grid" id="home-sales-grid"></div>
-</section>
-
-<section class="section-wrap">
-    <div class="section-title-row">
-        <h2>Новинки</h2>
-        <p>Додавай нові товари та став прапорець “Новинка”, щоб показувати їх тут.</p>
-    </div>
-    <div class="product-showcase-grid" id="home-new-grid"></div>
-</section>
-
-<section class="home-dynamic-block">
-    <div class="home-dynamic-head">
-        <h2>Обране</h2>
-        <p>Тут будуть товари, які клієнт позначив сердечком.</p>
-    </div>
-    <div class="home-mini-grid" id="home-favorites-grid"></div>
-</section>
-
-<section class="home-dynamic-block">
-    <div class="home-dynamic-head">
-        <h2>Нещодавно переглянуті</h2>
-        <p>Швидкий доступ до товарів, які дивилися останніми.</p>
-    </div>
-    <div class="home-mini-grid" id="recently-viewed-grid"></div>
-</section>
-
-<section class="section-wrap">
-    <div class="section-title-row">
-        <h2>Чому обирають Kids Room</h2>
-        <p>Ми поєднали зручний каталог, зрозуміле оформлення замовлення та корисні категорії для дітей.</p>
-    </div>
-
-    <div class="benefits-grid">
-        <div class="benefit-card">
-            <h3>📦 Широкий асортимент</h3>
-            <p>На сайті зібрані популярні дитячі категорії — від іграшок до меблів та товарів для немовлят.</p>
-        </div>
-        <div class="benefit-card">
-            <h3>💳 Зручне оформлення</h3>
-            <p>Швидко додавайте товари в кошик, обирайте доставку та залишайте дані без зайвих кроків.</p>
-        </div>
-        <div class="benefit-card">
-            <h3>🚚 Доставка по Україні</h3>
-            <p>Підтримується оформлення замовлень з доставкою Новою поштою та Укрпоштою.</p>
-        </div>
-        <div class="benefit-card">
-            <h3>💬 Швидкий контакт</h3>
-            <p>Покупець може одразу перейти до Viber, Telegram або Instagram для уточнення деталей.</p>
-        </div>
-    </div>
-</section>
-
-<section class="section-wrap">
-    <div class="section-title-row">
-        <h2>Популярні категорії</h2>
-        <p>Найчастіше покупці починають пошук саме з цих розділів.</p>
-    </div>
-
-    <div class="home-categories-grid">
-        <a class="home-category-card" href="#products" onclick="filterCategory('toy')">
-            <span class="icon">🧸</span>
-            <strong>Іграшки</strong>
-            <span>Плюшеві, розвиваючі та сюжетні іграшки для щоденних ігор.</span>
-        </a>
-        <a class="home-category-card" href="#products" onclick="filterCategory('stroller')">
-            <span class="icon">🛒</span>
-            <strong>Коляски</strong>
-            <span>Зручні моделі для прогулянок, поїздок і щоденного комфорту.</span>
-        </a>
-        <a class="home-category-card" href="#products" onclick="filterCategory('clothes')">
-            <span class="icon">👕</span>
-            <strong>Одяг</strong>
-            <span>Практичний дитячий одяг для дому, садочка та прогулянок.</span>
-        </a>
-        <a class="home-category-card" href="#products" onclick="filterCategory('baby')">
-            <span class="icon">🍼</span>
-            <strong>Для немовлят</strong>
-            <span>Корисні товари для перших місяців життя та щоденного догляду.</span>
-        </a>
-    </div>
-</section>
-
-<div id="sidebar-overlay" class="sidebar-overlay" onclick="closeCatalogMenu()"></div>
-
-<div class="container">
-    <aside class="sidebar" id="catalog-sidebar">
-        <h3>Каталог</h3>
-        <ul>
-            <li onclick="filterCategory('all')">✨ Всі товари</li>
-            <li onclick="filterCategory('toy')">🧸 Іграшки</li>
-            <li onclick="filterCategory('stroller')">🛒 Коляски</li>
-            <li onclick="filterCategory('seat')">💺 Автокрісла</li>
-            <li onclick="filterCategory('clothes')">👕 Одяг</li>
-            <li onclick="filterCategory('transport')">🚲 Транспорт</li>
-            <li onclick="filterCategory('sorter')">🧩 Сортери</li>
-            <li onclick="filterCategory('baby')">🍼 Для немовлят</li>
-            <li onclick="filterCategory('school')">🎒 Шкільні товари</li>
-            <li onclick="filterCategory('furniture')">🛏️ Дитячі меблі</li>
-            <li onclick="filterCategory('feeding')">🥣 Годування</li>
-            <li onclick="filterCategory('hygiene')">🧼 Гігієна</li>
-            <li onclick="filterCategory('bedding')">🛌 Постіль</li>
-            <li onclick="filterCategory('creativity')">🎨 Творчість</li>
-        </ul>
-    </aside>
-
-    <main>
-        <div class="filters">
-            <select onchange="sortProducts(this.value)">
-                <option value="">Сортувати</option>
-                <option value="cheap">Дешеві → дорогі</option>
-                <option value="expensive">Дорогі → дешеві</option>
-                <option value="name">По назві</option>
-            </select>
+          <div class="trust-row">
+            <div><span>💳</span><p>Оплата<br><strong>при отриманні</strong></p></div>
+            <div><span>🚚</span><p>Швидка доставка<br><strong>по Україні</strong></p></div>
+            <div><span>🛡️</span><p>Перевірка<br><strong>перед оплатою</strong></p></div>
+          </div>
         </div>
 
-        <div class="smart-filters">
-            <label class="smart-chip">
-                <input id="smart-hit" type="checkbox">
-                <span>Хіти</span>
-            </label>
-            <label class="smart-chip">
-                <input id="smart-sale" type="checkbox">
-                <span>Акції</span>
-            </label>
-            <label class="smart-chip">
-                <input id="smart-new" type="checkbox">
-                <span>Новинки</span>
-            </label>
-            <label class="smart-chip">
-                <input id="smart-available" type="checkbox">
-                <span>Є в наявності</span>
-            </label>
-            <label class="smart-chip">
-                <input id="smart-favorites" type="checkbox">
-                <span>Обране</span>
-            </label>
+        <div class="hero__visual">
+          <div class="hero__ring"></div>
+          <img src="assets/gen-front.webp" alt="Power Bank 100000 mAh JS-658 з LED-ліхтарем" width="1200" height="1200" fetchpriority="high" />
+          <div class="float-card float-card--top">4 USB<br><strong>одночасно</strong></div>
+          <div class="float-card float-card--bottom">LED<br><strong>ліхтар</strong></div>
         </div>
+      </div>
+    </section>
 
-        <div class="products-top-meta">
-            <span id="products-results-count">Знайдено товарів: 0</span>
+    <section class="feature-strip section-dark">
+      <div class="container feature-strip__grid">
+        <article class="mini-feature"><div class="mini-feature__icon">🔋</div><h3>100000 mAh</h3><p>Велика ємність</p></article>
+        <article class="mini-feature"><div class="mini-feature__icon">▤</div><h3>4 USB-виходи</h3><p>Кілька гаджетів</p></article>
+        <article class="mini-feature"><div class="mini-feature__icon">💡</div><h3>LED-ліхтар</h3><p>Яскраве освітлення</p></article>
+        <article class="mini-feature"><div class="mini-feature__icon">⚡</div><h3>Швидка зарядка</h3><p>Менше очікування</p></article>
+      </div>
+    </section>
+
+    <section class="section section-light">
+      <div class="container split">
+        <div class="split__media image-card">
+          <img src="assets/gen-desk.webp" alt="Power Bank заряджає смартфон і планшет" loading="lazy" width="1200" height="1200" />
         </div>
-
-        <div id="products" class="products"></div>
-    </main>
-</div>
-
-<section class="section-wrap">
-    <div class="section-title-row">
-        <h2>Як оформити замовлення</h2>
-        <p>Від першого кліку до підтвердження замовлення — усе просто та зрозуміло.</p>
-    </div>
-
-    <div class="how-order-grid">
-        <div class="how-order-card">
-            <div class="how-order-step">1</div>
-            <h3>Оберіть товар</h3>
-            <p>Скористайтеся категоріями, пошуком або сортуванням, щоб знайти потрібний товар.</p>
+        <div class="split__content">
+          <div class="section-label">Практичність щодня</div>
+          <h2>Незамінний помічник вдома, у поїздках та під час блекаутів</h2>
+          <p class="section-intro">Один пристрій поєднує потужний Power Bank, аварійне освітлення та зручний формат для перенесення.</p>
+          <div class="benefit-list">
+            <div><span>📱</span><p><strong>Для сучасних гаджетів</strong>Заряджає смартфони, планшети, навушники та іншу техніку.</p></div>
+            <div><span>💡</span><p><strong>Світло під рукою</strong>Велика LED-панель працює як настільна лампа або аварійне освітлення.</p></div>
+            <div><span>🧳</span><p><strong>Зручно переносити</strong>Міцна ручка робить пристрій практичним для дому, авто та подорожей.</p></div>
+            <div><span>🛡️</span><p><strong>Захист електроніки</strong>Передбачений захист від перегріву та короткого замикання.</p></div>
+          </div>
+          <a class="btn btn--dark" href="#order">Хочу замовити <span>→</span></a>
         </div>
-        <div class="how-order-card">
-            <div class="how-order-step">2</div>
-            <h3>Додайте в кошик</h3>
-            <p>Вкажіть кількість і натисніть кнопку додавання товару в кошик.</p>
+      </div>
+    </section>
+
+    <section class="section gallery-section section-dark">
+      <div class="container">
+        <div class="section-heading section-heading--light">
+          <div><div class="section-label section-label--orange">Детально про товар</div><h2>Галерея Power Bank JS-658</h2></div>
+          <p>6 ракурсів і сценаріїв використання: корпус, порти, заряджання, ліхтар та внутрішня конструкція.</p>
         </div>
-        <div class="how-order-card">
-            <div class="how-order-step">3</div>
-            <h3>Оформіть замовлення</h3>
-            <p>Заповніть ім’я, телефон і дані доставки через Нову пошту або Укрпошту.</p>
+        <div class="gallery">
+          <figure class="gallery__item gallery__item--wide"><img src="assets/gen-front.webp" alt="Power Bank JS-658 — вигляд спереду" loading="lazy" /><figcaption>Яскрава LED-панель та ручка</figcaption></figure>
+          <figure class="gallery__item"><img src="assets/gen-ports.webp" alt="Порти Power Bank JS-658" loading="lazy" /><figcaption>USB, USB-C, Micro-USB та Lightning</figcaption></figure>
+          <figure class="gallery__item"><img src="assets/gen-desk.webp" alt="Одночасне заряджання пристроїв" loading="lazy" /><figcaption>Одночасне заряджання гаджетів</figcaption></figure>
+          <figure class="gallery__item"><img src="assets/gen-cutaway.webp" alt="Внутрішня конструкція Power Bank" loading="lazy" /><figcaption>Внутрішня електроніка та акумулятор</figcaption></figure>
+          <figure class="gallery__item"><img src="assets/gen-night.webp" alt="Power Bank як лампа увечері" loading="lazy" /><figcaption>Освітлення під час відключень</figcaption></figure>
+          <figure class="gallery__item gallery__item--wide"><img src="assets/gen-multi.webp" alt="Power Bank заряджає декілька пристроїв" loading="lazy" /><figcaption>Для дому, роботи та подорожей</figcaption></figure>
         </div>
-        <div class="how-order-card">
-            <div class="how-order-step">4</div>
-            <h3>Отримайте підтвердження</h3>
-            <p>Після оформлення менеджер зв'яжеться з вами для підтвердження замовлення.</p>
+      </div>
+    </section>
+
+    <section class="section section-light">
+      <div class="container">
+        <div class="section-heading">
+          <div><div class="section-label">Чому його обирають</div><h2>Особливості та переваги</h2></div>
+          <p>Функції, які роблять цей Power Bank корисним не тільки для заряджання.</p>
         </div>
-    </div>
-</section>
-
-<section class="home-trust-strip">
-    <div class="home-trust-card">
-        <h3>📦 Зручна доставка</h3>
-        <p>Оформлюйте замовлення через сайт із доставкою Новою поштою або Укрпоштою.</p>
-    </div>
-    <div class="home-trust-card">
-        <h3>💬 Швидкий зв’язок</h3>
-        <p>Для консультації по товару або замовленню можна швидко написати нам у месенджери.</p>
-    </div>
-    <div class="home-trust-card">
-        <h3>🧾 Прозорі умови</h3>
-        <p>Окремі сторінки магазину допоможуть вам ознайомитись із доставкою, оплатою та контактами.</p>
-    </div>
-</section>
-
-<div id="cart" class="cart">
-    <h2>Кошик</h2>
-
-    <div id="cart-items"></div>
-
-    <h3 id="total"></h3>
-
-    <button onclick="clearCart()">Очистити</button>
-    <button onclick="checkout()">Оформити</button>
-
-    <br><br>
-
-    <button onclick="closeCart()">👉 Продовжити пошук</button>
-</div>
-
-<div id="checkout-modal" class="checkout-modal">
-    <div class="checkout-box">
-        <h2>Оформлення замовлення</h2>
-
-        <input type="text" id="order-name" placeholder="Ім'я">
-        <input type="text" id="order-surname" placeholder="Прізвище">
-        <input type="tel" id="order-phone" placeholder="Телефон">
-
-        <select id="order-delivery" onchange="handleDeliveryTypeChange()">
-            <option value="Нова пошта">Нова пошта</option>
-            <option value="Укрпошта">Укрпошта</option>
-        </select>
-
-        <div id="np-city-wrap" class="np-field-wrap">
-            <input type="text" id="order-city" placeholder="Почніть вводити місто">
-            <div id="city-suggestions" class="np-suggestions"></div>
+        <div class="cards-two">
+          <article class="info-card">
+            <div class="info-card__icon">⚙️</div>
+            <h3>Особливості</h3>
+            <ul class="check-list">
+              <li>Ємність <strong>100000 mAh</strong> — тривала автономна робота</li>
+              <li>Вбудований яскравий світлодіодний ліхтарик</li>
+              <li>Чотири вихідні USB-порти — зарядка до 4 пристроїв одночасно</li>
+              <li>Вхідні порти: Micro-USB, USB-C, Apple Lightning</li>
+              <li>Зручна ручка для перенесення</li>
+            </ul>
+          </article>
+          <article class="info-card">
+            <div class="info-card__icon">✓</div>
+            <h3>Переваги</h3>
+            <ul class="check-list">
+              <li>Універсальна сумісність із сучасними гаджетами</li>
+              <li>Підтримка швидкої зарядки</li>
+              <li>Захист від перегріву та короткого замикання</li>
+              <li>Практичний дизайн для дому та подорожей</li>
+              <li>Багатофункціональність: <strong>Power Bank + LED-ліхтар</strong></li>
+            </ul>
+          </article>
         </div>
+      </div>
+    </section>
 
-        <div id="np-warehouse-wrap" class="np-field-wrap">
-            <select id="order-address">
-                <option value="">Спочатку оберіть місто</option>
-            </select>
-        </div>
-
-        <div id="ukrposhta-wrap" style="display:none;">
-            <input type="text" id="order-city-manual" placeholder="Місто">
-            <input type="text" id="order-index" placeholder="Поштовий індекс">
-        </div>
-
-        <div class="checkout-actions">
-            <button onclick="submitCheckout()">Підтвердити</button>
-            <button class="secondary-btn" onclick="closeCheckoutModal()">Скасувати</button>
-        </div>
-    </div>
-</div>
-
-<div id="checkout-success-modal" class="checkout-success-modal" onclick="closeSuccessModal(event)">
-    <div class="checkout-success-box">
-        <div class="checkout-success-icon">✅</div>
-        <h2>Ваше замовлення прийнято</h2>
-        <div class="checkout-success-order">Номер замовлення: <span id="success-order-number">—</span></div>
-        <p>Дякуємо за покупку у Kids Room. Наш менеджер зв'яжеться з вами найближчим часом для підтвердження замовлення.</p>
-        <div class="checkout-success-actions">
-            <button type="button" onclick="closeSuccessModal()">Повернутись до магазину</button>
-        </div>
-    </div>
-</div>
-
-<div id="quick-view-modal" class="quick-view-modal" onclick="if(event.target===this) closeQuickView()">
-    <div class="quick-view-box">
-        <div class="quick-view-top">
-            <h2>Швидкий перегляд</h2>
-            <button class="quick-view-close" type="button" onclick="closeQuickView()">✕</button>
-        </div>
-        <div id="quick-view-body"></div>
-    </div>
-</div>
-
-<section class="section-wrap">
-    <div class="section-title-row">
-        <h2>Поширені питання</h2>
-        <p>Короткі відповіді на найчастіші запитання перед покупкою.</p>
-    </div>
-
-    <div class="home-faq-grid">
-        <div class="home-faq-card">
-            <h3>Коли зі мною зв’яжуться?</h3>
-            <p>Після оформлення замовлення менеджер зв’яжеться для підтвердження деталей і доставки.</p>
-        </div>
-        <div class="home-faq-card">
-            <h3>Яка доставка доступна?</h3>
-            <p>На сайті можна оформити доставку Новою поштою або Укрпоштою по Україні.</p>
-        </div>
-        <div class="home-faq-card">
-            <h3>Чи можу я уточнити товар перед оплатою?</h3>
-            <p>Так, перед підтвердженням замовлення можна написати нам у месенджери або через сторінку контактів.</p>
-        </div>
-        <div class="home-faq-card">
-            <h3>Де подивитися умови повернення?</h3>
-            <p>Для цього є окрема сторінка “Обмін та повернення”, щоб покупець одразу бачив зрозумілі правила.</p>
-        </div>
-    </div>
-</section>
-
-<section class="cta-banner">
-    <div>
-        <h2>Потрібна допомога з вибором товару?</h2>
-        <p>
-            Якщо вам потрібно уточнити наявність, характеристики або підібрати товар для дитини,
-            перейдіть на сторінку контактів і напишіть нам зручним способом.
-        </p>
-    </div>
-    <a href="contacts.html">Зв’язатися з нами</a>
-</section>
-
-<footer class="site-footer">
-    <div class="site-footer-grid">
+    <section class="section specs-section section-dark">
+      <div class="container specs-layout">
         <div>
-            <h3>Kids Room</h3>
-            <p>
-                Інтернет-магазин дитячих товарів з каталогом, корзиною, оформленням замовлення
-                та швидким зв’язком із клієнтом.
-            </p>
+          <div class="section-label section-label--orange">Технічні дані</div>
+          <h2>Характеристики</h2>
+          <div class="spec-table">
+            <div><span>Ємність</span><strong>100000 mAh</strong></div>
+            <div><span>Вхідні порти</span><strong>Micro-USB, USB-C, Apple Lightning</strong></div>
+            <div><span>Швидка зарядка</span><strong>Так</strong></div>
+            <div><span>LED-дисплей рівня заряду</span><strong>Так</strong></div>
+            <div><span>Вбудована LED-лампа</span><strong>Так</strong></div>
+            <div><span>Захист від перегріву та КЗ</span><strong>Так</strong></div>
+            <div><span>Ручка для перенесення</span><strong>Так</strong></div>
+            <div><span>Вхідна напруга</span><strong>5V-4,5A / 9V-2A / 12V-1,5A</strong></div>
+            <div><span>Модель</span><strong>JS-658</strong></div>
+            <div><span>Колір</span><strong>Чорний</strong></div>
+          </div>
         </div>
 
-        <div>
-            <h3>Покупцям</h3>
-            <div class="site-footer-links">
-                <a href="about.html">Про нас</a>
-                <a href="delivery-payment.html">Доставка і оплата</a>
-                <a href="returns.html">Обмін та повернення</a>
-                <a href="contacts.html">Контакти</a>
-            </div>
+        <aside class="package-card">
+          <h3>Комплектація</h3>
+          <div class="package-card__image"><img src="assets/product-front.webp" alt="Комплектація Power Bank JS-658" loading="lazy" /></div>
+          <ul>
+            <li><span>1</span> Power Bank 100000 mAh з ремінцем і ліхтариком JS-658</li>
+            <li><span>2</span> USB-кабель для зарядки</li>
+            <li><span>3</span> Заводська упаковка</li>
+          </ul>
+        </aside>
+      </div>
+    </section>
+
+    <section class="section order-section" id="order">
+      <div class="order-section__glow"></div>
+      <div class="container order-grid">
+        <div class="order-product">
+          <img src="assets/gen-front.webp" alt="Замовити Power Bank 100000 mAh" loading="lazy" />
+          <div class="order-product__stock">📦 Залишилось <strong>8 шт</strong></div>
+        </div>
+        <div class="order-copy">
+          <div class="section-label section-label--orange">Акційна пропозиція</div>
+          <h2>Замовляйте зараз за спеціальною ціною</h2>
+          <p>Залиште ім’я та номер телефону — менеджер зв’яжеться з вами для підтвердження замовлення.</p>
+          <div class="order-price"><span>3999 грн</span><strong>1449 грн</strong></div>
+          <div class="order-mini-timer">До кінця акції: <b id="timerMini">00:00:00</b></div>
         </div>
 
-        <div>
-            <h3>Швидкі посилання</h3>
-            <div class="site-footer-links">
-                <a href="#products">Каталог товарів</a>
-                <a href="contacts.html">Написати нам</a>
-                <a href="about.html">Інформація про магазин</a>
-            </div>
-        </div>
+        <form class="order-form" id="orderForm" novalidate>
+          <h3>Оформити замовлення</h3>
+          <label>Ваше ім’я
+            <input type="text" name="name" autocomplete="name" placeholder="Наприклад, Олександр" required minlength="2" />
+          </label>
+          <label>Ваш телефон
+            <input type="tel" name="phone" autocomplete="tel" inputmode="tel" placeholder="+380 __ ___ __ __" required />
+          </label>
+          <input type="hidden" name="product" value="Power Bank 100000 mAh JS-658" />
+          <input type="hidden" name="price" value="1449" />
+          <button class="btn btn--primary btn--full" type="submit">Оформити замовлення <span>→</span></button>
+          <p class="form-note">Натискаючи кнопку, ви погоджуєтесь на обробку даних для оформлення замовлення.</p>
+          <div class="form-message" id="formMessage" role="status" aria-live="polite"></div>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer section-dark">
+    <div class="container footer__inner">
+      <div><a class="brand" href="#top">TREBA<span>Market</span></a><p>Практичні товари для дому та щоденного життя.</p></div>
+      <div class="footer__trust"><span>🚚 Доставка по Україні</span><span>💳 Оплата при отриманні</span><span>🛡️ Перевірка перед оплатою</span></div>
+      <small>© 2026 TREBA Market</small>
     </div>
+  </footer>
 
-    <div class="site-footer-note">
-        Оформлюючи замовлення на сайті, ви можете ознайомитися з основною інформацією магазину
-        на сторінках довіри: про нас, доставка і оплата, обмін та повернення, контакти.
-    </div>
-</footer>
+  <div class="mobile-buybar" id="mobileBuybar">
+    <div><span>3999 грн</span><strong>1449 грн</strong></div>
+    <a href="#order">Замовити</a>
+  </div>
 
-<div class="social">
-    <a href="viber://chat?number=380684221803">Viber</a>
-    <a href="https://t.me/380684221803">Telegram</a>
-    <a href="https://www.instagram.com/kids.room.ua/">Instagram</a>
-</div>
-
-<script src="products.js"></script>
-<script src="crm.js"></script>
-<script src="cart.js"></script>
-<script src="script.js"></script>
-<script>
-function escapeHomeHtml(value) {
-    return String(value || "")
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#39;");
-}
-
-function getHomeDiscountPercent(product) {
-    const oldPrice = Number(product?.old || 0);
-    const currentPrice = Number(product?.price || 0);
-
-    if (!oldPrice || !currentPrice || oldPrice <= currentPrice) return null;
-    return Math.round(((oldPrice - currentPrice) / oldPrice) * 100);
-}
-
-function openHomeProduct(id) {
-    if (typeof openProduct === "function") {
-        openProduct(id);
-    }
-}
-
-function goToCategory(categoryId) {
-    if (typeof filterCategory === "function") {
-        filterCategory(categoryId);
-    }
-    window.location.hash = "products";
-}
-
-function addHomeProductToCart(id, event) {
-    if (event) event.stopPropagation();
-
-    const qtyInput = document.getElementById("home-qty-" + id);
-    let qty = parseInt(qtyInput ? qtyInput.value : "1", 10);
-
-    if (isNaN(qty) || qty < 1) qty = 1;
-
-    const tempId = "qty-" + id;
-    let tempInput = document.getElementById(tempId);
-
-    if (!tempInput) {
-        tempInput = document.createElement("input");
-        tempInput.type = "hidden";
-        tempInput.id = tempId;
-        document.body.appendChild(tempInput);
-    }
-
-    tempInput.value = qty;
-
-    if (typeof addToCart === "function") {
-        addToCart(id);
-    }
-
-    if (qtyInput) qtyInput.value = "1";
-}
-
-function homeMinus(id, event) {
-    if (event) event.stopPropagation();
-    const input = document.getElementById("home-qty-" + id);
-    if (!input) return;
-
-    const value = parseInt(input.value || "1", 10);
-    if (isNaN(value) || value <= 1) {
-        input.value = 1;
-        return;
-    }
-    input.value = value - 1;
-}
-
-function homePlus(id, event) {
-    if (event) event.stopPropagation();
-    const input = document.getElementById("home-qty-" + id);
-    if (!input) return;
-
-    const value = parseInt(input.value || "1", 10);
-    input.value = isNaN(value) || value < 1 ? 1 : value + 1;
-}
-
-function buildShowcaseCard(product, type) {
-    const image = typeof getSafeProductImage === "function"
-        ? getSafeProductImage(product)
-        : (product?.img || "product-placeholder.svg");
-
-    const discount = getHomeDiscountPercent(product);
-    const chipText = type === "hit" ? "ХІТ" : type === "sale" ? "АКЦІЯ" : "НОВИНКА";
-    const categoryName = typeof getCategoryName === "function"
-        ? getCategoryName(product.category)
-        : (product.category || "Товар");
-
-    return `
-        <div class="product-showcase-card">
-            <div class="product-showcase-image">
-                <img src="${escapeHomeHtml(image)}" alt="${escapeHomeHtml(product.name)}" onerror="this.onerror=null;this.src='product-placeholder.svg'">
-            </div>
-            <div class="product-showcase-body">
-                <div class="product-showcase-top">
-                    <span class="product-chip ${type}">${chipText}</span>
-                    <span class="product-chip secondary">${escapeHomeHtml(categoryName)}</span>
-                </div>
-                <h3>${escapeHomeHtml(product.name)}</h3>
-                <p>${escapeHomeHtml(product.description || "Якісний дитячий товар для щоденного використання.")}</p>
-                <div class="product-showcase-price">
-                    <span class="current">${Number(product.price || 0)} грн</span>
-                    ${Number(product.old || 0) > Number(product.price || 0) ? `<span class="old">${Number(product.old || 0)} грн</span>` : ""}
-                    ${discount ? `<span class="product-chip sale">-${discount}%</span>` : ""}
-                </div>
-                <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-                    <span style="font-size:13px;color:#6f7b8c;font-weight:700;">Кількість</span>
-                    <div style="display:flex;align-items:center;gap:6px;">
-                        <button type="button" onclick="homeMinus('${escapeHomeHtml(product.id)}', event)" style="width:34px;height:34px;border:none;border-radius:10px;background:#eef2f7;font-weight:900;cursor:pointer;">−</button>
-                        <input id="home-qty-${escapeHomeHtml(product.id)}" type="number" min="1" value="1" style="width:68px;padding:10px 12px;border:1px solid #e1e5eb;border-radius:12px;font-weight:800;text-align:center;">
-                        <button type="button" onclick="homePlus('${escapeHomeHtml(product.id)}', event)" style="width:34px;height:34px;border:none;border-radius:10px;background:#eef2f7;font-weight:900;cursor:pointer;">+</button>
-                    </div>
-                </div>
-                <div class="product-showcase-actions">
-                    <button class="primary" onclick="event.stopPropagation(); addHomeProductToCart('${escapeHomeHtml(product.id)}', event)">У кошик</button>
-                    <button class="secondary" onclick="event.stopPropagation(); openHomeProduct('${escapeHomeHtml(product.id)}')">Відкрити товар</button>
-                </div>
-            </div>
-        </div>
-    `;
-}
-
-function wrapShowcaseSlider(containerId, cardsHtml) {
-    return `
-        <div class="home-slider">
-            <button class="home-slider-arrow left" type="button" onclick="slideHomeSection('${containerId}', -1)">‹</button>
-            <div class="home-slider-track" id="${containerId}-track">
-                ${cardsHtml}
-            </div>
-            <button class="home-slider-arrow right" type="button" onclick="slideHomeSection('${containerId}', 1)">›</button>
-        </div>
-    `;
-}
-
-function renderShowcaseGrid(elementId, list, type, emptyText) {
-    const container = document.getElementById(elementId);
-    if (!container) return;
-
-    if (!Array.isArray(list) || !list.length) {
-        container.innerHTML = `<div class="showcase-empty">${escapeHomeHtml(emptyText)}</div>`;
-        return;
-    }
-
-    const cardsHtml = list.map(item => buildShowcaseCard(item, type)).join("");
-    container.innerHTML = wrapShowcaseSlider(elementId, cardsHtml);
-
-    setTimeout(() => updateHomeSliderButtons(elementId), 30);
-}
-
-function slideHomeSection(containerId, direction) {
-    const track = document.getElementById(containerId + "-track");
-    if (!track) return;
-
-    const card = track.querySelector(".product-showcase-card");
-    const cardWidth = card ? card.getBoundingClientRect().width : 280;
-    const gap = 16;
-    const offset = (cardWidth + gap) * Math.max(1, Math.min(2, window.innerWidth < 700 ? 1 : 2));
-
-    track.scrollBy({
-        left: direction * offset,
-        behavior: "smooth"
-    });
-
-    setTimeout(() => updateHomeSliderButtons(containerId), 350);
-}
-
-function updateHomeSliderButtons(containerId) {
-    const container = document.getElementById(containerId);
-    if (!container) return;
-
-    const track = document.getElementById(containerId + "-track");
-    if (!track) return;
-
-    const slider = container.querySelector(".home-slider");
-    if (!slider) return;
-
-    const leftBtn = slider.querySelector(".home-slider-arrow.left");
-    const rightBtn = slider.querySelector(".home-slider-arrow.right");
-
-    if (!leftBtn || !rightBtn) return;
-
-    const maxScrollLeft = track.scrollWidth - track.clientWidth;
-    const current = Math.round(track.scrollLeft);
-
-    leftBtn.classList.toggle("hidden", current <= 2);
-    rightBtn.classList.toggle("hidden", current >= maxScrollLeft - 2);
-}
-
-function bindAllHomeSliders() {
-    ["home-hits-grid", "home-sales-grid", "home-new-grid"].forEach(id => {
-        const track = document.getElementById(id + "-track");
-        if (!track || track.dataset.bound === "true") return;
-
-        track.dataset.bound = "true";
-        track.addEventListener("scroll", () => updateHomeSliderButtons(id));
-    });
-}
-
-function refreshAllHomeSliderButtons() {
-    ["home-hits-grid", "home-sales-grid", "home-new-grid"].forEach(updateHomeSliderButtons);
-}
-
-function renderHomeDynamicSections() {
-    const allProducts = Array.isArray(window.products) ? [...window.products] : [];
-
-    const hitProducts = allProducts.filter(product => product.is_hit);
-    const saleProducts = allProducts.filter(product => product.is_sale);
-    const newProducts = allProducts.filter(product => product.is_new);
-
-    const hits = (hitProducts.length ? hitProducts : allProducts.slice(0, 8)).slice(0, 8);
-
-    const sales = (
-        saleProducts.length
-            ? saleProducts
-            : [...allProducts]
-                .filter(product => Number(product.old || 0) > Number(product.price || 0))
-                .sort((a, b) => (getHomeDiscountPercent(b) || 0) - (getHomeDiscountPercent(a) || 0))
-    ).slice(0, 8);
-
-    const newest = (newProducts.length ? newProducts : [...allProducts].slice(-8).reverse()).slice(0, 8);
-
-    renderShowcaseGrid("home-hits-grid", hits, "hit", "Хіти продажу з’являться після додавання товарів.");
-    renderShowcaseGrid("home-sales-grid", sales, "sale", "Акційні товари з’являться, коли ти позначиш товари як акційні.");
-    renderShowcaseGrid("home-new-grid", newest, "new", "Новинки з’являться, коли ти позначиш товари як нові.");
-
-    setTimeout(() => {
-        bindAllHomeSliders();
-        refreshAllHomeSliderButtons();
-    }, 60);
-}
-
-window.slideHomeSection = slideHomeSection;
-
-window.addEventListener("products:ready", renderHomeDynamicSections);
-window.addEventListener("products:updated", renderHomeDynamicSections);
-window.addEventListener("storage", function(event) {
-    if (event.key === "products") {
-        renderHomeDynamicSections();
-    }
-});
-
-window.addEventListener("resize", function() {
-    refreshAllHomeSliderButtons();
-});
-
-document.addEventListener("DOMContentLoaded", function() {
-    setTimeout(renderHomeDynamicSections, 200);
-});
-
-window.addEventListener("load", function() {
-    setTimeout(renderHomeDynamicSections, 400);
-});
-</script>
-
+  <script src="script.js"></script>
 </body>
 </html>
